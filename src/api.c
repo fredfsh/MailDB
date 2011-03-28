@@ -3,7 +3,9 @@
    By fredfsh (fredfsh@gmail.com)
 */
 #include "api.h"
+#include "def.h"
 #include "router.h"
+#include <stdio.h>
 
 // Creates a bucket.
 //
@@ -22,24 +24,69 @@
 // Not supported.
 //int deleteBucket(const char *bucketId);
 
-// Saves a blob into the database.
-//
-// I simply use a Redis hash to implement this. The bucket ID is the key, the
-// blob ID is the field, while the blob content is the value. I also invoke
-// APIs from the router layer, which is responsible for data distribution.
-int saveBlob(const char *bucketId, const char *blobId, const int streamLength,
-    const void *inputStream) {
-  int rv = redisHashSet(bucketId, blobId, streamLength, inputStream);
-  if (rv == ROUTER_OK) return API_OK;
-  if (rv == ROUTER_FAILED) return API_FAILED;
-  return API_ERR;
+// Deletes a blob.
+int deleteBlob(const char *bucketId, const char *blobId) {
+  int rv;
+
+  rv = routeDeleteBlob(bucketId, blobId);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to delete blob.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to delete blob.", "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
 }
 
-// Reads the content of a blob from the database.
-//void *loadBlob(const char *bucket_id, const char *blobId, int *streamLength);
-
 // Tests whether a blob exists.
-//int ifBlobExist(const char *bucketId, const char *blobId);
+int existBlob(const char *bucketId, const char *blobId, int *result) {
+  int rv;
 
-// Deletes a blob.
-//int deleteBlob(const char *bucketId, const char *blobId);
+  rv = routeExistBlob(bucketId, blobId, result);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to determine existence of blob.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to determine existence of blob.",
+        "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
+
+// Loads a blob.
+int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
+    void *blob) {
+  int rv;
+
+  rv = routeLoadBlob(bucketId, blobId, blobLength, blob);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to load blob.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to load blob.", "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
+
+// Saves a blob.
+int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
+    const void *blob) {
+  int rv;
+
+  rv = routeSaveBlob(bucketId, blobId, blobLength, blob);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to save blob.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to save blob.", "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}

@@ -2,6 +2,7 @@
 
    By fredfsh (fredfsh@gmail.com)
 */
+#include "def.h"
 #include "redis.h"
 #include <sys/socket.h>
 #include <stdarg.h>

@@ -9,11 +9,12 @@
 #define REDIS_FAILED -1
 #define REDIS_ERR 1
 
+#define REDIS_PORT 6379
+
 #define REDIS_RETRY 100
 #define REDIS_RETRY_SLEEP 10000 // in microseconds
 
 #define MAX_COMMAND_LENGTH 0xFF
-#define MAX_BLOB_LENGTH 0xFFFF
 
 // Deletes a hash field.
 int hDel(const int sockfd, const char *key, const char *field);

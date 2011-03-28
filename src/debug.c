@@ -1,4 +1,5 @@
-#include "redis.h"
+#include "api.h"
+#include "def.h"
 #include <strings.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -7,14 +8,87 @@
 #include <sys/types.h>
 
 int main(int argc, char *argv[]) {
-  int sockfd;
+  //int sockfd;
   int rv;
   int result;
-  struct sockaddr_in serv_addr;
-  struct hostent *server;
+  //struct sockaddr_in serv_addr;
+  //struct hostent *server;
   int blobLength;
   char blob[MAX_BLOB_LENGTH];
 
+  /*********************************
+   *      debug for r.h/c      *
+   *********************************
+   */
+  rv = deleteBlob("fredfsh", "four");
+  if (rv == API_OK) {
+    printf("Success.\n");
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  rv = existBlob("fredfsh", "four", &result);
+  if (rv == API_OK) {
+    printf("%d\n", result);
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  rv = loadBlob("fredfsh", "four", &blobLength, blob);
+  if (rv == API_OK) {
+    if (blobLength == - 1) {
+      printf("(nil)\n");
+    } else {
+      blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
+          = '\0';  // for debug
+      printf("%s\n", blob);
+    }
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  rv = saveBlob("fredfsh", "four", 1, "4");
+  if (rv == API_OK) {
+    printf("Success.\n");
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  rv = existBlob("fredfsh", "four", &result);
+  if (rv == API_OK) {
+    printf("%d\n", result);
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  rv = loadBlob("fredfsh", "four", &blobLength, blob);
+  if (rv == API_OK) {
+    if (blobLength == - 1) {
+      printf("(nil)\n");
+    } else {
+      blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
+          = '\0';  // for debug
+      printf("%s\n", blob);
+    }
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  /*********************************
+   *      debug for redis.h/c      *
+   *********************************
   server = gethostbyname("alpha");
   serv_addr.sin_family = AF_INET;
   bcopy((char *) server->h_addr, (char *) &serv_addr.sin_addr.s_addr,
@@ -28,7 +102,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  rv = hDel(sockfd, "fredfsh", "three");
+  rv = hDel("fredfsh", "three");
   if (rv == REDIS_OK) {
     printf("Success.\n");
   } else if (rv == REDIS_FAILED) {
@@ -93,6 +167,7 @@ int main(int argc, char *argv[]) {
   } else if (rv == REDIS_ERR) {
     printf("Error.\n");
   }
+  */
 
   return 1;
 }
