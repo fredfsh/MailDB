@@ -187,6 +187,50 @@ int hDel(const int sockfd, const char *key, const char *field) {
   return rv;
 }
 
+//Executes EXISTS command to a Redis server.
+int exists(const int sockfd, const char *key, int *result) {
+  int rv;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "ss", "EXISTS", key);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing EXISTS.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute EXISTS.",
+        "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, result);
+  return rv;
+}
+
+//Executes DEL command to a Redis server.
+int del(const int sockfd, const char *key) {
+  int rv;
+  int result;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "ss", "DEL", key);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing DEL.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute DEL.", "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, &result);
+  return rv;
+}
+
 //Executes HEXISTS command to a Redis server.
 int hExists(const int sockfd, const char *key, const char *field, int *result) {
   int rv;

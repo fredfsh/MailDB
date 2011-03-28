@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   char blob[MAX_BLOB_LENGTH];
 
   /*********************************
-   *      debug for r.h/c      *
+   *      debug for api.h/c        *
    *********************************
    */
   rv = deleteBlob("fredfsh", "four");

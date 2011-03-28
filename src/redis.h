@@ -16,6 +16,10 @@
 
 #define MAX_COMMAND_LENGTH 0xFF
 
+// Deletes a key.
+int del(const int sockfd, const char *key);
+// Determines if a key exists.
+int exists(const int sockfd, const char *key, int *result);
 // Deletes a hash field.
 int hDel(const int sockfd, const char *key, const char *field);
 // Determines if a hash field exists.

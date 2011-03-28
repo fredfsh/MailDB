@@ -18,6 +18,9 @@
 
 #define CONFIG_FILE "RedisServers.cfg"
 
+#define EXIST_BLOB_ID "#ExistBlobId#"
+#define EXIST_BLOB "#ExistBlob#"
+
 #define MAX_HASH_LENGTH 0xFF
 #define MAX_ADDR_LENGTH 0xFF
 
@@ -47,10 +50,16 @@ chNode *addNodeByHostname(const char *hostname, chMap *map);
 // @returns that virtual node.
 chVirtualNode *addVirtualNode(const char *key, chMap *map);
 
+// Creates a bucket considering consistent hashing.
+int routeCreateBucket(const char *bucketId);
 // Deletes a blob considering consistent hashing.
 int routeDeleteBlob(const char *bucketId, const char *blobId);
+// Deletes a bucket considering consistent hashing.
+int routeDeleteBucket(const char *bucketId);
 // Determines whether a blob exists considering consistent hashing.
 int routeExistBlob(const char *bucketId, const char *blobId, int *result);
+// Determines whether a bucket exists considering consistent hashing.
+int routeExistBucket(const char *bucketId, int *result);
 // Loads a blob considering consistent hashing.
 int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
     void *blob);

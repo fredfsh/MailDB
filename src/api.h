@@ -12,18 +12,16 @@
 #define API_FAILED -1
 #define API_ERR 1
 
-
 // Creates a bucket.
-//int createBucket(const char *bucketId);
-// Tests whether a bucket exists.
-//int ifBucketExist(const char *bucketId);
-// Deletes a bucket.
-//int deleteBucket(const char *bucketId);
-
+int createBucket(const char *bucketId);
 // Deletes a blob.
 int deleteBlob(const char *bucketId, const char *blobId);
+// Deletes a bucket.
+int deleteBucket(const char *bucketId);
 // Determines whether a blob exists.
 int existBlob(const char *bucketId, const char *blobId, int *result);
+// Determines whether a bucket exists.
+int existBucket(const char *bucketId, int *result);
 // Loads a blob.
 int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
     void *blob);

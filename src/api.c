@@ -8,21 +8,20 @@
 #include <stdio.h>
 
 // Creates a bucket.
-//
-// Not supported.
-// Bucket creation could simply be done by maintaining a special Redis list,
-// the value of which is IDs of buckets.
-//int createBucket(const char *bucketId);
+int createBucket(const char *bucketId) {
+  int rv;
 
-// Tests whether a bucket exists.
-//
-// Not supported.
-//int ifBucketExist(const char *bucketId);
-
-// Deletes a bucket.
-//
-// Not supported.
-//int deleteBucket(const char *bucketId);
+  rv = routeCreateBucket(bucketId);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to create blob.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to create blob.", "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
 
 // Deletes a blob.
 int deleteBlob(const char *bucketId, const char *blobId) {
@@ -40,7 +39,24 @@ int deleteBlob(const char *bucketId, const char *blobId) {
   return API_OK;
 }
 
-// Tests whether a blob exists.
+// Deletes a bucket.
+int deleteBucket(const char *bucketId) {
+  int rv;
+
+  rv = routeDeleteBucket(bucketId);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to delete bucket.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to delete bucket.",
+        "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
+
+// Determines whether a blob exists.
 int existBlob(const char *bucketId, const char *blobId, int *result) {
   int rv;
 
@@ -51,6 +67,23 @@ int existBlob(const char *bucketId, const char *blobId, int *result) {
     return API_FAILED;
   } else if (rv == ROUTER_FAILED) {
     printf("api.c: %s %s\n", "Failed to determine existence of blob.",
+        "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
+
+// Determines whether a bucket exists.
+int existBucket(const char *bucketId, int *result) {
+  int rv;
+
+  rv = routeExistBucket(bucketId, result);
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to determine existence of bucket.",
+        "Lower layer replies with error.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to determine existence of bucket.",
         "Lower layer fails to.");
     return API_FAILED;
   }

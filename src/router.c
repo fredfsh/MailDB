@@ -233,6 +233,39 @@ int _chooseMachine(const char *key, const int mustExist) {
   return sockfd;
 }
 
+// Creates a bucket at the database considering consistent hashing.
+//
+// I choose a machine according to consistent hashing, and inserts a
+// pre-defined blob into that machine. Hence if a bucket with a same @bucketId
+// already exists, no bad effect would take place.
+int routeCreateBucket(const char *bucketId) {
+  int rv;
+  int sockfd;
+
+  // Finds the Redis server for bucket creation.
+  sockfd = _chooseMachine(bucketId, 0);
+  //printf("[debug]router.c: sockfd = %d\n", sockfd);  //debug
+  if (sockfd == -1) {
+    printf("router.c: %s %s\n", "Failed to create bucket.",
+        "No Redis server available.");
+    return ROUTER_FAILED;
+  }
+
+  // Creates bucket at that Redis server.
+  rv = hSet(sockfd, bucketId, EXIST_BLOB_ID, strlen(EXIST_BLOB), EXIST_BLOB);
+  close(sockfd);
+  if (rv == REDIS_ERR) {
+    printf("router.c: %s %s\n", "Failed to create bucket.",
+        "Lower layer replies with error.");
+    return ROUTER_FAILED;
+  } else if (rv == REDIS_FAILED) {
+    printf("router.c: %s %s\n", "Failed to create bucket.",
+        "Lower layer fails to.");
+    return ROUTER_FAILED;
+  }
+  return ROUTER_OK;
+}
+
 // Deletes a blob from the database considering consistent hashing.
 //
 // I choose a machine according to consistent hashing, and deletes the data from
@@ -255,6 +288,34 @@ int routeDeleteBlob(const char *bucketId, const char *blobId) {
     return ROUTER_FAILED;
   } else if (rv == REDIS_FAILED) {
     printf("router.c: %s %s\n", "Failed to delete blob.",
+        "Lower layer fails to.");
+    return ROUTER_FAILED;
+  }
+  return ROUTER_OK;
+}
+
+// Deletes a bucket from the database considering consistent hashing.
+//
+// I choose a machine according to consistent hashing, and deletes the data from
+// that machine.
+int routeDeleteBucket(const char *bucketId) {
+  int rv;
+  int sockfd;
+
+  // Finds the Redis server for bucket deletion.
+  sockfd = _chooseMachine(bucketId, 1);
+  //printf("[debug]router.c: sockfd = %d\n", sockfd);  //debug
+  if (sockfd == -1) return ROUTER_OK;
+
+  // Deletes bucket from that Redis server.
+  rv = del(sockfd, bucketId);
+  close(sockfd);
+  if (rv == REDIS_ERR) {
+    printf("router.c: %s %s\n", "Failed to delete bucket.",
+        "Lower layer replies with error.");
+    return ROUTER_FAILED;
+  } else if (rv == REDIS_FAILED) {
+    printf("router.c: %s %s\n", "Failed to delete bucket.",
         "Lower layer fails to.");
     return ROUTER_FAILED;
   }
@@ -286,6 +347,37 @@ int routeExistBlob(const char *bucketId, const char *blobId, int *result) {
     return ROUTER_FAILED;
   } else if (rv == REDIS_FAILED) {
     printf("router.c: %s %s\n", "Failed to determine existence of blob.",
+        "Lower layer fails to.");
+    return ROUTER_FAILED;
+  }
+  return ROUTER_OK;
+}
+
+// Determines whether a bucket exists in the database considering consistent
+// hashing.
+//
+// I choose a machine according to consistent hashing, and determines at that
+// machine.
+int routeExistBucket(const char *bucketId, int *result) {
+  int rv;
+  int sockfd;
+
+  // Finds the Redis server for bucket existence determination.
+  sockfd = _chooseMachine(bucketId, 1);
+  if (sockfd == -1) {
+    *result = 0;
+    return ROUTER_OK;
+  }
+
+  // Determines existence of bucket at that Redis server.
+  rv = exists(sockfd, bucketId, result);
+  close(sockfd);
+  if (rv == REDIS_ERR) {
+    printf("router.c: %s %s\n", "Failed to determine existence of bucket.",
+        "Lower layer replies with error.");
+    return ROUTER_FAILED;
+  } else if (rv == REDIS_FAILED) {
+    printf("router.c: %s %s\n", "Failed to determine existence of bucket.",
         "Lower layer fails to.");
     return ROUTER_FAILED;
   }
