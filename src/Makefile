@@ -5,14 +5,18 @@
 CC = g++
 CFLAGS = -Wall -O2
 SRCS = api.c\
-       debug.c\
        md5.c\
        redis.c\
        router.c
 OBJS = $(SRCS:%.c=%.o)
 
-debug: $(OBJS)
-	$(CC) $(CFLAGS) -o debug $(OBJS)
+#all: config-server debug
+
+#config-server: config-server.c
+#$(CC) $(CFLAGS) -o config-server config-server.c
+
+debug: debug.c $(OBJS)
+	$(CC) $(CFLAGS) -o debug debug.c $(OBJS)
 
 $(OBJS): %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<

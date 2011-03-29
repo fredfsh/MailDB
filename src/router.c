@@ -20,10 +20,10 @@ ConsistentHashingMap map;
 
 // Creates a ConsistentHashingNode and add it to a ConsistentHashingMap.
 // @returns that node.
-chNode *addNodeByIp(const char *ip, chMap *map) {
+chNode *addNode(const sockaddr *addr, chMap *map) {
   chNode *node, *p;
 
-  if (!map) return 0;
+  if (!addr || !map) return 0;
 
   // Creates a new node.
   node = (chNode *) malloc(sizeof(chNode));
@@ -32,10 +32,8 @@ chNode *addNodeByIp(const char *ip, chMap *map) {
         "Insufficient memory.");
     return 0;
   }
-  strcpy(node->hostname, "");
-  strcpy(node->ip, ip);
-  node->list = 0;
-  node->next = 0;
+  memset(node, 0, sizeof(chNode));
+  memcpy(&node->addr, &((sockaddr_in *) addr)->sin_addr, sizeof(in_addr));
 
   // Adds that node to the map.
   if (!map->nNode) {
@@ -46,18 +44,6 @@ chNode *addNodeByIp(const char *ip, chMap *map) {
     p->next = node;
   }
   ++ map->nNode;
-  return node;
-}
-chNode *addNodeByHostname(const char *hostname, chMap *map) {
-  chNode *node;
-  struct hostent *server;
-
-  // Creates a new node and add it to the map.
-  server = gethostbyname(hostname);
-  if (!server) return 0;
-  node = addNodeByIp(inet_ntoa(* ((in_addr *) server->h_addr)), map);
-  if (!node) return 0;
-  strcpy(node->hostname, hostname);
   return node;
 }
 
@@ -113,20 +99,32 @@ void _freeNodes(chMap *map) {
   map->nNode = 0;
 }
 
+// Displays information about the consistent hashing node.
+void _dumpNode(const chNode *node) {
+
+  if (!node) {
+    printf("[debug]router.c: %s %s\n", "Failed to dump node.", "Null pointer.");
+    return;
+  }
+
+  printf("[debug]router.c: ip: %s\n", inet_ntoa(node->addr));
+  printf("[debug]router.c: number of virtual nodes: %d\n", node->nVirtualNode);
+}
+
 // Displays information about the consistent hashing map.
-void _dumpNodes(const chMap *map) {
+void _dumpMap(const chMap *map) {
   chNode *node;
 
   if (!map) {
-    printf("No consistent hashing map.\n");
+    printf("[debug]router.c: %s %s\n", "Failed to dump map.", "Null pointer.");
     return;
   }
   
-  printf("Number of nodes: %d\n", map->nNode);
+  printf("[debug]router.c: Number of nodes: %d\n", map->nNode);
   node = map->list;
   while (node) {
-    printf("hostname: %s, ip: %s\n", node->hostname, node->ip);
-    printf("number of virtual nodes: %d\n", node->nVirtualNode);
+    printf("[debug]router.c: --\n");
+    _dumpNode(node);
     node = node->next;
   }
   return;
@@ -134,49 +132,52 @@ void _dumpNodes(const chMap *map) {
 
 // Loads hostnames of live servers from config file.
 //
-// Each line in the config file is a hostname of a live server.
+// Each line in the config file is a hostname/ip of a live server.
 //
 // TODO: This is a dummy version for demo.
 //
 void _loadLiveServers(const char *configFile, chMap *map) {
   FILE *fin;
-  char line[MAX_ADDR_LENGTH];
+  char line[MAX_LINE_LENGTH];
   int rv;
+  struct addrinfo hints, *result;
 
   // Frees all the memory pre-allocated by the consistent hashing map.
   if (!map) return;
   if (!map->nNode) _freeNodes(map);
 
   // Adds live servers to the map according to the config file.
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
   fin = fopen(CONFIG_FILE, "r");
+  rv = fscanf(fin, "%s", line);
   while (!feof(fin)) {
+    rv = getaddrinfo(line, NULL, &hints, &result);
+    addNode(result->ai_addr, map);
+    freeaddrinfo(result);
     rv = fscanf(fin, "%s", line);
-    if (!strcmp(line, "host")) {
-      rv = fscanf(fin, "%s", line);
-      addNodeByHostname(line, map);
-    } else if (!strcmp(line, "ip")) {
-      rv = fscanf(fin, "%s", line);
-      addNodeByIp(line, map);
-    }
   }
   fclose(fin);
 }
 
-// Makes a connection to the destination IP.
+// Makes a connection to the destination consistent hashing node.
 // @returns file descriptor of the socket connection.
-int _connectByIp(const char *ip) {
+int _connectToNode(const chNode *node) {
   int sockfd;
   int rv;
   struct sockaddr_in serv_addr;
 
-  serv_addr.sin_family = AF_INET;
-  inet_aton(ip, &serv_addr.sin_addr);
-  serv_addr.sin_port = htons(REDIS_PORT);
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(REDIS_PORT);
+  memcpy(&serv_addr.sin_addr, &node->addr, sizeof(in_addr));
   rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+
   if (rv < 0) {
-    printf("router.c: %s %s\n", "Error connecting to Redis server.", ip);
+    printf("router.c: %s %s\n", "Error connecting to Redis server.",
+        inet_ntoa(node->addr));
     return -1;
   }
   return sockfd;
@@ -204,7 +205,6 @@ int _chooseMachine(const char *key, const int mustExist) {
 
   // Loads live servers information into the map.
   if (!map.list) _loadLiveServers(CONFIG_FILE, &map);
-  //_dumpNodes(&map);  //debug
 
   // Chooses the machine associated with that key, if any.
   md5(key, hash);
@@ -213,13 +213,12 @@ int _chooseMachine(const char *key, const int mustExist) {
     virtualNode = node->list;
     while (virtualNode) {
       if (!memcmp(virtualNode->hash, hash, MD5_LENGTH)) {
-        sockfd = _connectByIp(node->ip);
+        sockfd = _connectToNode(node);
         return sockfd;
       }
     }
     node = node->next;
   }
-  //printf("[debug]router.c: machineIp = %s\n", node->ip);  // debug
 
   // No machine associated with that key, behaves according to @mustExist.
   if (mustExist) return -1;
@@ -228,8 +227,9 @@ int _chooseMachine(const char *key, const int mustExist) {
   srand((unsigned int) time(NULL));
   n = rand() % map.nNode;
   for (node = map.list, i = 0; i < n; ++i) node = node->next;
+  //_dumpNode(node);  // debug
   addVirtualNode(key, node);
-  sockfd = _connectByIp(node->ip);
+  sockfd = _connectToNode(node);
   return sockfd;
 }
 

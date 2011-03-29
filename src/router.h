@@ -22,7 +22,9 @@
 #define EXIST_BLOB "#ExistBlob#"
 
 #define MAX_HASH_LENGTH 0xFF
-#define MAX_ADDR_LENGTH 0xFF
+#define MAX_LINE_LENGTH 0xFF
+
+#include <netinet/in.h>
 
 typedef struct ConsistentHashingVirtualNode {
   unsigned char hash[MAX_HASH_LENGTH];
@@ -30,8 +32,7 @@ typedef struct ConsistentHashingVirtualNode {
 } chVirtualNode;
 
 typedef struct ConsistentHashingNode {
-  char hostname[MAX_ADDR_LENGTH];
-  char ip[MAX_ADDR_LENGTH];
+  in_addr addr;
   chVirtualNode *list;
   int nVirtualNode;
   struct ConsistentHashingNode *next;
@@ -44,8 +45,7 @@ typedef struct ConsistentHashingMap {
 
 // Creates a ConsistentHashingNode and add it to a ConsistentHashingMap.
 // @returns that node.
-chNode *addNodeByIp(const char *ip, chMap *map);
-chNode *addNodeByHostname(const char *hostname, chMap *map);
+chNode *addNode(const sockaddr *addr, chMap *map);
 // Creates a ConsistentHashingVirtualNode and add it to a ConsistentHashingNode.
 // @returns that virtual node.
 chVirtualNode *addVirtualNode(const char *key, chMap *map);
