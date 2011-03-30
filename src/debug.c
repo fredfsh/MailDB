@@ -1,18 +1,20 @@
 #include "api.h"
 #include "def.h"
+#include "redis.h"
 #include <strings.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
-  //int sockfd;
+  int sockfd;
   int rv;
   int result;
-  //struct sockaddr_in serv_addr;
-  //struct hostent *server;
+  struct sockaddr_in serv_addr;
+  struct hostent *server;
   int blobLength;
   char blob[MAX_BLOB_LENGTH];
 
@@ -86,9 +88,6 @@ int main(int argc, char *argv[]) {
     printf("Error.\n");
   }
 
-  /*********************************
-   *      debug for redis.h/c      *
-   *********************************
   server = gethostbyname("alpha");
   serv_addr.sin_family = AF_INET;
   bcopy((char *) server->h_addr, (char *) &serv_addr.sin_addr.s_addr,
@@ -102,6 +101,26 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  /*********************************
+   *      debug for redis.h/c      *
+   *********************************
+   */
+  rv = ping(sockfd, &result);
+  if (rv == REDIS_OK) {
+    if (result) {
+      printf("PONG.\n");
+    } else {
+      printf("NO PING.\n");
+    }
+  } else if (rv == REDIS_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == REDIS_ERR) {
+    printf("Error.\n");
+  }
+
+  close(sockfd);
+
+  /*
   rv = hDel("fredfsh", "three");
   if (rv == REDIS_OK) {
     printf("Success.\n");
@@ -169,5 +188,5 @@ int main(int argc, char *argv[]) {
   }
   */
 
-  return 1;
+  return 0;
 }

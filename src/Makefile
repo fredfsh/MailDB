@@ -3,23 +3,30 @@
 # By fredfsh (fredfsh@gmail.com)
 
 CC = g++
+LD = g++
 CFLAGS = -Wall -O2
-SRCS = api.c\
+SRC = api.c\
+       config-server.c\
+       debug.c\
        md5.c\
        redis.c\
        router.c
-OBJS = $(SRCS:%.c=%.o)
+OBJ = $(SRC:%.c=%.o)
+TARGET = config-server debug
+CONFSRVOBJ = config-server.o md5.o redis.o router.o
+DBGOBJ = api.o debug.o md5.o redis.o router.o
 
-#all: config-server debug
 
-#config-server: config-server.c
-#$(CC) $(CFLAGS) -o config-server config-server.c
+all: $(TARGET)
 
-debug: debug.c $(OBJS)
-	$(CC) $(CFLAGS) -o debug debug.c $(OBJS)
+config-server: $(CONFSRVOBJ)
+	$(LD) -o config-server $(CONFSRVOBJ)
 
-$(OBJS): %.o: %.c
+debug: $(DBGOBJ)
+	$(LD) -o debug $(DBGOBJ)
+
+$(OBJ): %.o: %.c %.h
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -rf *.o
+	rm -rf $(OBJ) $(TARGET)

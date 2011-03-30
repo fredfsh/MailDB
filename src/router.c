@@ -2,6 +2,7 @@
 
    By fredfsh (fredfsh@gmail.com)
 */
+#include "config-server.h"
 #include "def.h"
 #include "md5.h"
 #include "redis.h"
@@ -18,85 +19,84 @@
 // Global consistent hashing map.
 ConsistentHashingMap map;
 
-// Creates a ConsistentHashingNode and add it to a ConsistentHashingMap.
-// @returns that node.
-chNode *addNode(const sockaddr *addr, chMap *map) {
-  chNode *node, *p;
+// Asks config server for the latest liveness snapshot.
+//
+// Makes a connection to the config server and receives latest liveness
+// snapshot. The snapshot is a sequence of serialized in_addr.
+int _askConfigServer(chMap *map) {
+  int rv;
+  int sockfd;
+  int retry;
+  int i, n;
+  FILE *fin;
+  char line[MAX_LINE_LENGTH];
+  char port[MAX_PORT_LENGTH];
+  char snapshot[MAX_SNAPSHOT_LENGTH];
+  struct addrinfo hints, *result;
 
-  if (!addr || !map) return 0;
-
-  // Creates a new node.
-  node = (chNode *) malloc(sizeof(chNode));
-  if (!node) {
-    printf("router.c: %s %s\n", "Failed to create node.",
-        "Insufficient memory.");
-    return 0;
+  // Loads config server hostname/ip.
+  fin = fopen(CONFSRV_CONFIG_FILE, "r");
+  if (!fin) {
+    printf("router.c: %s %s\n", "Error asking config server.",
+        "Config file for config server not found.");
+    return ROUTER_ERR;
   }
-  memset(node, 0, sizeof(chNode));
-  memcpy(&node->addr, &((sockaddr_in *) addr)->sin_addr, sizeof(in_addr));
+  rv = fscanf(fin, "%s", line);
+  fclose(fin);
 
-  // Adds that node to the map.
-  if (!map->nNode) {
-    map->list = node;
-  } else {
-    p = map->list;
-    while (p->next) p = p->next;
-    p->next = node;
+  // Resolves config server.
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_NUMERICSERV;
+  sprintf(port, "%d", CONFIG_SERVER_PORT);
+  rv = getaddrinfo(line, port, &hints, &result);
+  if (rv || !result) {
+    printf("router.c: %s %s\n", "Error asking config server.",
+        "Config server not resolved.");
+    return ROUTER_ERR;
   }
-  ++ map->nNode;
-  return node;
-}
 
-// Creates a ConsistentHashingVirtualNode and add it to a ConsistentHashingNode.
-// @returns that virtual node.
-chVirtualNode *addVirtualNode(const char *key, chNode *node) {
-  chVirtualNode *virtualNode, *p;
-
-  if (!node) return 0;
-
-  // Creates a new virtual node.
-  virtualNode = (chVirtualNode *) malloc(sizeof(virtualNode));
-  if (!virtualNode) {
-    printf("router.c: %s %s\n", "Failed to create virtual node.",
-        "Insufficient memory.");
-    return 0;
+  // Creates a socket.
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sockfd == -1) {
+    printf("router.c: %s %s\n", "Error asking config server.",
+        "Failed to create socket.");
+    return ROUTER_ERR;
   }
-  md5(key, virtualNode->hash);
-  virtualNode->next = 0;
 
-  // Adds that virtual node to the node.
-  if (!node->nVirtualNode) {
-    node->list = virtualNode;
-  } else {
-    p = node->list;
-    while (p->next) p = p->next;
-    p->next = virtualNode;
+  // Connects to the config server.
+  rv = connect(sockfd, result->ai_addr, result->ai_addrlen);
+  if (rv < 0) {
+    printf("router.c: %s %s\n", "Error asking config server.",
+        "Failed to connect to config server.");
+    return ROUTER_ERR;
   }
-  ++ node->nVirtualNode;
-  return virtualNode;
-}
+  freeaddrinfo(result);
 
-// Frees all the memory pre-allocated by the consistent hashing map.
-void _freeNodes(chMap *map) {
-  chNode *node, *p;
-  chVirtualNode *virtualNode, *q;
-
-  if (!map || !map->nNode) return;
-
-  node = map->list;
-  while (node) {
-    p = node;
-    node = node->next;
-    virtualNode = p->list;
-    while (virtualNode) {
-      q = virtualNode;
-      virtualNode = virtualNode->next;
-      free(q);
+  // Receives latest snapshot from config server.
+  retry = SNAPSHOT_RETRY;
+  while (--retry >= 0) {
+    rv = recv(sockfd, snapshot, MAX_SNAPSHOT_LENGTH, MSG_DONTWAIT);
+    //printf("[debug]redis.c: recv buffer length: %d.\n", rv);
+    if (rv <= 0) {
+      usleep(SNAPSHOT_RETRY_INTERVAL);
+      continue;
     }
-    free(p);
+    clearMap(map);
+    n = rv / sizeof(in_addr);
+    for (i = 0; i < n; ++i) {
+      addNode((in_addr *) &snapshot[i * sizeof(in_addr)], map);
+    }
+    break;
   }
-  map->list = 0;
-  map->nNode = 0;
+  if (retry < 0) {
+      printf("router.c: %s %s\n", "Failed to ask config server.",
+          "No reply from config server.");
+      return ROUTER_FAILED;
+  }
+
+  return ROUTER_OK;
 }
 
 // Displays information about the consistent hashing node.
@@ -130,59 +130,6 @@ void _dumpMap(const chMap *map) {
   return;
 }
 
-// Loads hostnames of live servers from config file.
-//
-// Each line in the config file is a hostname/ip of a live server.
-//
-// TODO: This is a dummy version for demo.
-//
-void _loadLiveServers(const char *configFile, chMap *map) {
-  FILE *fin;
-  char line[MAX_LINE_LENGTH];
-  int rv;
-  struct addrinfo hints, *result;
-
-  // Frees all the memory pre-allocated by the consistent hashing map.
-  if (!map) return;
-  if (!map->nNode) _freeNodes(map);
-
-  // Adds live servers to the map according to the config file.
-  memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  fin = fopen(CONFIG_FILE, "r");
-  rv = fscanf(fin, "%s", line);
-  while (!feof(fin)) {
-    rv = getaddrinfo(line, NULL, &hints, &result);
-    addNode(result->ai_addr, map);
-    freeaddrinfo(result);
-    rv = fscanf(fin, "%s", line);
-  }
-  fclose(fin);
-}
-
-// Makes a connection to the destination consistent hashing node.
-// @returns file descriptor of the socket connection.
-int _connectToNode(const chNode *node) {
-  int sockfd;
-  int rv;
-  struct sockaddr_in serv_addr;
-
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(REDIS_PORT);
-  memcpy(&serv_addr.sin_addr, &node->addr, sizeof(in_addr));
-  rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-
-  if (rv < 0) {
-    printf("router.c: %s %s\n", "Error connecting to Redis server.",
-        inet_ntoa(node->addr));
-    return -1;
-  }
-  return sockfd;
-}
-
 // Chooses a machine according to consistent hashing.
 // @returns the file descriptor of the socket connection to the machine, or -1
 // if no such machine is available.
@@ -201,10 +148,18 @@ int _chooseMachine(const char *key, const int mustExist) {
   chVirtualNode *virtualNode;
   unsigned char hash[MAX_HASH_LENGTH];
   int sockfd;
+  int rv;
   int i, n;
 
-  // Loads live servers information into the map.
-  if (!map.list) _loadLiveServers(CONFIG_FILE, &map);
+  // Asks config server for the latest liveness snapshot.
+  if (!map.list) {
+    rv = _askConfigServer(&map);
+    if (rv != ROUTER_OK) {
+      printf("router.c: %s\n",
+          "Failed to ask config server for liveness snapshot.");
+      return -1;
+    }
+  }
 
   // Chooses the machine associated with that key, if any.
   md5(key, hash);
@@ -213,7 +168,7 @@ int _chooseMachine(const char *key, const int mustExist) {
     virtualNode = node->list;
     while (virtualNode) {
       if (!memcmp(virtualNode->hash, hash, MD5_LENGTH)) {
-        sockfd = _connectToNode(node);
+        sockfd = connectToNode(node);
         return sockfd;
       }
     }
@@ -229,8 +184,151 @@ int _chooseMachine(const char *key, const int mustExist) {
   for (node = map.list, i = 0; i < n; ++i) node = node->next;
   //_dumpNode(node);  // debug
   addVirtualNode(key, node);
-  sockfd = _connectToNode(node);
+  sockfd = connectToNode(node);
   return sockfd;
+}
+
+// Frees all the memory pre-allocated by this ConsistentHashingNode.
+void _freeNode(chNode *node) {
+  chVirtualNode *virtualNode, *q;
+
+  if (!node) return;
+
+  virtualNode = node->list;
+  while (virtualNode) {
+    q = virtualNode;
+    virtualNode = virtualNode->next;
+    free(q);
+  }
+  free(node);
+}
+
+// Creates a ConsistentHashingNode and add it to a ConsistentHashingMap.
+// @returns that node.
+chNode * addNode(const in_addr *addr, chMap *map) {
+  chNode *node, *p;
+
+  if (!addr || !map) return 0;
+
+  // Creates a new node.
+  node = (chNode *) malloc(sizeof(chNode));
+  if (!node) {
+    printf("router.c: %s %s\n", "Failed to create node.",
+        "Insufficient memory.");
+    return 0;
+  }
+  memset(node, 0, sizeof(chNode));
+  memcpy(&node->addr, addr, sizeof(in_addr));
+
+  // Adds that node to the map.
+  if (!map->nNode) {
+    map->list = node;
+  } else {
+    p = map->list;
+    while (p->next) p = p->next;
+    p->next = node;
+  }
+  ++ map->nNode;
+  return node;
+}
+
+// Creates a ConsistentHashingVirtualNode and add it to a ConsistentHashingNode.
+// @returns that virtual node.
+chVirtualNode * addVirtualNode(const char *key, chNode *node) {
+  chVirtualNode *virtualNode, *p;
+
+  if (!node) return 0;
+
+  // Creates a new virtual node.
+  virtualNode = (chVirtualNode *) malloc(sizeof(virtualNode));
+  if (!virtualNode) {
+    printf("router.c: %s %s\n", "Failed to create virtual node.",
+        "Insufficient memory.");
+    return 0;
+  }
+  md5(key, virtualNode->hash);
+  virtualNode->next = 0;
+
+  // Adds that virtual node to the node.
+  if (!node->nVirtualNode) {
+    node->list = virtualNode;
+  } else {
+    p = node->list;
+    while (p->next) p = p->next;
+    p->next = virtualNode;
+  }
+  ++ node->nVirtualNode;
+  return virtualNode;
+}
+
+// Frees all the memory pre-allocated by all nodes and virtual nodes of this
+// map.
+void clearMap(chMap *map) {
+  if (!map) return;
+  while (map->list) free(map->list);
+}
+
+// Makes a connection to the destination consistent hashing node.
+// @returns file descriptor of the socket connection, or -1 when failed to
+// establish the connection.
+int connectToNode(const chNode *node) {
+  int sockfd;
+  int rv;
+  struct sockaddr_in serv_addr;
+
+  // Creates a socket.
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sockfd == -1) {
+    printf("router.c: %s %s\n", "Error connecting to Redis server.",
+        "Failed to create socket.");
+    return -1;
+  }
+
+  // Connects to the Redis server.
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(REDIS_PORT);
+  memcpy(&serv_addr.sin_addr, &node->addr, sizeof(in_addr));
+  rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+
+  if (rv < 0) {
+    printf("router.c: %s %s\n", "Error connecting to Redis server.",
+        inet_ntoa(node->addr));
+    return -1;
+  }
+  return sockfd;
+}
+
+// Removes this ConsistentHashingNode from this ConsistentHashingMap and frees
+// all the pre-allocated memory.
+// @returns the ConsistentHashingNode/@map->list before @node when @node is
+// found in @map, or @node when not found.
+chNode * dropNode(chMap *map, chNode *node) {
+  chNode *p;
+
+  if (!map || !node) return node;
+
+  // If node is the first element in the map.
+  p = map->list;
+  if (p == node) {
+    -- map->nNode;
+    map->list = node->next;
+    _freeNode(p);
+    return map->list;
+  }
+
+  // If node is not the first.
+  while (p) {
+    if (p->next == node) {
+      -- map->nNode;
+      p->next = node->next;
+      _freeNode(node);
+      return p;
+    }
+    p = p->next;
+  }
+
+  // node not found.
+  return node;
 }
 
 // Creates a bucket at the database considering consistent hashing.

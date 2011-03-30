@@ -12,7 +12,7 @@
 #define REDIS_PORT 6379
 
 #define REDIS_RETRY 100
-#define REDIS_RETRY_SLEEP 10000 // in microseconds
+#define REDIS_RETRY_INTERVAL 10 * 1000 // in microseconds
 
 #define MAX_COMMAND_LENGTH 0xFF
 
@@ -30,5 +30,7 @@ int hGet(const int sockfd, const char *key, const char *field,
 // Sets the string value of a hash field.
 int hSet(const int sockfd, const char *key, const char *field,
     const int blobLength, const void *blob);
+// Pings the server.
+int ping(const int sockfd, int *result);
 
 #endif

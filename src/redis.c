@@ -68,7 +68,7 @@ int _recvBlob(const int sockfd, int *streamLength, void *blob) {
     rv = recv(sockfd, reply, MAX_COMMAND_LENGTH, MSG_DONTWAIT | MSG_PEEK);
     //printf("[debug]redis.c: recv buffer length: %d.\n", rv);
     if (rv <= 0) {
-      usleep(REDIS_RETRY_SLEEP);
+      usleep(REDIS_RETRY_INTERVAL);
       continue;
     }
     if (reply[0] == '-') {
@@ -111,7 +111,7 @@ int _recvBlob(const int sockfd, int *streamLength, void *blob) {
   while (--retry >= 0) {
     rv = recv(sockfd, blob, n, MSG_DONTWAIT);
     if (rv <= 0) {
-      usleep(REDIS_RETRY_SLEEP);
+      usleep(REDIS_RETRY_INTERVAL);
       continue;
     } else if (rv != n) {
       printf("redis.c: %s %s\n", "Failed to receive blob from Redis.",
@@ -142,26 +142,65 @@ int _recvInt(const int sockfd, int *result) {
     rv = recv(sockfd, reply, MAX_COMMAND_LENGTH, MSG_DONTWAIT);
     //printf("[debug]redis.c: recv buffer length: %d.\n", rv);
     if (rv <= 0) {
-      usleep(REDIS_RETRY_SLEEP);
+      usleep(REDIS_RETRY_INTERVAL);
       continue;
     }
     if (reply[0] == '-') {
-      printf("redis.c: %s %s\n", "Failed to receive integer from Redis.",
+      printf("redis.c: %s %s\n", "Failed to receive integer.",
           "Redis server replies with error.");
       return REDIS_FAILED;
     } else if (reply[0] != ':') {
-        printf("redis.c: %s %s\n", "Failed to receive integer from Redis.",
-            "No integer replied from Redis.");
+        printf("redis.c: %s %s\n", "Failed to receive integer.",
+            "No integer reply from Redis.");
         return REDIS_FAILED;
     }
     break;
   }
   if (retry < 0) {
-      printf("redis.c: %s %s\n", "Failed to execute HSET.",
-          "No reply from server.");
+      printf("redis.c: %s %s\n", "Failed to receive integer.",
+          "No reply from Redis.");
       return REDIS_FAILED;
   }
   *result = atoi(&reply[1]);
+  return REDIS_OK;
+}
+
+// Receives a status reply from Redis server.
+//
+// Status replies are preceded by "+".
+int _recvStatus(const int sockfd, char *status) {
+  int retry;
+  int rv;
+  int pos;
+  char reply[MAX_COMMAND_LENGTH];
+
+  retry = REDIS_RETRY;
+  while (--retry >= 0) {
+    rv = recv(sockfd, reply, MAX_COMMAND_LENGTH, MSG_DONTWAIT);
+    if (rv <= 0) {
+      usleep(REDIS_RETRY_INTERVAL);
+      continue;
+    }
+    if (reply[0] == '-') {
+      printf("redis.c: %s %s\n", "Failed to receive status.",
+          "Redis server replies with error.");
+      return REDIS_FAILED;
+    } else if (reply[0] != '+') {
+        printf("redis.c: %s %s\n", "Failed to receive status.",
+            "No status reply from Redis.");
+        return REDIS_FAILED;
+    }
+    break;
+  }
+
+  if (retry < 0) {
+      printf("redis.c: %s %s\n", "Failed to receive status.",
+          "No reply from server.");
+      return REDIS_FAILED;
+  }
+  pos = strstr(reply, "\r\n") - reply;
+  strncpy(status, &reply[1], pos - 1);
+  status[pos - 1] = '\0';
   return REDIS_OK;
 }
 
@@ -313,3 +352,32 @@ int hSet(const int sockfd, const char *key, const char *field,
   rv = _recvInt(sockfd, &result);
   return rv;
 }
+
+//Executes PING command to a Redis server.
+int ping(const int sockfd, int *result) {
+  int rv;
+  char commandStream[MAX_COMMAND_LENGTH];
+  char status[MAX_COMMAND_LENGTH];
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "s", "PING");
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing PING.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute PING.", "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvStatus(sockfd, status);
+  //printf("[debug]redis.c: PING response: %s.\n", status);  // debug
+  if (!strcmp(status, "PONG")) {
+    *result = 1;
+  } else {
+    *result = 0;
+  }
+  return REDIS_OK;
+}
+
