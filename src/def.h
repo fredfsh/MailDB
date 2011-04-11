@@ -7,7 +7,6 @@
 
 #define EXIST_BLOB_ID "#ExistBlobId#"
 #define EXIST_BLOB "#ExistBlob#"
-#define NIL_BLOB "(nil)"
 
 #define MAX_BLOB_LENGTH 0xFFFF
 

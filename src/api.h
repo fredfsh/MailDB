@@ -19,9 +19,9 @@ int deleteBlob(const char *bucketId, const char *blobId);
 // Deletes a bucket.
 int deleteBucket(const char *bucketId);
 // Determines whether a blob exists.
-//int existBlob(const char *bucketId, const char *blobId, int *result);
+int existBlob(const char *bucketId, const char *blobId);
 // Determines whether a bucket exists.
-//int existBucket(const char *bucketId, int *result);
+int existBucket(const char *bucketId);
 // Loads a blob.
 //int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
 //    void *blob);

@@ -54,8 +54,8 @@ int _commandStream(char *commandStream, const char *fmt, ...) {
 
 // Receives blob content from a Redis server.
 //
-// @blob is set to "(nil)" if the field or key does not exist.
-int _recvBlob(const int sockfd, int *blobLength, void *blob) {
+// @blobLength is set to -1 if the field or key does not exist.
+int _recvBulk(const int sockfd, int *blobLength, void *blob) {
   int retry;
   int n;
   int rv;
@@ -103,14 +103,8 @@ int _recvBlob(const int sockfd, int *blobLength, void *blob) {
           "Blob content exceeding buffer length truncated.");
       n = MAX_BLOB_LENGTH;
   }
-  // @blob is set to NIL.
-  if (n == -1) {
-    n = strlen(NIL_BLOB);
-    memcpy(blob, NIL_BLOB, n);
-    *blobLength = n;
-    return REDIS_OK;
-  }
   *blobLength = n;
+  if (n < 0) return REDIS_OK;
 
   // Reads blob content from Redis reply.
   retry = REDIS_RETRY;
@@ -240,9 +234,139 @@ int connectByIp(const in_addr *ip) {
   return sockfd;
 }
 
+//Executes DEL command to a Redis server.
+int del(const in_addr *ip, const char *key) {
+  int sockfd;
+  int rv;
+  int result;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Connects to redis server.
+  sockfd = connectByIp(ip);
+  if (sockfd == -1) {
+    printf("redis.c: %s %s\n", "Failed to execute DEL.",
+        "Failed to connect to redis server.");
+    return REDIS_FAILED;
+  }
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "ss", "DEL", key);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing DEL.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute DEL.", "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, &result);
+  return rv;
+}
+
+//Executes EXISTS command to a Redis server.
+//@returns REDIS_OK when existed.
+int exists(const in_addr *ip, const char *key) {
+  int sockfd;
+  int rv;
+  int result;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Connects to redis server.
+  sockfd = connectByIp(ip);
+  if (sockfd == -1) {
+    printf("redis.c: %s %s\n", "Failed to execute EXISTS.",
+        "Failed to connect to redis server.");
+    return REDIS_FAILED;
+  }
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "ss", "EXISTS", key);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing EXISTS.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute EXISTS.",
+        "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, &result);
+  if (rv == REDIS_OK && !result) rv = REDIS_FAILED;
+  return rv;
+}
+
+//Executes HDEL command to a Redis server.
+int hDel(const in_addr *ip, const char *key, const char *field) {
+  int sockfd;
+  int rv;
+  int result;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Connects to redis server.
+  sockfd = connectByIp(ip);
+  if (sockfd == -1) {
+    printf("redis.c: %s %s\n", "Failed to execute HDEL.",
+        "Failed to connect to redis server.");
+    return REDIS_FAILED;
+  }
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "sss", "HDEL", key, field);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing HDEL.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute HDEL.", "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, &result);
+  return rv;
+}
+
+//Executes HEXISTS command to a Redis server.
+//@returns REDIS_OK when existed.
+int hExists(const in_addr *ip, const char *key, const char *field) {
+  int sockfd;
+  int rv;
+  int result;
+  char commandStream[MAX_COMMAND_LENGTH];
+
+  // Connects to redis server.
+  sockfd = connectByIp(ip);
+  if (sockfd == -1) {
+    printf("redis.c: %s %s\n", "Failed to execute HEXIST.",
+        "Failed to connect to redis server.");
+    return REDIS_FAILED;
+  }
+
+  // Writes command metadata to Redis server.
+  _commandStream(commandStream, "sss", "HEXISTS", key, field);
+  rv = write(sockfd, commandStream, strlen(commandStream));
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing HEXISTS.", "Command not sent.");
+    return REDIS_ERR;
+  } else if (rv != (int) strlen(commandStream)) {
+    printf("redis.c: %s %s\n", "Failed to execute HEXISTS.",
+        "Command not sent.");
+    return REDIS_FAILED;
+  }
+
+  // Reads Redis reply.
+  rv = _recvInt(sockfd, &result);
+  if (rv == REDIS_OK && !result) rv = REDIS_FAILED;
+  return rv;
+}
+
 // Executes HGET command to a Redis server.
 //
-// @blob is set to "(nil)" if the field or key does not exist.
+// @blobLength is set to -1 if the field or key does not exist.
 int hGet(const in_addr *ip, const char *key, const char *field,
     int *blobLength, void *blob) {
   int sockfd;
@@ -270,7 +394,7 @@ int hGet(const in_addr *ip, const char *key, const char *field,
   }
 
   // Reads Redis reply.
-  rv = _recvBlob(sockfd, blobLength, blob);
+  rv = _recvBulk(sockfd, blobLength, blob);
   close(sockfd);
   return rv;
 }

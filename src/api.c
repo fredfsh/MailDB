@@ -57,41 +57,35 @@ int deleteBucket(const char *bucketId) {
   return API_OK;
 }
 
-/*
 // Determines whether a blob exists.
-int existBlob(const char *bucketId, const char *blobId, int *result) {
+// @returns API_OK when existed.
+int existBlob(const char *bucketId, const char *blobId) {
   int rv;
 
-  rv = routeExistBlob(bucketId, blobId, result);
+  rv = routeExistBlob(bucketId, blobId);
   if (rv == ROUTER_ERR) {
-    printf("api.c: %s %s\n", "Failed to determine existence of blob.",
-        "Lower layer replies with error.");
     return API_FAILED;
   } else if (rv == ROUTER_FAILED) {
-    printf("api.c: %s %s\n", "Failed to determine existence of blob.",
-        "Lower layer fails to.");
     return API_FAILED;
   }
   return API_OK;
 }
 
 // Determines whether a bucket exists.
-int existBucket(const char *bucketId, int *result) {
+// @returns API_OK when existed.
+int existBucket(const char *bucketId) {
   int rv;
 
-  rv = routeExistBucket(bucketId, result);
+  rv = routeExistBucket(bucketId);
   if (rv == ROUTER_ERR) {
-    printf("api.c: %s %s\n", "Failed to determine existence of bucket.",
-        "Lower layer replies with error.");
     return API_FAILED;
   } else if (rv == ROUTER_FAILED) {
-    printf("api.c: %s %s\n", "Failed to determine existence of bucket.",
-        "Lower layer fails to.");
     return API_FAILED;
   }
   return API_OK;
 }
 
+/*
 // Loads a blob.
 int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
     void *blob) {
