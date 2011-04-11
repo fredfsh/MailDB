@@ -4,361 +4,108 @@
 */
 #include "config-server.h"
 #include "def.h"
-#include "md5.h"
 #include "redis.h"
 #include "router.h"
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
-// Global consistent hashing map.
-ConsistentHashingMap map;
+// Cleans zombie children. (Ah... Horrible!)
+void _cleanZombies() {
+  while (waitpid(-1, NULL, WNOHANG) > 0) ;
+}
 
-// Asks config server for the latest liveness snapshot.
+// Waits for enough children processes to exit.
 //
-// Makes a connection to the config server and receives latest liveness
-// snapshot. The snapshot is a sequence of serialized in_addr.
-int _askConfigServer(chMap *map) {
-  int rv;
-  int sockfd;
+// @returns ROUTER_OK if at least @threshold among @total children processes
+// responses successfully.
+int _waitChildren(const int total, const int threshold, const pid_t *pids) {
+  int exitNum, successNum;
   int retry;
-  int i, n;
-  FILE *fin;
-  char line[MAX_LINE_LENGTH];
-  char port[MAX_PORT_LENGTH];
-  char snapshot[MAX_SNAPSHOT_LENGTH];
-  struct addrinfo hints, *result;
+  int status;
+  int i;
+  int result;
+  pid_t exitPid;
 
-  // Loads config server hostname/ip.
-  fin = fopen(CONFSRV_CONFIG_FILE, "r");
-  if (!fin) {
-    printf("router.c: %s %s\n", "Error asking config server.",
-        "Config file for config server not found.");
-    return ROUTER_ERR;
-  }
-  rv = fscanf(fin, "%s", line);
-  fclose(fin);
-
-  // Resolves config server.
-  memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_NUMERICSERV;
-  sprintf(port, "%d", CONFIG_SERVER_PORT);
-  rv = getaddrinfo(line, port, &hints, &result);
-  if (rv || !result) {
-    printf("router.c: %s %s\n", "Error asking config server.",
-        "Config server not resolved.");
-    return ROUTER_ERR;
-  }
-
-  // Creates a socket.
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd == -1) {
-    printf("router.c: %s %s\n", "Error asking config server.",
-        "Failed to create socket.");
-    return ROUTER_ERR;
-  }
-
-  // Connects to the config server.
-  rv = connect(sockfd, result->ai_addr, result->ai_addrlen);
-  if (rv < 0) {
-    printf("router.c: %s %s\n", "Error asking config server.",
-        "Failed to connect to config server.");
-    return ROUTER_ERR;
-  }
-  freeaddrinfo(result);
-
-  // Receives latest snapshot from config server.
-  retry = SNAPSHOT_RETRY;
-  while (--retry >= 0) {
-    rv = recv(sockfd, snapshot, MAX_SNAPSHOT_LENGTH, MSG_DONTWAIT);
-    //printf("[debug]redis.c: recv buffer length: %d.\n", rv);
-    if (rv <= 0) {
-      usleep(SNAPSHOT_RETRY_INTERVAL);
-      continue;
-    }
-    clearMap(map);
-    n = rv / sizeof(in_addr);
-    for (i = 0; i < n; ++i) {
-      addNode((in_addr *) &snapshot[i * sizeof(in_addr)], map);
-    }
-    break;
-  }
-  if (retry < 0) {
-      printf("router.c: %s %s\n", "Failed to ask config server.",
-          "No reply from config server.");
-      return ROUTER_FAILED;
-  }
-
-  return ROUTER_OK;
-}
-
-// Displays information about the consistent hashing node.
-void _dumpNode(const chNode *node) {
-
-  if (!node) {
-    printf("[debug]router.c: %s %s\n", "Failed to dump node.", "Null pointer.");
-    return;
-  }
-
-  printf("[debug]router.c: ip: %s\n", inet_ntoa(node->addr));
-  printf("[debug]router.c: number of virtual nodes: %d\n", node->nVirtualNode);
-}
-
-// Displays information about the consistent hashing map.
-void _dumpMap(const chMap *map) {
-  chNode *node;
-
-  if (!map) {
-    printf("[debug]router.c: %s %s\n", "Failed to dump map.", "Null pointer.");
-    return;
-  }
-  
-  printf("[debug]router.c: Number of nodes: %d\n", map->nNode);
-  node = map->list;
-  while (node) {
-    printf("[debug]router.c: --\n");
-    _dumpNode(node);
-    node = node->next;
-  }
-  return;
-}
-
-// Chooses a machine according to consistent hashing.
-// @returns the file descriptor of the socket connection to the machine, or -1
-// if no such machine is available.
-//
-// Caller of this function should close the connection.
-//
-// TODO: This is a dummy version for demo.
-// If there is already a machine associated with that key, that machine is
-// chosen.
-// Otherwise, if @mustExist is 0, @returns -1.
-// Otherwise, if @mustExist is 1, I just randomly pick a machine.
-// If the connection to the chosen machine cannot be established, @returns -1.
-//
-int _chooseMachine(const char *key, const int mustExist) {
-  chNode *node;
-  chVirtualNode *virtualNode;
-  unsigned char hash[MAX_HASH_LENGTH];
-  int sockfd;
-  int rv;
-  int i, n;
-
-  // Asks config server for the latest liveness snapshot.
-  if (!map.list) {
-    rv = _askConfigServer(&map);
-    if (rv != ROUTER_OK) {
-      printf("router.c: %s\n",
-          "Failed to ask config server for liveness snapshot.");
-      return -1;
-    }
-  }
-
-  // Chooses the machine associated with that key, if any.
-  md5(key, hash);
-  node = map.list;
-  while (node) {
-    virtualNode = node->list;
-    while (virtualNode) {
-      if (!memcmp(virtualNode->hash, hash, MD5_LENGTH)) {
-        sockfd = connectToNode(node);
-        return sockfd;
+  exitNum = 0;
+  successNum = 0;
+  retry = WAIT_RETRY;
+  while (exitNum < total && successNum < threshold && --retry >= 0) {
+    usleep(WAIT_RETRY_INTERVAL);
+    while ( (exitPid = waitpid(-1, &status, WNOHANG)) ) {
+      if (exitPid < 0) {
+        result = ROUTER_ERR;
+        goto re;
       }
+      printf("[debug]router.c: exitPid = %d\n", exitPid);
+      for (i = 0; i < total; ++i) {
+        if (exitPid == pids[i]) {
+          if (status == REDIS_OK) ++successNum;
+          ++exitNum;
+          break;
+        }
+      }
+      if (i < total) break;
     }
-    node = node->next;
   }
+  if (successNum < threshold) {
+    result = ROUTER_FAILED;
+    printf("[debug]router.c: successNum = %d\n", successNum);
+    goto re;
+  }
+  result = ROUTER_OK;
+  goto re;
 
-  // No machine associated with that key, behaves according to @mustExist.
-  if (mustExist) return -1;
-  // @mustExist = 0
-  if (!map.nNode) return -1;
-  srand((unsigned int) time(NULL));
-  n = rand() % map.nNode;
-  for (node = map.list, i = 0; i < n; ++i) node = node->next;
-  //_dumpNode(node);  // debug
-  addVirtualNode(key, node);
-  sockfd = connectToNode(node);
-  return sockfd;
+re:
+  for (i = 0; i < total; ++i) kill(pids[i], SIGTERM);
+  return result;
 }
-
-// Frees all the memory pre-allocated by this ConsistentHashingNode.
-void _freeNode(chNode *node) {
-  chVirtualNode *virtualNode, *q;
-
-  if (!node) return;
-
-  virtualNode = node->list;
-  while (virtualNode) {
-    q = virtualNode;
-    virtualNode = virtualNode->next;
-    free(q);
-  }
-  free(node);
-}
-
-// Creates a ConsistentHashingNode and add it to a ConsistentHashingMap.
-// @returns that node.
-chNode * addNode(const in_addr *addr, chMap *map) {
-  chNode *node, *p;
-
-  if (!addr || !map) return 0;
-
-  // Creates a new node.
-  node = (chNode *) malloc(sizeof(chNode));
-  if (!node) {
-    printf("router.c: %s %s\n", "Failed to create node.",
-        "Insufficient memory.");
-    return 0;
-  }
-  memset(node, 0, sizeof(chNode));
-  memcpy(&node->addr, addr, sizeof(in_addr));
-
-  // Adds that node to the map.
-  if (!map->nNode) {
-    map->list = node;
-  } else {
-    p = map->list;
-    while (p->next) p = p->next;
-    p->next = node;
-  }
-  ++ map->nNode;
-  return node;
-}
-
-// Creates a ConsistentHashingVirtualNode and add it to a ConsistentHashingNode.
-// @returns that virtual node.
-chVirtualNode * addVirtualNode(const char *key, chNode *node) {
-  chVirtualNode *virtualNode, *p;
-
-  if (!node) return 0;
-
-  // Creates a new virtual node.
-  virtualNode = (chVirtualNode *) malloc(sizeof(virtualNode));
-  if (!virtualNode) {
-    printf("router.c: %s %s\n", "Failed to create virtual node.",
-        "Insufficient memory.");
-    return 0;
-  }
-  md5(key, virtualNode->hash);
-  virtualNode->next = 0;
-
-  // Adds that virtual node to the node.
-  if (!node->nVirtualNode) {
-    node->list = virtualNode;
-  } else {
-    p = node->list;
-    while (p->next) p = p->next;
-    p->next = virtualNode;
-  }
-  ++ node->nVirtualNode;
-  return virtualNode;
-}
-
-// Frees all the memory pre-allocated by all nodes and virtual nodes of this
-// map.
-void clearMap(chMap *map) {
-  if (!map) return;
-  while (map->list) free(map->list);
-}
-
-// Makes a connection to the destination consistent hashing node.
-// @returns file descriptor of the socket connection, or -1 when failed to
-// establish the connection.
-int connectToNode(const chNode *node) {
-  int sockfd;
-  int rv;
-  struct sockaddr_in serv_addr;
-
-  // Creates a socket.
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd == -1) {
-    printf("router.c: %s %s\n", "Error connecting to Redis server.",
-        "Failed to create socket.");
-    return -1;
-  }
-
-  // Connects to the Redis server.
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(REDIS_PORT);
-  memcpy(&serv_addr.sin_addr, &node->addr, sizeof(in_addr));
-  rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-
-  if (rv < 0) {
-    printf("router.c: %s %s\n", "Error connecting to Redis server.",
-        inet_ntoa(node->addr));
-    return -1;
-  }
-  return sockfd;
-}
-
-// Removes this ConsistentHashingNode from this ConsistentHashingMap and frees
-// all the pre-allocated memory.
-// @returns the ConsistentHashingNode/@map->list before @node when @node is
-// found in @map, or @node when not found.
-chNode * dropNode(chMap *map, chNode *node) {
-  chNode *p;
-
-  if (!map || !node) return node;
-
-  // If node is the first element in the map.
-  p = map->list;
-  if (p == node) {
-    -- map->nNode;
-    map->list = node->next;
-    _freeNode(p);
-    return map->list;
-  }
-
-  // If node is not the first.
-  while (p) {
-    if (p->next == node) {
-      -- map->nNode;
-      p->next = node->next;
-      _freeNode(node);
-      return p;
-    }
-    p = p->next;
-  }
-
-  // node not found.
-  return node;
-}
-
 // Creates a bucket at the database considering consistent hashing.
+// @returns ROUTER_OK when at least W machines succeed.
 //
-// I choose a machine according to consistent hashing, and inserts a
-// pre-defined blob into that machine. Hence if a bucket with a same @bucketId
-// already exists, no bad effect would take place.
+// I choose N machines according to consistent hashing, and inserts a
+// pre-defined blob into those machines. Hence if a bucket with a same
+// @bucketId already exists, no bad effect would take place.
 int routeCreateBucket(const char *bucketId) {
   int rv;
-  int sockfd;
+  int i;
+  int ipNum;
+  in_addr ips[C];
+  pid_t pid, pids[N];
 
-  // Finds the Redis server for bucket creation.
-  sockfd = _chooseMachine(bucketId, 0);
-  //printf("[debug]router.c: sockfd = %d\n", sockfd);  //debug
-  if (sockfd == -1) {
-    printf("router.c: %s %s\n", "Failed to create bucket.",
-        "No Redis server available.");
-    return ROUTER_FAILED;
+  // Finds N redis servers for blob saving.
+  getHostsByKey(bucketId, &ipNum, ips);
+
+  // Saves blob onto those redis servers.
+  // Piggybacking zombies cleaing.
+  _cleanZombies();
+  if (ipNum > N) ipNum = N;
+  for (i = 0; i < ipNum; ++i) {
+    pid = fork();
+    if (pid < 0) {
+      printf("router.c: %s %s\n", "Error creating bucket.", "Error forking.");
+      return ROUTER_ERR;
+    }
+    if (pid == 0) {  // child process
+      rv = hSet(ips[i], bucketId, EXIST_BLOB_ID, strlen(EXIST_BLOB),
+          EXIST_BLOB);
+      _exit(rv);
+    }
+    pids[i] = pid;
   }
 
-  // Creates bucket at that Redis server.
-  rv = hSet(sockfd, bucketId, EXIST_BLOB_ID, strlen(EXIST_BLOB), EXIST_BLOB);
-  close(sockfd);
+  // Collects responses from children processes.
+  rv = _waitChildren(N, W, pids);
   if (rv == REDIS_ERR) {
-    printf("router.c: %s %s\n", "Failed to create bucket.",
-        "Lower layer replies with error.");
-    return ROUTER_FAILED;
+    printf("router.c: %s %s\n", "Error creating bucket.",
+        "Error waiting for children processes to respond.");
+    return ROUTER_ERR;
   } else if (rv == REDIS_FAILED) {
     printf("router.c: %s %s\n", "Failed to create bucket.",
-        "Lower layer fails to.");
+        "Failed to wait for children processes to respond.");
     return ROUTER_FAILED;
   }
   return ROUTER_OK;
@@ -366,27 +113,44 @@ int routeCreateBucket(const char *bucketId) {
 
 // Deletes a blob from the database considering consistent hashing.
 //
-// I choose a machine according to consistent hashing, and deletes the data from
-// that machine.
+// I choose N machines according to consistent hashing, and inserts a
+// pre-defined blob into those machines marking as deletion.
 int routeDeleteBlob(const char *bucketId, const char *blobId) {
   int rv;
-  int sockfd;
+  int i;
+  int ipNum;
+  in_addr ips[C];
+  pid_t pid, pids[N];
 
-  // Finds the Redis server for blob deletion.
-  sockfd = _chooseMachine(bucketId, 1);
-  //printf("[debug]router.c: sockfd = %d\n", sockfd);  //debug
-  if (sockfd == -1) return ROUTER_OK;
+  // Finds N redis servers for blob saving.
+  getHostsByKey(bucketId, &ipNum, ips);
 
-  // Deletes blob from that Redis server.
-  rv = hDel(sockfd, bucketId, blobId);
-  close(sockfd);
+  // Saves blob onto those redis servers.
+  // Piggybacking zombies cleaing.
+  _cleanZombies();
+  if (ipNum > N) ipNum = N;
+  for (i = 0; i < ipNum; ++i) {
+    pid = fork();
+    if (pid < 0) {
+      printf("router.c: %s %s\n", "Error deleting blob.", "Error forking.");
+      return ROUTER_ERR;
+    }
+    if (pid == 0) {  // child process
+      rv = hSet(ips[i], bucketId, blobId, strlen(NIL_BLOB), NIL_BLOB);
+      _exit(rv);
+    }
+    pids[i] = pid;
+  }
+
+  // Collects responses from children processes.
+  rv = _waitChildren(N, W, pids);
   if (rv == REDIS_ERR) {
-    printf("router.c: %s %s\n", "Failed to delete blob.",
-        "Lower layer replies with error.");
-    return ROUTER_FAILED;
+    printf("router.c: %s %s\n", "Error deleting blob.",
+        "Error waiting for children processes to respond.");
+    return ROUTER_ERR;
   } else if (rv == REDIS_FAILED) {
     printf("router.c: %s %s\n", "Failed to delete blob.",
-        "Lower layer fails to.");
+        "Failed to wait for children processes to respond.");
     return ROUTER_FAILED;
   }
   return ROUTER_OK;
@@ -394,8 +158,8 @@ int routeDeleteBlob(const char *bucketId, const char *blobId) {
 
 // Deletes a bucket from the database considering consistent hashing.
 //
-// I choose a machine according to consistent hashing, and deletes the data from
-// that machine.
+// I choose N machines according to consistent hashing, and inserts a
+// pre-defined blob into those machines marking as deletion.
 int routeDeleteBucket(const char *bucketId) {
   int rv;
   int sockfd;
@@ -420,6 +184,7 @@ int routeDeleteBucket(const char *bucketId) {
   return ROUTER_OK;
 }
 
+/*
 // Determines whether a blob exists in the database considering consistent
 // hashing.
 //
@@ -512,34 +277,49 @@ int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
   }
   return ROUTER_OK;
 }
-
+*/
 // Saves a blob into the database considering consistent hashing.
+// @returns ROUTER_OK when at least W machines succeed.
 //
-// I choose a machine according to consistent hashing, and save the data onto
-// that machine.
+// I choose N machines according to consistent hashing, and save the data onto
+// those machines. @returns ROUTER_OK when at least W machines succeed.
 int routeSaveBlob(const char *bucketId, const char *blobId,
     const int blobLength, const void *blob) {
   int rv;
-  int sockfd;
+  int i;
+  int ipNum;
+  in_addr ips[C];
+  pid_t pid, pids[N];
 
-  // Finds a Redis server for blob saving.
-  sockfd = _chooseMachine(bucketId, 0);
-  if (sockfd == -1) {
-    printf("router.c: %s %s\n", "Failed to save blob.",
-        "No Redis server available.");
-    return ROUTER_FAILED;
+  // Finds N redis servers for blob saving.
+  getHostsByKey(bucketId, &ipNum, ips);
+
+  // Saves blob onto those redis servers.
+  // Piggybacking zombies cleaing.
+  _cleanZombies();
+  if (ipNum > N) ipNum = N;
+  for (i = 0; i < ipNum; ++i) {
+    pid = fork();
+    if (pid < 0) {
+      printf("router.c: %s %s\n", "Error saving blob.", "Error forking.");
+      return ROUTER_ERR;
+    }
+    if (pid == 0) {  // child process
+      rv = hSet(&ips[i], bucketId, blobId, blobLength, blob);
+      _exit(rv);
+    }
+    pids[i] = pid;
   }
 
-  // Saves blob onto that Redis server.
-  rv = hSet(sockfd, bucketId, blobId, blobLength, blob);
-  close(sockfd);
+  // Collects responses from children processes.
+  rv = _waitChildren(N, W, pids);
   if (rv == REDIS_ERR) {
-    printf("router.c: %s %s\n", "Failed to save blob.",
-        "Lower layer replies with error.");
-    return ROUTER_FAILED;
+    printf("router.c: %s %s\n", "Error saving blob.",
+        "Error waiting for children processes to respond.");
+    return ROUTER_ERR;
   } else if (rv == REDIS_FAILED) {
     printf("router.c: %s %s\n", "Failed to save blob.",
-        "Lower layer fails to.");
+        "Failed to wait for children processes to respond.");
     return ROUTER_FAILED;
   }
   return ROUTER_OK;

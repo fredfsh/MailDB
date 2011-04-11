@@ -6,24 +6,19 @@ CC = g++
 LD = g++
 CFLAGS = -Wall -O2
 SRC = api.c\
-       config-server.c\
-       debug.c\
-       md5.c\
-       redis.c\
-       router.c
+      client.c\
+      config-server.c\
+      redis.c\
+      router.c
 OBJ = $(SRC:%.c=%.o)
-TARGET = config-server debug
-CONFSRVOBJ = config-server.o md5.o redis.o router.o
-DBGOBJ = api.o debug.o md5.o redis.o router.o
+TARGET = client
+CLIOBJ = $(OBJ)
 
 
 all: $(TARGET)
 
-config-server: $(CONFSRVOBJ)
-	$(LD) -o config-server $(CONFSRVOBJ)
-
-debug: $(DBGOBJ)
-	$(LD) -o debug $(DBGOBJ)
+client: $(CLIOBJ)
+	$(LD) -o client $(CLIOBJ)
 
 $(OBJ): %.o: %.c %.h
 	$(CC) $(CFLAGS) -o $@ -c $<

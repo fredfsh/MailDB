@@ -13,11 +13,12 @@ int createBucket(const char *bucketId) {
 
   rv = routeCreateBucket(bucketId);
   if (rv == ROUTER_ERR) {
-    printf("api.c: %s %s\n", "Failed to create blob.",
+    printf("api.c: %s %s\n", "Failed to create bucket.",
         "Lower layer replies with error.");
     return API_FAILED;
   } else if (rv == ROUTER_FAILED) {
-    printf("api.c: %s %s\n", "Failed to create blob.", "Lower layer fails to.");
+    printf("api.c: %s %s\n", "Failed to create bucket.",
+        "Lower layer fails to.");
     return API_FAILED;
   }
   return API_OK;
@@ -56,6 +57,7 @@ int deleteBucket(const char *bucketId) {
   return API_OK;
 }
 
+/*
 // Determines whether a blob exists.
 int existBlob(const char *bucketId, const char *blobId, int *result) {
   int rv;
@@ -106,7 +108,7 @@ int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
   }
   return API_OK;
 }
-
+*/
 // Saves a blob.
 int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
     const void *blob) {

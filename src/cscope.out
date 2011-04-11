@@ -1,4 +1,4 @@
-cscope 15 $HOME/mailstore/MailDB/src               0000464104
+cscope 15 $HOME/mailstore/MailDB/src               0000430669
 	@api.c
 
 5 
@@ -537,591 +537,67 @@ blob
 
 	@config-server.c
 
-5 
+8 
 	~"c⁄fig-£rvî.h
 "
 
-6 
-	~"ªdis.h
-"
-
-7 
-	~"rouãr.h
-"
-
-8 
-	~<¨∑/öë.h
->
-
 9 
-	~<î∫o.h
->
-
-10 
 	~<√tdb.h
 >
 
-11 
-	~<√töë/ö.h
->
-
-12 
-	~<sig«l.h
->
-
-13 
+10 
 	~<°dio.h
 >
 
-14 
+11 
 	~<°rög.h
 >
 
-15 
-	~<sys/sockë.h
->
+13 
+	#CONFIG_FILE
+ "RedisSîvîs.cfg"
 
-16 
-	~<sys/ty≥s.h
->
+	)
 
-17 
-	~<uni°d.h
->
+14 
+	#MAX_LINE_LENGTH
+ 0xFF
 
-19 
-chM≠
- 
-	gli°
-;
+	)
 
-20 
-	g¢≠shŸ
-[
-MAX_SNAPSHOT_LENGTH
-];
-
-23 
-	$_log
+16 
+	$gëHo°sByKey
 (c⁄° *
-log
-) {
-
-24 
-	`¥ötf
-("[log]c⁄fig-£rvî.c: %s\n", 
-log
-);
-
-25 
-	}
-}
-
-34 
-	$_hóπbót
-(
-signum
+key
+, *
+num
 , 
-sigöfo_t
- *
-öfo
-, *
-unu£d
-) {
-
-35 
-rv
-;
-
-36 
-sockfd
-;
-
-37 
-°©us
-;
-
-38 
-chNode
- *
-node
-;
-
-39 
-log
-[
-MAX_LOG_LENGTH
-];
-
-42 
-	`Æ¨m
-(
-HEARTBEAT_INTERVAL
-);
-
-43 
-node
- = 
-li°
-.list;
-
-44 
-node
-) {
-
-45 
-sockfd
- = 
-	`c⁄√˘ToNode
-(
-node
-);
-
-46 i‡(
-sockfd
- == -1) {
-
-48 i‡(++
-node
-->
-nNoHóπbót
- =
-HEARTBEAT_RETRY
-) {
-
-49 
-	`•rötf
-(
-log
-, "Sîvî uƒóchabÀ: %s. %s", 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-),
-
-51 
-	`_log
-(
-log
-);
-
-52 
-node
- = 
-	`dr›Node
-(&
-li°
-,Çode);
-
-56 
-rv
- = 
-	`pög
-(
-sockfd
-, &
-°©us
-);
-
-57 
-	`•rötf
-(
-log
-, "PING %s.", 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-));
-
-58 
-	`_log
-(
-log
-);
-
-59 
-rv
- !
-REDIS_OK
- || !
-°©us
-) {
-
-61 i‡(++
-node
-->
-nNoPög
- =
-PING_RETRY
-) {
-
-62 
-	`•rötf
-(
-log
-, "RedisÖrocess unresponsive: %s. %s",
-
-63 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-),
-
-65 
-	`_log
-(
-log
-);
-
-66 
-node
- = 
-	`dr›Node
-(&
-li°
-,Çode);
-
-69 
-	`u¶ìp
-(
-PING_INTERVAL
-);
-
-70 
-rv
- = 
-	`pög
-(
-sockfd
-, &
-°©us
-);
-
-71 
-	`•rötf
-(
-log
-, "PING %s.", 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-));
-
-72 
-	`_log
-(
-log
-);
-
-74 
-	`˛o£
-(
-sockfd
-);
-
-75 i‡(
-rv
- =
-REDIS_OK
- && 
-°©us
-) {
-
-77 
-	`•rötf
-(
-log
-, "PONG from %s.", 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-));
-
-78 
-	`_log
-(
-log
-);
-
-81 i‡(
-node
-Ënodênode->
-√xt
-;
-
-83 
-	}
-}
-
-90 
-	$_li°íToClõ¡
-() {
-
-91 
-sockfd
-, 
-√wSockfd
-;
-
-92 
-rv
-;
-
-93 
-n
-;
-
-94 
-sockaddr_ö
- 
-£rv_addr
-, 
-˛i_addr
-;
-
-95 
-sockÀn_t
- 
-˛ûí
-;
-
-96 
-log
-[
-MAX_LOG_LENGTH
-];
-
-99 
-sockfd
- = 
-	`sockë
-(
-AF_INET
-, 
-SOCK_STREAM
-, 0);
-
-100 i‡(
-sockfd
- == -1) {
-
-101 
-	`¥ötf
-("config-server.c: %s %s\n", "ErrorÜisteningÅo client.",
-
-107 
-	`mem£t
-(&
-£rv_addr
-, 0, (
-sockaddr_ö
-));
-
-108 
-£rv_addr
-.
-sö_Ámûy
- = 
-AF_INET
-;
-
-109 
-£rv_addr
-.
-sö_p‹t
- = 
-	`ht⁄s
-(
-CONFIG_SERVER_PORT
-);
-
-110 
-£rv_addr
-.
-sö_addr
-.
-s_addr
- = 
-INADDR_ANY
-;
-
-111 
-rv
- = 
-	`böd
-(
-sockfd
-, (
-sockaddr
- *Ë&
-£rv_addr
-, (sockaddr));
-
-112 i‡(
-rv
- == -1) {
-
-113 
-	`¥ötf
-("config-server.c: %s %s\n", "ErrorÜisteningÅo client.",
-
-119 
-rv
- = 
-	`li°í
-(
-sockfd
-, 5);
-
-120 i‡(
-rv
- == -1) {
-
-121 
-	`¥ötf
-("config-server.c: %s %s\n", "ErrorÜisteningÅo client.",
-
-125 
-	`_log
-("StartsÅoÜistenÅo client...");
-
-129 
-√wSockfd
- = 
-	`ac˚±
-(
-sockfd
-, (
-sockaddr
- *Ë&
-˛i_addr
-, &
-˛ûí
-);
-
-131 i‡(
-√wSockfd
- == -1) {
-
-135 i‡(
-î∫o
- =
-EINTR
-) ;
-
-136 
-	`¥ötf
-("config-server.c: %s %s\n", "ErrorÜisteningÅo client.",
-
-142 
-n
- = 
-li°
-.
-nNode
- * (
 ö_addr
-);
-
-143 
-rv
- = 
-	`wrôe
-(
-√wSockfd
-, 
-¢≠shŸ
-, 
-n
-);
-
-144 i‡(
-rv
- == -1) {
-
-145 
-	`¥ötf
-("config-server.c: %s %s\n", "ErrorÜisteningÅo client.",
-
-147 } i‡(
-rv
- !
-n
-) {
-
-148 
-	`¥ötf
-("config-server.c: %s %s\n", "FailedÅoÜistenÅo client.",
-
-151 
-	`•rötf
-(
-log
-, "Snapshot ofÜive Redis servers sentÅo %s.",
-
-152 
-	`öë_¡ﬂ
-(
-˛i_addr
-.
-sö_addr
-));
-
-153 
-	`_log
-(
-log
-);
-
-155 
-	`˛o£
-(
-√wSockfd
-);
-
-157 
-	}
-}
-
-164 
-	$_lﬂdC⁄figFûe
-(
-signum
-, 
-sigöfo_t
  *
-öfo
-, *
-unu£d
+ùs
 ) {
 
-165 
+17 
 FILE
  *
 fö
 ;
 
-166 
+18 
+n
+;
+
+19 
+rv
+;
+
+20 
 löe
 [
 MAX_LINE_LENGTH
 ];
 
-167 
-rv
-;
-
-168 
+21 
 addröfo
  
 höts
@@ -1129,29 +605,31 @@ höts
 ªsu…
 ;
 
-171 
-	`˛órM≠
-(&
-li°
-);
+23 
+n
+ = 0;
 
-174 
+24 
 fö
  = 
 	`f›í
 (
-REDISSRV_CONFIG_FILE
+CONFIG_FILE
 , "r");
 
-175 i‡(!
+25 i‡(!
 fö
 ) {
 
-176 
+26 
 	`¥ötf
-("config-server.c: %s %s\n", "FailedÅoÜoad config file.",
+("config-server.c: %s %s\n", "Error getting hosts by key.",
 
-180 
+28 *
+num
+ = 0;
+
+32 
 	`mem£t
 (&
 höts
@@ -1159,7 +637,7 @@ höts
 addröfo
 ));
 
-181 
+33 
 höts
 .
 ai_Ámûy
@@ -1167,7 +645,7 @@ ai_Ámûy
 AF_INET
 ;
 
-182 
+34 
 höts
 .
 ai_sockty≥
@@ -1175,7 +653,7 @@ ai_sockty≥
 SOCK_STREAM
 ;
 
-183 
+35 
 rv
  = 
 	`fsˇnf
@@ -1185,13 +663,13 @@ fö
 löe
 );
 
-184 !
+36 !
 	`„of
 (
 fö
 )) {
 
-185 
+37 
 rv
  = 
 	`gëaddröfo
@@ -1205,25 +683,19 @@ höts
 ªsu…
 );
 
-186 i‡(!
+38 i‡(!
 rv
  && 
 ªsu…
 ) {
 
-187 
+39 
 	`mem˝y
 (&
-¢≠shŸ
+ùs
 [
-li°
-.
-nNode
- * (
-ö_addr
-)],
-
-188 &((
+n
+++], &((
 sockaddr_ö
  *Ë
 ªsu…
@@ -1231,317 +703,61 @@ sockaddr_ö
 ai_addr
 )->
 sö_addr
-, (
+,
+
+40 (
 ö_addr
 ));
 
-189 
-	`addNode
-(
-ªsu…
-->
-ai_addr
-, &
-li°
-);
-
-191 
+42 
 	`‰ìaddröfo
 (
 ªsu…
 );
 
-192 
-rv
- = 
-	`fsˇnf
-(
-fö
-, "%s", 
-löe
-);
-
-194 
+44 
 	`f˛o£
 (
 fö
 );
 
-195 
-	`_log
-("Config fileÜoaded.");
-
-196 
-	}
-}
-
-203 
-	$_ªgi°îSig«lH™dÀrs
-() {
-
-204 
-rv
-;
-
-205 
-siga˘i⁄
- 
-ß
-;
-
-208 
-ß
-.
-ß_siga˘i⁄
+45 *
+num
  = 
-_lﬂdC⁄figFûe
+n
 ;
 
-209 
-	`sigem±y£t
-(&
-ß
-.
-ß_mask
-);
-
-210 
-ß
-.
-ß_Êags
- = 
-SA_SIGINFO
-;
-
-212 
-rv
- = 
-	`siga˘i⁄
-(
-SIGUSR1
-, &
-ß
-, 
-NULL
-);
-
-213 i‡(
-rv
- == -1) {
-
-214 
-	`¥ötf
-("config-server.c: %s\n", "ErrorÑegistering SIGUSR1 signal.");
-
-215  
-CONFSRV_ERR
-;
-
-219 
-ß
-.
-ß_siga˘i⁄
- = 
-_hóπbót
-;
-
-220 
-	`sigem±y£t
-(&
-ß
-.
-ß_mask
-);
-
-221 
-ß
-.
-ß_Êags
- = 
-SA_SIGINFO
-;
-
-223 
-rv
- = 
-	`siga˘i⁄
-(
-SIGALRM
-, &
-ß
-, 
-NULL
-);
-
-224 i‡(
-rv
- == -1) {
-
-225 
-	`¥ötf
-("config-server.c: %s\n", "ErrorÑegistering SIGALRM signal.");
-
-226  
-CONFSRV_ERR
-;
-
-229 
-	`_log
-("Signal handlersÑegistered.");
-
-230  
-CONFSRV_OK
-;
-
-231 
-	}
-}
-
-233 
-	$maö
-(
-¨gc
-, *
-¨gv
-[]) {
-
-234 
-rv
-;
-
-237 
-rv
- = 
-	`_ªgi°îSig«lH™dÀrs
-();
-
-238 i‡(
-rv
- =
-CONFSRV_ERR
-) {
-
-239 
-	`¥ötf
-("config-server.c: %s\n", "ErrorÑegistering signals.");
-
-241 } i‡(
-rv
- =
-CONFSRV_FAILED
-) {
-
-242 
-	`¥ötf
-("config-server.c: %s\n", "FailedÅoÑegister signals.");
-
-247 
-	`_lﬂdC⁄figFûe
-(0, 
-NULL
-, NULL);
-
-250 
-	`Æ¨m
-(
-HEARTBEAT_INTERVAL
-);
-
-253 
-	`_li°íToClõ¡
-();
-
-256 
-	`¥ötf
-("config-server.c: %s\n", "Config serverÉxits unexpectedly.");
-
-258 
+46 
 	}
 }
 
 	@config-server.h
 
-18 #i‚de‡
+7 #i‚de‡
 CONFIG_SERVER_H_
 
 
-19 
+8 
 	#CONFIG_SERVER_H_
 
 
 	)
 
-21 
-	#CONFSRV_OK
- 0
+10 
+	~<√töë/ö.h
+>
 
-	)
-
-22 
-	#CONFSRV_FAILED
- -1
-
-	)
-
-23 
-	#CONFSRV_ERR
- 1
-
-	)
-
-25 
-	#REDISSRV_CONFIG_FILE
- "RedisSîvîs.cfg"
-
-	)
-
-27 
-	#MAX_LINE_LENGTH
- 0xFF
-
-	)
-
-28 
-	#MAX_LOG_LENGTH
- 0xFF
-
-	)
-
-29 
-	#MAX_SNAPSHOT_LENGTH
- 0xFFFF
-
-	)
-
-31 
-	#HEARTBEAT_RETRY
- 3
-
-	)
-
-33 
-	#HEARTBEAT_INTERVAL
- 3
-
-34 
-	#PING_RETRY
- 5
-
-	)
-
-35 
-	#PING_INTERVAL
- 500 * 1000
-
-36 
-
-	)
-
-37 
-	#CONFIG_SERVER_PORT
- 6380
-
-	)
+13 
+gëHo°sByKey
+(c⁄° *
+key
+, *
+num
+, 
+ö_addr
+ *
+ùs
+);
 
 	@debug.c
 
@@ -2025,6 +1241,18 @@ sockfd
 	}
 }
 
+	@debug.h
+
+5 #i‚de‡
+DEBUG_H_
+
+
+6 
+	#DEBUG_H_
+
+
+	)
+
 	@def.h
 
 5 #i‚de‡
@@ -2043,1981 +1271,27 @@ DEF_H_
 
 	)
 
-	@md5.c
+10 
+	#C
+ 0xF
 
-58 
-	~"md5.h
-"
-
-59 
-	~<°dio.h
->
-
-60 
-	~<°rög.h
->
-
-63 
-Tønsf‹m
- (
-UINT4
- *, UINT4 *);
-
-65 
-	gPADDING
-[64] = {
-
-77 
-	#F
-(
-x
-, 
-y
-, 
-z
-Ë(((xË& (y)Ë| ((~xË& (z)))
+11 
+	#N
+ 0x3
 
 	)
 
-78 
-	#G
-(
-x
-, 
-y
-, 
-z
-Ë(((xË& (z)Ë| ((yË& (~z)))
+12 
+	#R
+ 0x2
 
 	)
 
-79 
-	#H
-(
-x
-, 
-y
-, 
-z
-Ë((xË^ (yË^ (z))
+13 
+	#W
+ 0x2
 
 	)
-
-80 
-	#I
-(
-x
-, 
-y
-, 
-z
-Ë((yË^ ((xË| (~z)))
-
-	)
-
-83 
-	#ROTATE_LEFT
-(
-x
-, 
-n
-Ë(((xË<< (n)Ë| ((xË>> (32-“))))
-
-	)
-
-87 
-	#FF
-(
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-x
-, 
-s
-, 
-ac
-) \
-
-88 {(
-a
-Ë+
-	`F
- ((
-b
-), (
-c
-), (
-d
-)Ë+ (
-x
-Ë+ (
-UINT4
-)(
-ac
-); \
-
-89 (
-a
-Ë
-	`ROTATE_LEFT
- (◊), (
-s
-)); \
-
-90 (
-a
-Ë+(
-b
-); \
-
-91 }
-
-	)
-
-92 
-	#GG
-(
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-x
-, 
-s
-, 
-ac
-) \
-
-93 {(
-a
-Ë+
-	`G
- ((
-b
-), (
-c
-), (
-d
-)Ë+ (
-x
-Ë+ (
-UINT4
-)(
-ac
-); \
-
-94 (
-a
-Ë
-	`ROTATE_LEFT
- (◊), (
-s
-)); \
-
-95 (
-a
-Ë+(
-b
-); \
-
-96 }
-
-	)
-
-97 
-	#HH
-(
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-x
-, 
-s
-, 
-ac
-) \
-
-98 {(
-a
-Ë+
-	`H
- ((
-b
-), (
-c
-), (
-d
-)Ë+ (
-x
-Ë+ (
-UINT4
-)(
-ac
-); \
-
-99 (
-a
-Ë
-	`ROTATE_LEFT
- (◊), (
-s
-)); \
-
-100 (
-a
-Ë+(
-b
-); \
-
-101 }
-
-	)
-
-102 
-	#II
-(
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-x
-, 
-s
-, 
-ac
-) \
-
-103 {(
-a
-Ë+
-	`I
- ((
-b
-), (
-c
-), (
-d
-)Ë+ (
-x
-Ë+ (
-UINT4
-)(
-ac
-); \
-
-104 (
-a
-Ë
-	`ROTATE_LEFT
- (◊), (
-s
-)); \
-
-105 (
-a
-Ë+(
-b
-); \
-
-106 }
-
-	)
-
-108 
-	$MD5Inô
- (
-MD5_CTX
- *
-mdC⁄ãxt
-)
-
-110 
-mdC⁄ãxt
-->
-i
-[0] = mdC⁄ãxt->i[1] = (
-UINT4
-)0;
-
-114 
-mdC⁄ãxt
-->
-buf
-[0] = (
-UINT4
-)0x67452301;
-
-115 
-mdC⁄ãxt
-->
-buf
-[1] = (
-UINT4
-)0xefcdab89;
-
-116 
-mdC⁄ãxt
-->
-buf
-[2] = (
-UINT4
-)0x98badcfe;
-
-117 
-mdC⁄ãxt
-->
-buf
-[3] = (
-UINT4
-)0x10325476;
-
-118 
-	}
-}
-
-120 
-	$MD5Upd©e
- (
-MD5_CTX
- *
-mdC⁄ãxt
-, *
-öBuf
-, 
-öLí
-)
-
-122 
-UINT4
- 
-ö
-[16];
-
-123 
-mdi
-;
-
-124 
-i
-, 
-ii
-;
-
-127 
-mdi
- = ()((
-mdC⁄ãxt
-->
-i
-[0] >> 3) & 0x3F);
-
-130 i‡((
-mdC⁄ãxt
-->
-i
-[0] + ((
-UINT4
-)
-öLí
- << 3)) < mdContext->i[0])
-
-131 
-mdC⁄ãxt
-->
-i
-[1]++;
-
-132 
-mdC⁄ãxt
-->
-i
-[0] +((
-UINT4
-)
-öLí
- << 3);
-
-133 
-mdC⁄ãxt
-->
-i
-[1] +((
-UINT4
-)
-öLí
- >> 29);
-
-135 
-öLí
---) {
-
-137 
-mdC⁄ãxt
-->
-ö
-[
-mdi
-++] = *
-öBuf
-++;
-
-140 i‡(
-mdi
- == 0x40) {
-
-141 
-i
- = 0, 
-ii
- = 0; i < 16; i++, ii += 4)
-
-142 
-ö
-[
-i
-] = (((
-UINT4
-)
-mdC⁄ãxt
-->ö[
-ii
-+3]) << 24) |
-
-143 (((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-+2]) << 16) |
-
-144 (((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-+1]) << 8) |
-
-145 ((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-]);
-
-146 
-	`Tønsf‹m
- (
-mdC⁄ãxt
-->
-buf
-, 
-ö
-);
-
-147 
-mdi
- = 0;
-
-150 
-	}
-}
-
-152 
-	$MD5FöÆ
- (
-MD5_CTX
- *
-mdC⁄ãxt
-)
-
-154 
-UINT4
- 
-ö
-[16];
-
-155 
-mdi
-;
-
-156 
-i
-, 
-ii
-;
-
-157 
-∑dLí
-;
-
-160 
-ö
-[14] = 
-mdC⁄ãxt
-->
-i
-[0];
-
-161 
-ö
-[15] = 
-mdC⁄ãxt
-->
-i
-[1];
-
-164 
-mdi
- = ()((
-mdC⁄ãxt
-->
-i
-[0] >> 3) & 0x3F);
-
-167 
-∑dLí
- = (
-mdi
- < 56) ? (56 - mdi) : (120 - mdi);
-
-168 
-	`MD5Upd©e
- (
-mdC⁄ãxt
-, 
-PADDING
-, 
-∑dLí
-);
-
-171 
-i
- = 0, 
-ii
- = 0; i < 14; i++, ii += 4)
-
-172 
-ö
-[
-i
-] = (((
-UINT4
-)
-mdC⁄ãxt
-->ö[
-ii
-+3]) << 24) |
-
-173 (((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-+2]) << 16) |
-
-174 (((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-+1]) << 8) |
-
-175 ((
-UINT4
-)
-mdC⁄ãxt
-->
-ö
-[
-ii
-]);
-
-176 
-	`Tønsf‹m
- (
-mdC⁄ãxt
-->
-buf
-, 
-ö
-);
-
-179 
-i
- = 0, 
-ii
- = 0; i < 4; i++, ii += 4) {
-
-180 
-mdC⁄ãxt
-->
-dige°
-[
-ii
-] = ()(mdC⁄ãxt->
-buf
-[
-i
-] & 0xFF);
-
-181 
-mdC⁄ãxt
-->
-dige°
-[
-ii
-+1] =
-
-182 ()((
-mdC⁄ãxt
-->
-buf
-[
-i
-] >> 8) & 0xFF);
-
-183 
-mdC⁄ãxt
-->
-dige°
-[
-ii
-+2] =
-
-184 ()((
-mdC⁄ãxt
-->
-buf
-[
-i
-] >> 16) & 0xFF);
-
-185 
-mdC⁄ãxt
-->
-dige°
-[
-ii
-+3] =
-
-186 ()((
-mdC⁄ãxt
-->
-buf
-[
-i
-] >> 24) & 0xFF);
-
-188 
-	}
-}
-
-192 
-	$Tønsf‹m
- (
-UINT4
- *
-buf
-, UINT4 *
-ö
-)
-
-194 
-UINT4
- 
-a
- = 
-buf
-[0], 
-b
- = buf[1], 
-c
- = buf[2], 
-d
- = buf[3];
-
-197 
-	#S11
- 7
-
-	)
-
-198 
-	#S12
- 12
-
-	)
-
-199 
-	#S13
- 17
-
-	)
-
-200 
-	#S14
- 22
-
-	)
-
-201 
-	`FF
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 0], 
-S11
-, 3614090360);
-
-202 
-	`FF
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 1], 
-S12
-, 3905402710);
-
-203 
-	`FF
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 2], 
-S13
-, 606105819);
-
-204 
-	`FF
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 3], 
-S14
-, 3250441966);
-
-205 
-	`FF
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 4], 
-S11
-, 4118548399);
-
-206 
-	`FF
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 5], 
-S12
-, 1200080426);
-
-207 
-	`FF
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 6], 
-S13
-, 2821735955);
-
-208 
-	`FF
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 7], 
-S14
-, 4249261313);
-
-209 
-	`FF
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 8], 
-S11
-, 1770035416);
-
-210 
-	`FF
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 9], 
-S12
-, 2336552879);
-
-211 
-	`FF
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[10], 
-S13
-, 4294925233);
-
-212 
-	`FF
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[11], 
-S14
-, 2304563134);
-
-213 
-	`FF
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[12], 
-S11
-, 1804603682);
-
-214 
-	`FF
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[13], 
-S12
-, 4254626195);
-
-215 
-	`FF
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[14], 
-S13
-, 2792965006);
-
-216 
-	`FF
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[15], 
-S14
-, 1236535329);
-
-219 
-	#S21
- 5
-
-	)
-
-220 
-	#S22
- 9
-
-	)
-
-221 
-	#S23
- 14
-
-	)
-
-222 
-	#S24
- 20
-
-	)
-
-223 
-	`GG
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 1], 
-S21
-, 4129170786);
-
-224 
-	`GG
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 6], 
-S22
-, 3225465664);
-
-225 
-	`GG
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[11], 
-S23
-, 643717713);
-
-226 
-	`GG
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 0], 
-S24
-, 3921069994);
-
-227 
-	`GG
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 5], 
-S21
-, 3593408605);
-
-228 
-	`GG
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[10], 
-S22
-, 38016083);
-
-229 
-	`GG
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[15], 
-S23
-, 3634488961);
-
-230 
-	`GG
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 4], 
-S24
-, 3889429448);
-
-231 
-	`GG
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 9], 
-S21
-, 568446438);
-
-232 
-	`GG
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[14], 
-S22
-, 3275163606);
-
-233 
-	`GG
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 3], 
-S23
-, 4107603335);
-
-234 
-	`GG
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 8], 
-S24
-, 1163531501);
-
-235 
-	`GG
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[13], 
-S21
-, 2850285829);
-
-236 
-	`GG
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 2], 
-S22
-, 4243563512);
-
-237 
-	`GG
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 7], 
-S23
-, 1735328473);
-
-238 
-	`GG
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[12], 
-S24
-, 2368359562);
-
-241 
-	#S31
- 4
-
-	)
-
-242 
-	#S32
- 11
-
-	)
-
-243 
-	#S33
- 16
-
-	)
-
-244 
-	#S34
- 23
-
-	)
-
-245 
-	`HH
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 5], 
-S31
-, 4294588738);
-
-246 
-	`HH
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 8], 
-S32
-, 2272392833);
-
-247 
-	`HH
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[11], 
-S33
-, 1839030562);
-
-248 
-	`HH
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[14], 
-S34
-, 4259657740);
-
-249 
-	`HH
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 1], 
-S31
-, 2763975236);
-
-250 
-	`HH
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 4], 
-S32
-, 1272893353);
-
-251 
-	`HH
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 7], 
-S33
-, 4139469664);
-
-252 
-	`HH
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[10], 
-S34
-, 3200236656);
-
-253 
-	`HH
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[13], 
-S31
-, 681279174);
-
-254 
-	`HH
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 0], 
-S32
-, 3936430074);
-
-255 
-	`HH
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 3], 
-S33
-, 3572445317);
-
-256 
-	`HH
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 6], 
-S34
-, 76029189);
-
-257 
-	`HH
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 9], 
-S31
-, 3654602809);
-
-258 
-	`HH
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[12], 
-S32
-, 3873151461);
-
-259 
-	`HH
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[15], 
-S33
-, 530742520);
-
-260 
-	`HH
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 2], 
-S34
-, 3299628645);
-
-263 
-	#S41
- 6
-
-	)
-
-264 
-	#S42
- 10
-
-	)
-
-265 
-	#S43
- 15
-
-	)
-
-266 
-	#S44
- 21
-
-	)
-
-267 
-	`II
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 0], 
-S41
-, 4096336452);
-
-268 
-	`II
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 7], 
-S42
-, 1126891415);
-
-269 
-	`II
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[14], 
-S43
-, 2878612391);
-
-270 
-	`II
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 5], 
-S44
-, 4237533241);
-
-271 
-	`II
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[12], 
-S41
-, 1700485571);
-
-272 
-	`II
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[ 3], 
-S42
-, 2399980690);
-
-273 
-	`II
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[10], 
-S43
-, 4293915773);
-
-274 
-	`II
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 1], 
-S44
-, 2240044497);
-
-275 
-	`II
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 8], 
-S41
-, 1873313359);
-
-276 
-	`II
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[15], 
-S42
-, 4264355552);
-
-277 
-	`II
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 6], 
-S43
-, 2734768916);
-
-278 
-	`II
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[13], 
-S44
-, 1309151649);
-
-279 
-	`II
- ( 
-a
-, 
-b
-, 
-c
-, 
-d
-, 
-ö
-[ 4], 
-S41
-, 4149444226);
-
-280 
-	`II
- ( 
-d
-, 
-a
-, 
-b
-, 
-c
-, 
-ö
-[11], 
-S42
-, 3174756917);
-
-281 
-	`II
- ( 
-c
-, 
-d
-, 
-a
-, 
-b
-, 
-ö
-[ 2], 
-S43
-, 718787259);
-
-282 
-	`II
- ( 
-b
-, 
-c
-, 
-d
-, 
-a
-, 
-ö
-[ 9], 
-S44
-, 3951481745);
-
-284 
-buf
-[0] +
-a
-;
-
-285 
-buf
-[1] +
-b
-;
-
-286 
-buf
-[2] +
-c
-;
-
-287 
-buf
-[3] +
-d
-;
-
-288 
-	}
-}
-
-291 
-	$md5
-(c⁄° *
-°r
-, *
-dige°
-) {
-
-292 
-MD5_CTX
- 
-c⁄ãxt
-;
-
-295 
-	`MD5Inô
-(&
-c⁄ãxt
-);
-
-296 
-	`MD5Upd©e
-(&
-c⁄ãxt
-, (*Ë
-°r
-, 
-	`°æí
-(str));
-
-297 
-	`MD5FöÆ
-(&
-c⁄ãxt
-);
-
-299 
-	`mem˝y
-(
-dige°
-, 
-c⁄ãxt
-.digest, 16);
-
-300 
-	}
-}
-
-	@md5.h
-
-40 #i‚de‡
-MD5_H_
-
-
-41 
-	#MD5_H_
-
-
-	)
-
-43 
-	#MD5_LENGTH
- 16
-
-	)
-
-46 
-	tUINT4
-;
-
-50 
-UINT4
- 
-	mi
-[2];
-
-51 
-UINT4
- 
-	mbuf
-[4];
-
-52 
-	mö
-[64];
-
-53 
-	mdige°
-[16];
-
-54 } 
-	tMD5_CTX
-;
-
-56 
-md5
-(c⁄° *
-°r
-, *
-dige°
-);
 
 	@redis.c
 
@@ -4661,7 +1935,111 @@ REDIS_OK
 	}
 }
 
-208 
+210 
+	$c⁄√˘ByIp
+(c⁄° 
+ö_addr
+ *
+ù
+) {
+
+211 
+sockfd
+;
+
+212 
+rv
+;
+
+213 
+sockaddr_ö
+ 
+£rv_addr
+;
+
+216 
+sockfd
+ = 
+	`sockë
+(
+AF_INET
+, 
+SOCK_STREAM
+, 0);
+
+217 i‡(
+sockfd
+ == -1) {
+
+218 
+	`¥ötf
+("router.c: %s %s\n", "Error connectingÅo Redis server.",
+
+224 
+£rv_addr
+.
+sö_Ámûy
+ = 
+AF_INET
+;
+
+225 
+£rv_addr
+.
+sö_p‹t
+ = 
+	`ht⁄s
+(
+REDIS_PORT
+);
+
+226 
+	`mem˝y
+(&
+£rv_addr
+.
+sö_addr
+, 
+ù
+, (
+ö_addr
+));
+
+227 
+rv
+ = 
+	`c⁄√˘
+(
+sockfd
+, (
+sockaddr
+ *Ë&
+£rv_addr
+, (serv_addr));
+
+228 i‡(
+rv
+ < 0) {
+
+229 
+	`¥ötf
+("router.c: %s %s\n", "Error connectingÅo Redis server.",
+
+230 
+	`öë_¡ﬂ
+(
+ù
+));
+
+233  
+sockfd
+;
+
+234 
+	}
+}
+
+237 
 	$hDñ
 (c⁄° 
 sockfd
@@ -4671,21 +2049,21 @@ key
 fõld
 ) {
 
-209 
+238 
 rv
 ;
 
-210 
+239 
 ªsu…
 ;
 
-211 
+240 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-214 
+243 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -4695,7 +2073,7 @@ key
 fõld
 );
 
-215 
+244 
 rv
  = 
 	`wrôe
@@ -4707,19 +2085,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-216 i‡(
+245 i‡(
 rv
  == -1) {
 
-217 
+246 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting HDEL.", "CommandÇot sent.");
 
-218  
+247  
 REDIS_ERR
 ;
 
-219 } i‡(
+248 } i‡(
 rv
  !(Ë
 	`°æí
@@ -4727,15 +2105,15 @@ rv
 comm™dSåóm
 )) {
 
-220 
+249 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute HDEL.", "CommandÇot sent.");
 
-221  
+250  
 REDIS_FAILED
 ;
 
-225 
+254 
 rv
  = 
 	`_ªcvI¡
@@ -4745,15 +2123,15 @@ sockfd
 ªsu…
 );
 
-226  
+255  
 rv
 ;
 
-227 
+256 
 	}
 }
 
-230 
+259 
 	$exi°s
 (c⁄° 
 sockfd
@@ -4763,17 +2141,17 @@ key
 ªsu…
 ) {
 
-231 
+260 
 rv
 ;
 
-232 
+261 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-235 
+264 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -4781,7 +2159,7 @@ comm™dSåóm
 key
 );
 
-236 
+265 
 rv
  = 
 	`wrôe
@@ -4793,19 +2171,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-237 i‡(
+266 i‡(
 rv
  == -1) {
 
-238 
+267 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting EXISTS.", "CommandÇot sent.");
 
-239  
+268  
 REDIS_ERR
 ;
 
-240 } i‡(
+269 } i‡(
 rv
  !(Ë
 	`°æí
@@ -4813,15 +2191,15 @@ rv
 comm™dSåóm
 )) {
 
-241 
+270 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute EXISTS.",
 
-243  
+272  
 REDIS_FAILED
 ;
 
-247 
+276 
 rv
  = 
 	`_ªcvI¡
@@ -4831,15 +2209,15 @@ sockfd
 ªsu…
 );
 
-248  
+277  
 rv
 ;
 
-249 
+278 
 	}
 }
 
-252 
+281 
 	$dñ
 (c⁄° 
 sockfd
@@ -4847,21 +2225,21 @@ sockfd
 key
 ) {
 
-253 
+282 
 rv
 ;
 
-254 
+283 
 ªsu…
 ;
 
-255 
+284 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-258 
+287 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -4869,7 +2247,7 @@ comm™dSåóm
 key
 );
 
-259 
+288 
 rv
  = 
 	`wrôe
@@ -4881,19 +2259,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-260 i‡(
+289 i‡(
 rv
  == -1) {
 
-261 
+290 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting DEL.", "CommandÇot sent.");
 
-262  
+291  
 REDIS_ERR
 ;
 
-263 } i‡(
+292 } i‡(
 rv
  !(Ë
 	`°æí
@@ -4901,15 +2279,15 @@ rv
 comm™dSåóm
 )) {
 
-264 
+293 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute DEL.", "CommandÇot sent.");
 
-265  
+294  
 REDIS_FAILED
 ;
 
-269 
+298 
 rv
  = 
 	`_ªcvI¡
@@ -4919,15 +2297,15 @@ sockfd
 ªsu…
 );
 
-270  
+299  
 rv
 ;
 
-271 
+300 
 	}
 }
 
-274 
+303 
 	$hExi°s
 (c⁄° 
 sockfd
@@ -4939,17 +2317,17 @@ fõld
 ªsu…
 ) {
 
-275 
+304 
 rv
 ;
 
-276 
+305 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-279 
+308 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -4959,7 +2337,7 @@ key
 fõld
 );
 
-280 
+309 
 rv
  = 
 	`wrôe
@@ -4971,19 +2349,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-281 i‡(
+310 i‡(
 rv
  == -1) {
 
-282 
+311 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting HEXISTS.", "CommandÇot sent.");
 
-283  
+312  
 REDIS_ERR
 ;
 
-284 } i‡(
+313 } i‡(
 rv
  !(Ë
 	`°æí
@@ -4991,15 +2369,15 @@ rv
 comm™dSåóm
 )) {
 
-285 
+314 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute HEXISTS.",
 
-287  
+316  
 REDIS_FAILED
 ;
 
-291 
+320 
 rv
  = 
 	`_ªcvI¡
@@ -5009,15 +2387,15 @@ sockfd
 ªsu…
 );
 
-292  
+321  
 rv
 ;
 
-293 
+322 
 	}
 }
 
-298 
+327 
 	$hGë
 (c⁄° 
 sockfd
@@ -5027,23 +2405,23 @@ key
 fõld
 ,
 
-299 *
+328 *
 blobLígth
 , *
 blob
 ) {
 
-300 
+329 
 rv
 ;
 
-301 
+330 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-304 
+333 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -5053,7 +2431,7 @@ key
 fõld
 );
 
-306 
+335 
 rv
  = 
 	`wrôe
@@ -5065,19 +2443,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-307 i‡(
+336 i‡(
 rv
  == -1) {
 
-308 
+337 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting HGET.", "CommandÇot sent.");
 
-309  
+338  
 REDIS_ERR
 ;
 
-310 } i‡(
+339 } i‡(
 rv
  !(Ë
 	`°æí
@@ -5085,15 +2463,15 @@ rv
 comm™dSåóm
 )) {
 
-311 
+340 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute HGET.", "CommandÇot sent.");
 
-312  
+341  
 REDIS_FAILED
 ;
 
-316 
+345 
 rv
  = 
 	`_ªcvBlob
@@ -5105,15 +2483,15 @@ blobLígth
 blob
 );
 
-317  
+346  
 rv
 ;
 
-318 
+347 
 	}
 }
 
-321 
+350 
 	$hSë
 (c⁄° 
 sockfd
@@ -5123,27 +2501,27 @@ key
 fõld
 ,
 
-322 c⁄° 
+351 c⁄° 
 blobLígth
 , c⁄° *
 blob
 ) {
 
-323 
+352 
 rv
 ;
 
-324 
+353 
 ªsu…
 ;
 
-325 
+354 
 comm™dSåóm
 [
 MAX_COMMAND_LENGTH
 ];
 
-328 
+357 
 	`_comm™dSåóm
 (
 comm™dSåóm
@@ -5155,7 +2533,7 @@ fõld
 blobLígth
 );
 
-331 
+360 
 rv
  = 
 	`wrôe
@@ -5167,19 +2545,19 @@ comm™dSåóm
 	`°æí
 (commandStream));
 
-332 i‡(
+361 i‡(
 rv
  == -1) {
 
-333 
+362 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting HSET.", "CommandÇot sent.");
 
-334  
+363  
 REDIS_ERR
 ;
 
-335 } i‡(
+364 } i‡(
 rv
  !(Ë
 	`°æí
@@ -5187,15 +2565,15 @@ rv
 comm™dSåóm
 )) {
 
-336 
+365 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute HSET.", "CommandÇot sent.");
 
-337  
+366  
 REDIS_FAILED
 ;
 
-341 
+370 
 rv
  = 
 	`wrôe
@@ -5207,33 +2585,33 @@ blob
 blobLígth
 );
 
-342 i‡(
+371 i‡(
 rv
  == -1) {
 
-343 
+372 
 	`¥ötf
 ("redis.c: %s %s\n", "ErrorÉxecuting HSET.", "BlobÇot sent.");
 
-344  
+373  
 REDIS_ERR
 ;
 
-345 } i‡(
+374 } i‡(
 rv
  !
 blobLígth
 ) {
 
-346 
+375 
 	`¥ötf
 ("redis.c: %s %s\n", "FailedÅoÉxecute HSET.", "BlobÇot sent.");
 
-347  
+376  
 REDIS_FAILED
 ;
 
-349 
+378 
 rv
  = 
 	`wrôe
@@ -5241,7 +2619,7 @@ rv
 sockfd
 , "\r\n", 2);
 
-352 
+381 
 rv
  = 
 	`_ªcvI¡
@@ -5251,113 +2629,11 @@ sockfd
 ªsu…
 );
 
-353  
+382  
 rv
 ;
 
-354 
-	}
-}
-
-357 
-	$pög
-(c⁄° 
-sockfd
-, *
-ªsu…
-) {
-
-358 
-rv
-;
-
-359 
-comm™dSåóm
-[
-MAX_COMMAND_LENGTH
-];
-
-360 
-°©us
-[
-MAX_COMMAND_LENGTH
-];
-
-363 
-	`_comm™dSåóm
-(
-comm™dSåóm
-, "s", "PING");
-
-364 
-rv
- = 
-	`wrôe
-(
-sockfd
-, 
-comm™dSåóm
-, 
-	`°æí
-(commandStream));
-
-365 i‡(
-rv
- == -1) {
-
-366 
-	`¥ötf
-("redis.c: %s %s\n", "ErrorÉxecuting PING.", "CommandÇot sent.");
-
-367  
-REDIS_ERR
-;
-
-368 } i‡(
-rv
- !(Ë
-	`°æí
-(
-comm™dSåóm
-)) {
-
-369 
-	`¥ötf
-("redis.c: %s %s\n", "FailedÅoÉxecute PING.", "CommandÇot sent.");
-
-370  
-REDIS_FAILED
-;
-
-374 
-rv
- = 
-	`_ªcvSètus
-(
-sockfd
-, 
-°©us
-);
-
-376 i‡(!
-	`°rcmp
-(
-°©us
-, "PONG")) {
-
-377 *
-ªsu…
- = 1;
-
-379 *
-ªsu…
- = 0;
-
-381  
-REDIS_OK
-;
-
-382 
+383 
 	}
 }
 
@@ -5373,51 +2649,63 @@ REDIS_H_
 
 	)
 
-8 
+8 
+	~<√töë/ö.h
+>
+
+10 
 	#REDIS_OK
  0
 
 	)
 
-9 
+11 
 	#REDIS_FAILED
  -1
 
 	)
 
-10 
+12 
 	#REDIS_ERR
  1
 
 	)
 
-12 
+14 
 	#REDIS_PORT
  6379
 
 	)
 
-14 
+16 
 	#REDIS_RETRY
  100
 
 	)
 
-15 
+17 
 	#REDIS_RETRY_INTERVAL
- 10 * 000
+ 10 * 1000
 
-16 
+18 
 
 	)
 
-17 
+19 
 	#MAX_COMMAND_LENGTH
  0xFF
 
 	)
 
-20 
+22 
+c⁄√˘ByIp
+(c⁄° 
+ö_addr
+ *
+ù
+);
+
+25 
 dñ
 (c⁄° 
 sockfd
@@ -5425,7 +2713,7 @@ sockfd
 key
 );
 
-22 
+27 
 exi°s
 (c⁄° 
 sockfd
@@ -5435,7 +2723,7 @@ key
 ªsu…
 );
 
-24 
+29 
 hDñ
 (c⁄° 
 sockfd
@@ -5445,7 +2733,7 @@ key
 fõld
 );
 
-26 
+31 
 hExi°s
 (c⁄° 
 sockfd
@@ -5457,54 +2745,50 @@ fõld
 ªsu…
 );
 
-28 
-hGë
-(c⁄° 
-sockfd
+33 
+hGëSync
+(c⁄° 
+ö_addr
+ *
+ù
 , c⁄° *
 key
 , c⁄° *
 fõld
 ,
 
-29 *
+34 *
 blobLígth
 , *
 blob
 );
 
-31 
-hSë
-(c⁄° 
-sockfd
+36 
+hSëSync
+(c⁄° 
+ö_addr
+ *
+ù
 , c⁄° *
 key
 , c⁄° *
 fõld
 ,
 
-32 c⁄° 
+37 c⁄° 
 blobLígth
 , c⁄° *
 blob
 );
 
-34 
-pög
-(c⁄° 
-sockfd
-, *
-ªsu…
-);
-
 	@router.c
 
 5 
-	~"def.h
+	~"c⁄fig-£rvî.h
 "
 
 6 
-	~"md5.h
+	~"def.h
 "
 
 7 
@@ -5547,995 +2831,39 @@ sockfd
 	~<uni°d.h
 >
 
-19 
-C⁄si°ítHashögM≠
- 
-	gm≠
-;
-
-25 
-	$_askC⁄figSîvî
-(
-chM≠
- *
-m≠
-) {
-
-26 
-rv
-;
-
-27 
-sockfd
-;
-
-28 
-FILE
- *
-fö
-;
-
-29 
-löe
-[
-MAX_LINE_LENGTH
-];
-
-30 
-addröfo
- 
-höts
-, *
-ªsu…
-;
-
-32 
-fö
- = 
-	`f›í
-(
-CONFSRV_CONFIG_FILE
-, "r");
-
-33 i‡(!
-fö
-) {
-
-34 
-	`¥ötf
-("router.c: %s %s\n", "FailedÅoásk config server.",
-
-38 
-rv
- = 
-	`fsˇnf
-(
-fö
-, "%s", 
-löe
-);
-
-39 
-	`f˛o£
-(
-fö
-);
-
-41 
-	`mem£t
-(&
-höts
-, 0, (
-addröfo
-));
-
-42 
-höts
-.
-ai_Ámûy
- = 
-AF_INET
-;
-
-43 
-höts
-.
-ai_sockty≥
- = 
-SOCK_STREAM
-;
-
-45 
-rv
- = 
-	`gëaddröfo
-(
-löe
-, 
-NULL
-, &
-höts
-, &
-ªsu…
-);
-
-46 i‡(
-rv
- || !
-ªsu…
-) {
-
-47 
-	`¥ötf
-("router.c: %s %s\n", "FailedÅoásk config server.",
-
-52 i‡(!
-rv
- && 
-ªsu…
-) {
-
-53 
-	`mem˝y
-(&
-¢≠shŸ
-[
-li°
-.
-nNode
- * (
-ö_addr
-)],
-
-54 &((
-sockaddr_ö
- *Ë
-ªsu…
-->
-ai_addr
-)->
-sö_addr
-, (
-ö_addr
-));
-
-55 
-	`addNode
-(
-ªsu…
-->
-ai_addr
-, &
-li°
-);
-
-58 
-	`‰ìaddröfo
-(
-ªsu…
-);
-
-59 
-	}
-}
-
-62 
-	$_dumpNode
-(c⁄° 
-chNode
- *
-node
-) {
-
-64 i‡(!
-node
-) {
-
-65 
-	`¥ötf
-("[debug]router.c: %s %s\n", "FailedÅo dumpÇode.", "NullÖointer.");
-
-69 
-	`¥ötf
-("[debug]rouãr.c: ip: %s\n", 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-));
-
-70 
-	`¥ötf
-("[debug]rouãr.c:Çumbî o‡vútuÆÇodes: %d\n", 
-node
-->
-nVútuÆNode
-);
-
-71 
-	}
-}
-
-74 
-	$_dumpM≠
-(c⁄° 
-chM≠
- *
-m≠
-) {
-
-75 
-chNode
- *
-node
-;
-
-77 i‡(!
-m≠
-) {
-
-78 
-	`¥ötf
-("[debug]router.c: %s %s\n", "FailedÅo dump map.", "NullÖointer.");
-
-82 
-	`¥ötf
-("[debug]rouãr.c: Numbî o‡nodes: %d\n", 
-m≠
-->
-nNode
-);
-
-83 
-node
- = 
-m≠
-->
-li°
-;
-
-84 
-node
-) {
-
-85 
-	`¥ötf
-("[debug]router.c: --\n");
-
-86 
-	`_dumpNode
-(
-node
-);
-
-87 
-node
- =Çode->
-√xt
-;
-
-90 
-	}
-}
-
-105 
-	$_choo£Machöe
-(c⁄° *
-key
-, c⁄° 
-mu°Exi°
-) {
-
-106 
-chNode
- *
-node
-;
-
-107 
-chVútuÆNode
- *
-vútuÆNode
-;
-
-108 
-hash
-[
-MAX_HASH_LENGTH
-];
-
-109 
-sockfd
-;
-
-110 
-i
-, 
-n
-;
-
-113 i‡(!
-m≠
-.
-li°
-Ë
-	`_askC⁄figSîvî
-(&map);
-
-116 
-	`md5
-(
-key
-, 
-hash
-);
-
-117 
-node
- = 
-m≠
-.
-li°
-;
-
-118 
-node
-) {
-
-119 
-vútuÆNode
- = 
-node
-->
-li°
-;
-
-120 
-vútuÆNode
-) {
-
-121 i‡(!
-	`memcmp
-(
-vútuÆNode
-->
-hash
-, hash, 
-MD5_LENGTH
-)) {
-
-122 
-sockfd
- = 
-	`c⁄√˘ToNode
-(
-node
-);
-
-123  
-sockfd
-;
-
-126 
-node
- =Çode->
-√xt
-;
-
-130 i‡(
-mu°Exi°
-)  -1;
-
-132 i‡(!
-m≠
-.
-nNode
-)  -1;
-
-133 
-	`§™d
-((Ë
-	`time
-(
-NULL
-));
-
-134 
-n
- = 
-	`ønd
-(Ë% 
-m≠
-.
-nNode
-;
-
-135 
-node
- = 
-m≠
-.
-li°
-, 
-i
- = 0; i < 
-n
-; ++iËnodênode->
-√xt
-;
-
-137 
-	`addVútuÆNode
-(
-key
-, 
-node
-);
-
-138 
-sockfd
- = 
-	`c⁄√˘ToNode
-(
-node
-);
-
-139  
-sockfd
-;
-
-140 
-	}
-}
-
-143 
-	$_‰ìNode
-(
-chNode
- *
-node
-) {
-
-144 
-chVútuÆNode
- *
-vútuÆNode
-, *
-q
-;
-
-146 i‡(!
-node
-) ;
-
-148 
-vútuÆNode
- = 
-node
-->
-li°
-;
-
-149 
-vútuÆNode
-) {
-
-150 
-q
- = 
-vútuÆNode
-;
-
-151 
-vútuÆNode
- = vútuÆNode->
-√xt
-;
-
-152 
-	`‰ì
-(
-q
-);
-
-154 
-	`‰ì
-(
-node
-);
-
-155 
-	}
-}
-
-159 
-chNode
- * 
-	$addNode
-(c⁄° 
-sockaddr
- *
-addr
-, 
-chM≠
- *
-m≠
-) {
-
-160 
-chNode
- *
-node
-, *
-p
-;
-
-162 i‡(!
-addr
- || !
-m≠
-)  0;
-
-165 
-node
- = (
-chNode
- *Ë
-	`mÆloc
-((chNode));
-
-166 i‡(!
-node
-) {
-
-167 
-	`¥ötf
-("router.c: %s %s\n", "FailedÅo createÇode.",
-
-171 
-	`mem£t
-(
-node
-, 0, (
-chNode
-));
-
-172 
-	`mem˝y
-(&
-node
-->
-addr
-, &((
-sockaddr_ö
- *Ëaddr)->
-sö_addr
-, (
-ö_addr
-));
-
-175 i‡(!
-m≠
-->
-nNode
-) {
-
-176 
-m≠
-->
-li°
- = 
-node
-;
-
-178 
-p
- = 
-m≠
-->
-li°
-;
-
-179 
-p
-->
-√xt
-)Ö =Ö->next;
-
-180 
-p
-->
-√xt
- = 
-node
-;
-
-182 ++ 
-m≠
-->
-nNode
-;
-
-183  
-node
-;
-
-184 
-	}
-}
-
-188 
-chVútuÆNode
- * 
-	$addVútuÆNode
-(c⁄° *
-key
-, 
-chNode
- *
-node
-) {
-
-189 
-chVútuÆNode
- *
-vútuÆNode
-, *
-p
-;
-
-191 i‡(!
-node
-)  0;
-
-194 
-vútuÆNode
- = (
-chVútuÆNode
- *Ë
-	`mÆloc
-((virtualNode));
-
-195 i‡(!
-vútuÆNode
-) {
-
-196 
-	`¥ötf
-("router.c: %s %s\n", "FailedÅo create virtualÇode.",
-
-200 
-	`md5
-(
-key
-, 
-vútuÆNode
-->
-hash
-);
-
-201 
-vútuÆNode
-->
-√xt
- = 0;
-
-204 i‡(!
-node
-->
-nVútuÆNode
-) {
-
-205 
-node
-->
-li°
- = 
-vútuÆNode
-;
-
-207 
-p
- = 
-node
-->
-li°
-;
-
-208 
-p
-->
-√xt
-)Ö =Ö->next;
-
-209 
-p
-->
-√xt
- = 
-vútuÆNode
-;
-
-211 ++ 
-node
-->
-nVútuÆNode
-;
-
-212  
-vútuÆNode
-;
-
-213 
-	}
-}
-
-217 
-	$˛órM≠
-(
-chM≠
- *
-m≠
-) {
-
-218 i‡(!
-m≠
-) ;
-
-219 
-m≠
-->
-li°
-Ë
-	`‰ì
-(map->list);
-
-220 
-	}
-}
-
-225 
-	$c⁄√˘ToNode
-(c⁄° 
-chNode
- *
-node
-) {
-
-226 
-sockfd
-;
-
-227 
-rv
-;
-
-228 
-sockaddr_ö
- 
-£rv_addr
-;
-
-231 
-sockfd
- = 
-	`sockë
-(
-AF_INET
-, 
-SOCK_STREAM
-, 0);
-
-232 i‡(
-sockfd
- == -1) {
-
-233 
-	`¥ötf
-("router.c: %s %s\n", "Error connectingÅo Redis server.",
-
-239 
-£rv_addr
-.
-sö_Ámûy
- = 
-AF_INET
-;
-
-240 
-£rv_addr
-.
-sö_p‹t
- = 
-	`ht⁄s
-(
-REDIS_PORT
-);
-
-241 
-	`mem˝y
-(&
-£rv_addr
-.
-sö_addr
-, &
-node
-->
-addr
-, (
-ö_addr
-));
-
-242 
-rv
- = 
-	`c⁄√˘
-(
-sockfd
-, (
-sockaddr
- *Ë&
-£rv_addr
-, (serv_addr));
-
-244 i‡(
-rv
- < 0) {
-
-245 
-	`¥ötf
-("router.c: %s %s\n", "Error connectingÅo Redis server.",
-
-246 
-	`öë_¡ﬂ
-(
-node
-->
-addr
-));
-
-249  
-sockfd
-;
-
-250 
-	}
-}
-
-256 
-chNode
- * 
-	$dr›Node
-(
-chM≠
- *
-m≠
-, 
-chNode
- *
-node
-) {
-
-257 
-chNode
- *
-p
-;
-
-259 i‡(!
-m≠
- || !
-node
-) Çode;
-
-262 
-p
- = 
-m≠
-->
-li°
-;
-
-263 i‡(
-p
- =
-node
-) {
-
-264 -- 
-m≠
-->
-nNode
-;
-
-265 
-m≠
-->
-li°
- = 
-node
-->
-√xt
-;
-
-266 
-	`_‰ìNode
-(
-p
-);
-
-267  
-m≠
-->
-li°
-;
-
-271 
-p
-) {
-
-272 i‡(
-p
-->
-√xt
- =
-node
-) {
-
-273 -- 
-m≠
-->
-nNode
-;
-
-274 
-p
-->
-√xt
- = 
-node
-->next;
-
-275 
-	`_‰ìNode
-(
-node
-);
-
-276  
-p
-;
-
-278 
-p
- =Ö->
-√xt
-;
-
-282  
-node
-;
-
-283 
-	}
-}
-
-290 
+23 
 	$rouãCª©eBuckë
 (c⁄° *
 buckëId
 ) {
 
-291 
+24 
 rv
 ;
 
-292 
-sockfd
+25 
+ö_addr
+ 
+ùs
+[
+C
+];
+
+26 
+ùNum
 ;
 
-295 
+29 
+	`gëHo°sByKey
+(
+buckëId
+, &
+ùNum
+, 
+ùs
+);
+
+30 
 sockfd
  = 
 	`_choo£Machöe
@@ -6543,19 +2871,19 @@ sockfd
 buckëId
 , 0);
 
-297 i‡(
+32 i‡(
 sockfd
  == -1) {
 
-298 
+33 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo create bucket.",
 
-300  
+35  
 ROUTER_FAILED
 ;
 
-304 
+39 
 rv
  = 
 	`hSë
@@ -6571,49 +2899,49 @@ EXIST_BLOB_ID
 EXIST_BLOB
 ), EXIST_BLOB);
 
-305 
+40 
 	`˛o£
 (
 sockfd
 );
 
-306 i‡(
+41 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-307 
+42 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo create bucket.",
 
-309  
+44  
 ROUTER_FAILED
 ;
 
-310 } i‡(
+45 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-311 
+46 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo create bucket.",
 
-313  
+48  
 ROUTER_FAILED
 ;
 
-315  
+50  
 ROUTER_OK
 ;
 
-316 
+51 
 	}
 }
 
-322 
+57 
 	$rouãDñëeBlob
 (c⁄° *
 buckëId
@@ -6621,15 +2949,15 @@ buckëId
 blobId
 ) {
 
-323 
+58 
 rv
 ;
 
-324 
+59 
 sockfd
 ;
 
-327 
+62 
 sockfd
  = 
 	`_choo£Machöe
@@ -6637,13 +2965,13 @@ sockfd
 buckëId
 , 1);
 
-329 i‡(
+64 i‡(
 sockfd
  =-1Ë 
 ROUTER_OK
 ;
 
-332 
+67 
 rv
  = 
 	`hDñ
@@ -6655,63 +2983,63 @@ buckëId
 blobId
 );
 
-333 
+68 
 	`˛o£
 (
 sockfd
 );
 
-334 i‡(
+69 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-335 
+70 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo delete blob.",
 
-337  
+72  
 ROUTER_FAILED
 ;
 
-338 } i‡(
+73 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-339 
+74 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo delete blob.",
 
-341  
+76  
 ROUTER_FAILED
 ;
 
-343  
+78  
 ROUTER_OK
 ;
 
-344 
+79 
 	}
 }
 
-350 
+85 
 	$rouãDñëeBuckë
 (c⁄° *
 buckëId
 ) {
 
-351 
+86 
 rv
 ;
 
-352 
+87 
 sockfd
 ;
 
-355 
+90 
 sockfd
  = 
 	`_choo£Machöe
@@ -6719,13 +3047,13 @@ sockfd
 buckëId
 , 1);
 
-357 i‡(
+92 i‡(
 sockfd
  =-1Ë 
 ROUTER_OK
 ;
 
-360 
+95 
 rv
  = 
 	`dñ
@@ -6735,49 +3063,49 @@ sockfd
 buckëId
 );
 
-361 
+96 
 	`˛o£
 (
 sockfd
 );
 
-362 i‡(
+97 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-363 
+98 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo delete bucket.",
 
-365  
+100  
 ROUTER_FAILED
 ;
 
-366 } i‡(
+101 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-367 
+102 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo delete bucket.",
 
-369  
+104  
 ROUTER_FAILED
 ;
 
-371  
+106  
 ROUTER_OK
 ;
 
-372 
+107 
 	}
 }
 
-379 
+114 
 	$rouãExi°Blob
 (c⁄° *
 buckëId
@@ -6787,15 +3115,15 @@ blobId
 ªsu…
 ) {
 
-380 
+115 
 rv
 ;
 
-381 
+116 
 sockfd
 ;
 
-384 
+119 
 sockfd
  = 
 	`_choo£Machöe
@@ -6803,19 +3131,19 @@ sockfd
 buckëId
 , 1);
 
-385 i‡(
+120 i‡(
 sockfd
  == -1) {
 
-386 *
+121 *
 ªsu…
  = 0;
 
-387  
+122  
 ROUTER_OK
 ;
 
-391 
+126 
 rv
  = 
 	`hExi°s
@@ -6829,49 +3157,49 @@ blobId
 ªsu…
 );
 
-392 
+127 
 	`˛o£
 (
 sockfd
 );
 
-393 i‡(
+128 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-394 
+129 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo determineÉxistence of blob.",
 
-396  
+131  
 ROUTER_FAILED
 ;
 
-397 } i‡(
+132 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-398 
+133 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo determineÉxistence of blob.",
 
-400  
+135  
 ROUTER_FAILED
 ;
 
-402  
+137  
 ROUTER_OK
 ;
 
-403 
+138 
 	}
 }
 
-410 
+145 
 	$rouãExi°Buckë
 (c⁄° *
 buckëId
@@ -6879,15 +3207,15 @@ buckëId
 ªsu…
 ) {
 
-411 
+146 
 rv
 ;
 
-412 
+147 
 sockfd
 ;
 
-415 
+150 
 sockfd
  = 
 	`_choo£Machöe
@@ -6895,19 +3223,19 @@ sockfd
 buckëId
 , 1);
 
-416 i‡(
+151 i‡(
 sockfd
  == -1) {
 
-417 *
+152 *
 ªsu…
  = 0;
 
-418  
+153  
 ROUTER_OK
 ;
 
-422 
+157 
 rv
  = 
 	`exi°s
@@ -6919,49 +3247,49 @@ buckëId
 ªsu…
 );
 
-423 
+158 
 	`˛o£
 (
 sockfd
 );
 
-424 i‡(
+159 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-425 
+160 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo determineÉxistence of bucket.",
 
-427  
+162  
 ROUTER_FAILED
 ;
 
-428 } i‡(
+163 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-429 
+164 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo determineÉxistence of bucket.",
 
-431  
+166  
 ROUTER_FAILED
 ;
 
-433  
+168  
 ROUTER_OK
 ;
 
-434 
+169 
 	}
 }
 
-440 
+175 
 	$rouãLﬂdBlob
 (c⁄° *
 buckëId
@@ -6971,19 +3299,19 @@ blobId
 blobLígth
 ,
 
-441 *
+176 *
 blob
 ) {
 
-442 
+177 
 rv
 ;
 
-443 
+178 
 sockfd
 ;
 
-446 
+181 
 sockfd
  = 
 	`_choo£Machöe
@@ -6991,19 +3319,19 @@ sockfd
 buckëId
 , 1);
 
-447 i‡(
+182 i‡(
 sockfd
  == -1) {
 
-448 *
+183 *
 blobLígth
  = -1;
 
-449  
+184  
 ROUTER_OK
 ;
 
-453 
+188 
 rv
  = 
 	`hGë
@@ -7019,49 +3347,49 @@ blobLígth
 blob
 );
 
-454 
+189 
 	`˛o£
 (
 sockfd
 );
 
-455 i‡(
+190 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-456 
+191 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅoÜoad blob.",
 
-458  
+193  
 ROUTER_FAILED
 ;
 
-459 } i‡(
+194 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-460 
+195 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅoÜoad blob.",
 
-462  
+197  
 ROUTER_FAILED
 ;
 
-464  
+199  
 ROUTER_OK
 ;
 
-465 
+200 
 	}
 }
 
-471 
+206 
 	$rouãSaveBlob
 (c⁄° *
 buckëId
@@ -7069,21 +3397,21 @@ buckëId
 blobId
 ,
 
-472 c⁄° 
+207 c⁄° 
 blobLígth
 , c⁄° *
 blob
 ) {
 
-473 
+208 
 rv
 ;
 
-474 
+209 
 sockfd
 ;
 
-477 
+212 
 sockfd
  = 
 	`_choo£Machöe
@@ -7091,19 +3419,19 @@ sockfd
 buckëId
 , 0);
 
-478 i‡(
+213 i‡(
 sockfd
  == -1) {
 
-479 
+214 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo save blob.",
 
-481  
+216  
 ROUTER_FAILED
 ;
 
-485 
+220 
 rv
  = 
 	`hSë
@@ -7119,45 +3447,45 @@ blobLígth
 blob
 );
 
-486 
+221 
 	`˛o£
 (
 sockfd
 );
 
-487 i‡(
+222 i‡(
 rv
  =
 REDIS_ERR
 ) {
 
-488 
+223 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo save blob.",
 
-490  
+225  
 ROUTER_FAILED
 ;
 
-491 } i‡(
+226 } i‡(
 rv
  =
 REDIS_FAILED
 ) {
 
-492 
+227 
 	`¥ötf
 ("router.c: %s %s\n", "FailedÅo save blob.",
 
-494  
+229  
 ROUTER_FAILED
 ;
 
-496  
+231  
 ROUTER_OK
 ;
 
-497 
+232 
 	}
 }
 
@@ -7173,27 +3501,25 @@ ROUTER_H_
 
 	)
 
-15 
+15 
+	~<√töë/ö.h
+>
+
+17 
 	#ROUTER_OK
  0
 
 	)
 
-16 
+18 
 	#ROUTER_FAILED
  -1
 
 	)
 
-17 
+19 
 	#ROUTER_ERR
  1
-
-	)
-
-19 
-	#CONFSRV_CONFIG_FILE
- "C⁄figSîvî.cfg"
 
 	)
 
@@ -7221,147 +3547,39 @@ ROUTER_H_
 
 	)
 
-27 
-	~<√töë/ö.h
->
+26 
+	#MAX_PORT_LENGTH
+ 0xFF
 
-29 
-	sC⁄si°ítHashögVútuÆNode
- {
+	)
 
-30 
-	mhash
-[
-MAX_HASH_LENGTH
-];
+27 
+	#MAX_SNAPSHOT_LENGTH
+ 0xFFFF
 
-31 
-C⁄si°ítHashögVútuÆNode
- *
-	m√xt
-;
+	)
 
-32 } 
-	tchVútuÆNode
-;
+29 
+	#SNAPSHOT_RETRY
+ 100
 
-34 
-	sC⁄si°ítHashögNode
- {
+	)
 
-35 
-ö_addr
- 
-	maddr
-;
+30 
+	#SNAPSHOT_RETRY_INTERVAL
+ 10 * 1000
 
-36 
-chVútuÆNode
- *
-	mli°
-;
+31 
 
-37 
-	mnVútuÆNode
-;
+	)
 
-38 
-	mnNoHóπbót
-;
-
-39 
-	mnNoPög
-;
-
-40 
-C⁄si°ítHashögNode
- *
-	m√xt
-;
-
-41 } 
-	tchNode
-;
-
-43 
-	sC⁄si°ítHashögM≠
- {
-
-44 
-chNode
- *
-	mli°
-;
-
-45 
-	mnNode
-;
-
-46 } 
-	tchM≠
-;
-
-50 
-chNode
- * 
-addNode
-(c⁄° 
-sockaddr
- *
-addr
-, 
-chM≠
- *
-m≠
-);
-
-53 
-chVútuÆNode
- * 
-addVútuÆNode
-(c⁄° *
-key
-, 
-chNode
- *
-node
-);
-
-56 
-˛órM≠
-(
-chM≠
- *
-m≠
-);
-
-60 
-c⁄√˘ToNode
-(c⁄° 
-chNode
- *
-node
-);
-
-63 
-chNode
- * 
-dr›Node
-(
-chM≠
- *
-m≠
-, chNodê*
-node
-);
-
-66 
+33 
 rouãCª©eBuckë
 (c⁄° *
 buckëId
 );
 
-68 
+35 
 rouãDñëeBlob
 (c⁄° *
 buckëId
@@ -7369,13 +3587,13 @@ buckëId
 blobId
 );
 
-70 
+37 
 rouãDñëeBuckë
 (c⁄° *
 buckëId
 );
 
-72 
+39 
 rouãExi°Blob
 (c⁄° *
 buckëId
@@ -7385,7 +3603,7 @@ blobId
 ªsu…
 );
 
-74 
+41 
 rouãExi°Buckë
 (c⁄° *
 buckëId
@@ -7393,7 +3611,7 @@ buckëId
 ªsu…
 );
 
-76 
+43 
 rouãLﬂdBlob
 (c⁄° *
 buckëId
@@ -7403,11 +3621,11 @@ blobId
 blobLígth
 ,
 
-77 *
+44 *
 blob
 );
 
-79 
+46 
 rouãSaveBlob
 (c⁄° *
 buckëId
@@ -7415,7 +3633,7 @@ buckëId
 blobId
 ,
 
-80 c⁄° 
+47 c⁄° 
 blobLígth
 , c⁄° *
 blob
@@ -7693,90 +3911,6 @@ __THROW
 
 104 
 __END_DECLS
-
-
-	@/usr/include/errno.h
-
-23 #i‚def 
-_ERRNO_H
-
-
-27 #i‚def 
-__√ed_Em©h
-
-
-28 
-	#_ERRNO_H
- 1
-
-	)
-
-29 
-	~<„©uªs.h
->
-
-32 
-	g__BEGIN_DECLS
-
-
-36 
-	~<bôs/î∫o.h
->
-
-37 #unde‡
-__√ed_Em©h
-
-
-39 #ifdef 
-_ERRNO_H
-
-
-46 #i‚def 
-î∫o
-
-
-47 
-î∫o
-;
-
-50 #ifde‡
-__USE_GNU
-
-
-55 *
-¥ogøm_övoˇti⁄_«me
-, *
-¥ogøm_övoˇti⁄_sh‹t_«me
-;
-
-59 
-	g__END_DECLS
-
-
-67 #i‡
-deföed
- 
-__USE_GNU
- || deföed 
-__√ed_îr‹_t
-
-
-68 #i‚de‡
-__îr‹_t_deföed
-
-
-69 
-	tîr‹_t
-;
-
-70 
-	#__îr‹_t_deföed
- 1
-
-	)
-
-72 #unde‡
-__√ed_îr‹_t
 
 
 	@/usr/include/netdb.h
@@ -11862,1104 +7996,6 @@ __THROW
 ;
 
 565 
-__END_DECLS
-
-
-	@/usr/include/signal.h
-
-23 #i‚def 
-_SIGNAL_H
-
-
-25 #i‡!
-deföed
- 
-__√ed_sig_©omic_t
- && !deföed 
-__√ed_sig£t_t
-
-
-26 
-	#_SIGNAL_H
-
-
-	)
-
-29 
-	~<„©uªs.h
->
-
-31 
-	g__BEGIN_DECLS
-
-
-33 
-	~<bôs/sig£t.h
->
-
-37 #i‡
-deföed
- 
-__√ed_sig_©omic_t
- || deföed 
-_SIGNAL_H
-
-
-38 #i‚de‡
-__sig_©omic_t_deföed
-
-
-39 
-	#__sig_©omic_t_deföed
-
-
-	)
-
-40 
-__BEGIN_NAMESPACE_STD
-
-
-41 
-__sig_©omic_t
- 
-	tsig_©omic_t
-;
-
-42 
-	g__END_NAMESPACE_STD
-
-
-44 #unde‡
-__√ed_sig_©omic_t
-
-
-47 #i‡
-deföed
- 
-__√ed_sig£t_t
- || (deföed 
-_SIGNAL_H
- && deföed 
-__USE_POSIX
-)
-
-48 #i‚de‡
-__sig£t_t_deföed
-
-
-49 
-	#__sig£t_t_deföed
-
-
-	)
-
-50 
-__sig£t_t
- 
-	tsig£t_t
-;
-
-52 #unde‡
-__√ed_sig£t_t
-
-
-55 #ifde‡
-_SIGNAL_H
-
-
-57 
-	~<bôs/ty≥s.h
->
-
-58 
-	~<bôs/signum.h
->
-
-60 #i‡
-deföed
- 
-__USE_XOPEN
- || deföed 
-__USE_XOPEN2K
-
-
-61 #i‚de‡
-__pid_t_deföed
-
-
-62 
-__pid_t
- 
-	tpid_t
-;
-
-63 
-	#__pid_t_deföed
-
-
-	)
-
-65 #ifde‡
-__USE_XOPEN
-
-
-67 #i‚de‡
-__uid_t_deföed
-
-
-68 
-__uid_t
- 
-	tuid_t
-;
-
-69 
-	#__uid_t_deföed
-
-
-	)
-
-73 #ifde‡
-__USE_POSIX199309
-
-
-75 
-	#__√ed_time•ec
-
-
-	)
-
-76 
-	~<time.h
->
-
-79 
-	~<bôs/sigöfo.h
->
-
-84 (*
-	t__sigh™dÀr_t
-) ();
-
-89 
-__sigh™dÀr_t
- 
-	$__sysv_sig«l
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-)
-
-90 
-__THROW
-;
-
-91 #ifde‡
-__USE_GNU
-
-
-92 
-__sigh™dÀr_t
- 
-	$sysv_sig«l
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-)
-
-93 
-__THROW
-;
-
-99 
-__BEGIN_NAMESPACE_STD
-
-
-100 #ifde‡
-__USE_BSD
-
-
-101 
-__sigh™dÀr_t
- 
-	$sig«l
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-)
-
-102 
-__THROW
-;
-
-105 #ifde‡
-__REDIRECT_NTH
-
-
-106 
-__sigh™dÀr_t
- 
-	`__REDIRECT_NTH
- (
-sig«l
-,
-
-107 (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-),
-
-108 
-__sysv_sig«l
-);
-
-110 
-	#sig«l
- 
-__sysv_sig«l
-
-
-	)
-
-113 
-__END_NAMESPACE_STD
-
-
-115 #ifde‡
-__USE_XOPEN
-
-
-118 
-__sigh™dÀr_t
- 
-	$bsd_sig«l
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-)
-
-119 
-__THROW
-;
-
-125 #ifde‡
-__USE_POSIX
-
-
-126 
-	$kûl
- (
-__pid_t
- 
-__pid
-, 
-__sig
-Ë
-__THROW
-;
-
-129 #i‡
-deföed
- 
-__USE_BSD
- || deföed 
-__USE_XOPEN_EXTENDED
-
-
-133 
-	$kûÕg
- (
-__pid_t
- 
-__pgΩ
-, 
-__sig
-Ë
-__THROW
-;
-
-136 
-__BEGIN_NAMESPACE_STD
-
-
-138 
-	$øi£
- (
-__sig
-Ë
-__THROW
-;
-
-139 
-__END_NAMESPACE_STD
-
-
-141 #ifde‡
-__USE_SVID
-
-
-143 
-__sigh™dÀr_t
- 
-	$ssig«l
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__h™dÀr
-)
-
-144 
-__THROW
-;
-
-145 
-	$gsig«l
- (
-__sig
-Ë
-__THROW
-;
-
-148 #i‡
-deföed
- 
-__USE_MISC
- || deföed 
-__USE_XOPEN2K
-
-
-150 
-	`psig«l
- (
-__sig
-, 
-__c⁄°
- *
-__s
-);
-
-153 #ifde‡
-__USE_XOPEN2K
-
-
-155 
-	`psigöfo
- (
-__c⁄°
- 
-sigöfo_t
- *
-__pöfo
-, __c⁄° *
-__s
-);
-
-168 
-	`__sig∑u£
- (
-__sig_‹_mask
-, 
-__is_sig
-);
-
-170 #ifde‡
-__FAVOR_BSD
-
-
-173 
-	$sig∑u£
- (
-__mask
-Ë
-__THROW
- 
-__©åibuã_dïªˇãd__
-;
-
-175 #ifde‡
-__USE_XOPEN
-
-
-176 #ifde‡
-__GNUC__
-
-
-177 
-	$sig∑u£
- (
-__sig
-Ë
-	`__asm__
- ("__xpg_sigpause");
-
-180 
-	#sig∑u£
-(
-sig
-Ë
-	`__sig∑u£
- ((sig), 1)
-
-	)
-
-186 #ifde‡
-__USE_BSD
-
-
-193 
-	#sigmask
-(
-sig
-Ë
-	`__sigmask
-(sig)
-
-	)
-
-196 
-	$sigblock
- (
-__mask
-Ë
-__THROW
- 
-__©åibuã_dïªˇãd__
-;
-
-199 
-	$sig£tmask
- (
-__mask
-Ë
-__THROW
- 
-__©åibuã_dïªˇãd__
-;
-
-202 
-	$siggëmask
- (Ë
-__THROW
- 
-__©åibuã_dïªˇãd__
-;
-
-206 #ifde‡
-__USE_MISC
-
-
-207 
-	#NSIG
- 
-_NSIG
-
-
-	)
-
-210 #ifde‡
-__USE_GNU
-
-
-211 
-__sigh™dÀr_t
- 
-	tsigh™dÀr_t
-;
-
-215 #ifde‡
-__USE_BSD
-
-
-216 
-__sigh™dÀr_t
- 
-	tsig_t
-;
-
-219 #ifde‡
-__USE_POSIX
-
-
-222 
-	$sigem±y£t
- (
-sig£t_t
- *
-__£t
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-225 
-	$sigfûl£t
- (
-sig£t_t
- *
-__£t
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-228 
-	$sigadd£t
- (
-sig£t_t
- *
-__£t
-, 
-__signo
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-231 
-	$sigdñ£t
- (
-sig£t_t
- *
-__£t
-, 
-__signo
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-234 
-	$sigismembî
- (
-__c⁄°
- 
-sig£t_t
- *
-__£t
-, 
-__signo
-)
-
-235 
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-237 #ifde‡
-__USE_GNU
-
-
-239 
-	$sigi£m±y£t
- (
-__c⁄°
- 
-sig£t_t
- *
-__£t
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-242 
-	$sig™d£t
- (
-sig£t_t
- *
-__£t
-, 
-__c⁄°
- sig£t_à*
-__À·
-,
-
-243 
-__c⁄°
- 
-sig£t_t
- *
-__right
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1, 2, 3));
-
-246 
-	$sig‹£t
- (
-sig£t_t
- *
-__£t
-, 
-__c⁄°
- sig£t_à*
-__À·
-,
-
-247 
-__c⁄°
- 
-sig£t_t
- *
-__right
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1, 2, 3));
-
-252 
-	~<bôs/siga˘i⁄.h
->
-
-255 
-	$sig¥ocmask
- (
-__how
-, 
-__c⁄°
- 
-sig£t_t
- *
-__ª°ri˘
- 
-__£t
-,
-
-256 
-sig£t_t
- *
-__ª°ri˘
- 
-__o£t
-Ë
-__THROW
-;
-
-263 
-	$sigsu•íd
- (
-__c⁄°
- 
-sig£t_t
- *
-__£t
-Ë
-	`__n⁄nuŒ
- ((1));
-
-266 
-	$siga˘i⁄
- (
-__sig
-, 
-__c⁄°
- 
-siga˘i⁄
- *
-__ª°ri˘
- 
-__a˘
-,
-
-267 
-siga˘i⁄
- *
-__ª°ri˘
- 
-__ﬂ˘
-Ë
-__THROW
-;
-
-270 
-	$sig≥ndög
- (
-sig£t_t
- *
-__£t
-Ë
-__THROW
- 
-	`__n⁄nuŒ
- ((1));
-
-277 
-	$sigwaô
- (
-__c⁄°
- 
-sig£t_t
- *
-__ª°ri˘
- 
-__£t
-, *__ª°ri˘ 
-__sig
-)
-
-278 
-	`__n⁄nuŒ
- ((1, 2));
-
-280 #ifde‡
-__USE_POSIX199309
-
-
-285 
-	$sigwaôöfo
- (
-__c⁄°
- 
-sig£t_t
- *
-__ª°ri˘
- 
-__£t
-,
-
-286 
-sigöfo_t
- *
-__ª°ri˘
- 
-__öfo
-Ë
-	`__n⁄nuŒ
- ((1));
-
-293 
-	$sigtimedwaô
- (
-__c⁄°
- 
-sig£t_t
- *
-__ª°ri˘
- 
-__£t
-,
-
-294 
-sigöfo_t
- *
-__ª°ri˘
- 
-__öfo
-,
-
-295 
-__c⁄°
- 
-time•ec
- *
-__ª°ri˘
- 
-__timeout
-)
-
-296 
-	`__n⁄nuŒ
- ((1));
-
-300 
-	$sigqueue
- (
-__pid_t
- 
-__pid
-, 
-__sig
-, 
-__c⁄°
- 
-sigvÆ
- 
-__vÆ
-)
-
-301 
-__THROW
-;
-
-306 #ifde‡
-__USE_BSD
-
-
-310 
-__c⁄°
- *__c⁄° 
-_sys_sigli°
-[
-_NSIG
-];
-
-311 
-__c⁄°
- *__c⁄° 
-sys_sigli°
-[
-_NSIG
-];
-
-314 
-	ssigvec
-
-
-316 
-__sigh™dÀr_t
- 
-sv_h™dÀr
-;
-
-317 
-sv_mask
-;
-
-319 
-sv_Êags
-;
-
-320 
-	#sv_⁄°ack
- 
-sv_Êags
-
-
-	)
-
-324 
-	#SV_ONSTACK
- (1 << 0)
-
-	)
-
-325 
-	#SV_INTERRUPT
- (1 << 1)
-
-	)
-
-326 
-	#SV_RESETHAND
- (1 << 2)
-
-	)
-
-334 
-	$sigvec
- (
-__sig
-, 
-__c⁄°
- 
-sigvec
- *
-__vec
-,
-
-335 
-sigvec
- *
-__ovec
-Ë
-__THROW
-;
-
-339 
-	~<bôs/sigc⁄ãxt.h
->
-
-342 
-	$sigªtu∫
- (
-sigc⁄ãxt
- *
-__s˝
-Ë
-__THROW
-;
-
-347 #i‡
-deföed
- 
-__USE_BSD
- || deföed 
-__USE_XOPEN_EXTENDED
- || deföed 
-__USE_XOPEN2K8
-
-
-348 
-	#__√ed_size_t
-
-
-	)
-
-349 
-	~<°ddef.h
->
-
-354 
-	$sigöãºu±
- (
-__sig
-, 
-__öãºu±
-Ë
-__THROW
-;
-
-356 
-	~<bôs/sig°ack.h
->
-
-357 #i‡
-deföed
- 
-__USE_XOPEN
- || deföed 
-__USE_XOPEN2K8
-
-
-359 
-	~<sys/uc⁄ãxt.h
->
-
-365 
-	$sig°ack
- (
-sig°ack
- *
-__ss
-, sig°ack *
-__oss
-)
-
-366 
-__THROW
- 
-__©åibuã_dïªˇãd__
-;
-
-370 
-	$sigÆt°ack
- (
-__c⁄°
- 
-sigÆt°ack
- *
-__ª°ri˘
- 
-__ss
-,
-
-371 
-sigÆt°ack
- *
-__ª°ri˘
- 
-__oss
-Ë
-__THROW
-;
-
-375 #ifde‡
-__USE_XOPEN_EXTENDED
-
-
-379 
-	$sighﬁd
- (
-__sig
-Ë
-__THROW
-;
-
-382 
-	$sigªl£
- (
-__sig
-Ë
-__THROW
-;
-
-385 
-	$sigign‹e
- (
-__sig
-Ë
-__THROW
-;
-
-388 
-__sigh™dÀr_t
- 
-	$sig£t
- (
-__sig
-, 
-__sigh™dÀr_t
- 
-__di•
-Ë
-__THROW
-;
-
-391 #i‡
-deföed
- 
-__USE_POSIX199506
- || deföed 
-__USE_UNIX98
-
-
-394 
-	~<bôs/±hªadty≥s.h
->
-
-395 
-	~<bôs/sigthªad.h
->
-
-402 
-	$__libc_cuºít_sigπmö
- (Ë
-__THROW
-;
-
-404 
-	$__libc_cuºít_sigπmax
- (Ë
-__THROW
-;
-
-408 
 __END_DECLS
 
 
@@ -32377,128 +27413,6 @@ __WORDSIZE
 
 	)
 
-	@/usr/include/bits/errno.h
-
-20 #ifde‡
-_ERRNO_H
-
-
-22 #unde‡
-EDOM
-
-
-23 #unde‡
-EILSEQ
-
-
-24 #unde‡
-ERANGE
-
-
-25 
-	~<löux/î∫o.h
->
-
-28 
-	#ENOTSUP
- 
-EOPNOTSUPP
-
-
-	)
-
-31 #i‚de‡
-ECANCELED
-
-
-32 
-	#ECANCELED
- 125
-
-	)
-
-36 #i‚de‡
-EOWNERDEAD
-
-
-37 
-	#EOWNERDEAD
- 130
-
-	)
-
-38 
-	#ENOTRECOVERABLE
- 131
-
-	)
-
-41 #i‚de‡
-ERFKILL
-
-
-42 
-	#ERFKILL
- 132
-
-	)
-
-45 #i‚de‡
-__ASSEMBLER__
-
-
-47 *
-	$__î∫o_loˇti⁄
- (Ë
-__THROW
- 
-	`__©åibuã__
- ((
-__c⁄°__
-));
-
-49 #i‡!
-deföed
- 
-_LIBC
- || deföed 
-_LIBC_REENTRANT
-
-
-51 
-	#î∫o
- (*
-	`__î∫o_loˇti⁄
- ())
-
-	)
-
-56 #i‡!
-deföed
- 
-_ERRNO_H
- && deföed 
-__√ed_Em©h
-
-
-60 
-	#EDOM
- 33
-
-	)
-
-61 
-	#EILSEQ
- 84
-
-	)
-
-62 
-	#ERANGE
- 34
-
-	)
-
 	@/usr/include/bits/in.h
 
 21 #i‚de‡
@@ -34165,656 +29079,6 @@ __WORDSIZE
 
 	)
 
-	@/usr/include/bits/sigaction.h
-
-20 #i‚de‡
-_SIGNAL_H
-
-
-25 
-	ssiga˘i⁄
-
-
-28 #ifde‡
-__USE_POSIX199309
-
-
-32 
-__sigh™dÀr_t
- 
-	mß_h™dÀr
-;
-
-34 (*
-	mß_siga˘i⁄
-Ë(, 
-	msigöfo_t
- *, *);
-
-36 
-	m__siga˘i⁄_h™dÀr
-;
-
-37 
-	#ß_h™dÀr
- 
-__siga˘i⁄_h™dÀr
-.
-ß_h™dÀr
-
-
-	)
-
-38 
-	#ß_siga˘i⁄
- 
-__siga˘i⁄_h™dÀr
-.
-ß_siga˘i⁄
-
-
-	)
-
-40 
-__sigh™dÀr_t
- 
-	mß_h™dÀr
-;
-
-44 
-__sig£t_t
- 
-	mß_mask
-;
-
-47 
-	mß_Êags
-;
-
-50 (*
-	mß_ª°‹î
-) ();
-
-54 
-	#SA_NOCLDSTOP
- 1
-
-	)
-
-55 
-	#SA_NOCLDWAIT
- 2
-
-	)
-
-56 
-	#SA_SIGINFO
- 4
-
-	)
-
-58 #i‡
-deföed
- 
-__USE_UNIX98
- || deföed 
-__USE_MISC
-
-
-59 
-	#SA_ONSTACK
- 0x08000000
-
-	)
-
-61 #i‡
-deföed
- 
-__USE_UNIX98
- || deföed 
-__USE_MISC
- || deföed 
-__USE_XOPEN2K8
-
-
-62 
-	#SA_RESTART
- 0x10000000
-
-	)
-
-63 
-	#SA_NODEFER
- 0x40000000
-
-	)
-
-65 
-	#SA_RESETHAND
- 0x80000000
-
-	)
-
-67 #ifde‡
-__USE_MISC
-
-
-68 
-	#SA_INTERRUPT
- 0x20000000
-
-	)
-
-71 
-	#SA_NOMASK
- 
-SA_NODEFER
-
-
-	)
-
-72 
-	#SA_ONESHOT
- 
-SA_RESETHAND
-
-
-	)
-
-73 
-	#SA_STACK
- 
-SA_ONSTACK
-
-
-	)
-
-77 
-	#SIG_BLOCK
- 0
-
-	)
-
-78 
-	#SIG_UNBLOCK
- 1
-
-	)
-
-79 
-	#SIG_SETMASK
- 2
-
-	)
-
-	@/usr/include/bits/sigcontext.h
-
-19 #i‚de‡
-_BITS_SIGCONTEXT_H
-
-
-20 
-	#_BITS_SIGCONTEXT_H
- 1
-
-	)
-
-22 #i‡!
-deföed
- 
-_SIGNAL_H
- && !deföed 
-_SYS_UCONTEXT_H
-
-
-26 
-	~<bôs/w‹dsize.h
->
-
-28 
-	s_Âªg
-
-
-30 
-	msignifiˇnd
-[4];
-
-31 
-	mexp⁄ít
-;
-
-34 
-	s_Âxªg
-
-
-36 
-	msignifiˇnd
-[4];
-
-37 
-	mexp⁄ít
-;
-
-38 
-	m∑ddög
-[3];
-
-41 
-	s_xmmªg
-
-
-43 
-__uöt32_t
- 
-	mñemít
-[4];
-
-48 #i‡
-__WORDSIZE
- == 32
-
-50 
-	s_Â°©e
-
-
-53 
-__uöt32_t
- 
-	mcw
-;
-
-54 
-__uöt32_t
- 
-	msw
-;
-
-55 
-__uöt32_t
- 
-	mèg
-;
-
-56 
-__uöt32_t
- 
-	mùoff
-;
-
-57 
-__uöt32_t
- 
-	mcs£l
-;
-
-58 
-__uöt32_t
- 
-	md©aoff
-;
-
-59 
-__uöt32_t
- 
-	md©a£l
-;
-
-60 
-_Âªg
- 
-	m_°
-[8];
-
-61 
-	m°©us
-;
-
-62 
-	mmagic
-;
-
-65 
-__uöt32_t
- 
-	m_fx§_ív
-[6];
-
-66 
-__uöt32_t
- 
-	mmxc§
-;
-
-67 
-__uöt32_t
- 
-	mª£rved
-;
-
-68 
-_Âxªg
- 
-	m_fx§_°
-[8];
-
-69 
-_xmmªg
- 
-	m_xmm
-[8];
-
-70 
-__uöt32_t
- 
-	m∑ddög
-[56];
-
-73 #i‚de‡
-sigc⁄ãxt_°ru˘
-
-
-78 
-	#sigc⁄ãxt_°ru˘
- 
-sigc⁄ãxt
-
-
-	)
-
-81 
-	ssigc⁄ãxt
-
-
-83 
-	mgs
-, 
-	m__gsh
-;
-
-84 
-	mfs
-, 
-	m__fsh
-;
-
-85 
-	mes
-, 
-	m__esh
-;
-
-86 
-	mds
-, 
-	m__dsh
-;
-
-87 
-	medi
-;
-
-88 
-	mesi
-;
-
-89 
-	mebp
-;
-
-90 
-	me•
-;
-
-91 
-	mebx
-;
-
-92 
-	medx
-;
-
-93 
-	mecx
-;
-
-94 
-	móx
-;
-
-95 
-	må≠no
-;
-
-96 
-	mîr
-;
-
-97 
-	meù
-;
-
-98 
-	mcs
-, 
-	m__csh
-;
-
-99 
-	meÊags
-;
-
-100 
-	me•_©_sig«l
-;
-
-101 
-	mss
-, 
-	m__ssh
-;
-
-102 
-_Â°©e
- * 
-	mÂ°©e
-;
-
-103 
-	mﬁdmask
-;
-
-104 
-	m¸2
-;
-
-109 
-	s_Â°©e
-
-
-112 
-__uöt16_t
- 
-	mcwd
-;
-
-113 
-__uöt16_t
- 
-	mswd
-;
-
-114 
-__uöt16_t
- 
-	m·w
-;
-
-115 
-__uöt16_t
- 
-	mf›
-;
-
-116 
-__uöt64_t
- 
-	mrù
-;
-
-117 
-__uöt64_t
- 
-	mrdp
-;
-
-118 
-__uöt32_t
- 
-	mmxc§
-;
-
-119 
-__uöt32_t
- 
-	mmx¸_mask
-;
-
-120 
-_Âxªg
- 
-	m_°
-[8];
-
-121 
-_xmmªg
- 
-	m_xmm
-[16];
-
-122 
-__uöt32_t
- 
-	m∑ddög
-[24];
-
-125 
-	ssigc⁄ãxt
-
-
-127 
-	mr8
-;
-
-128 
-	mr9
-;
-
-129 
-	mr10
-;
-
-130 
-	mr11
-;
-
-131 
-	mr12
-;
-
-132 
-	mr13
-;
-
-133 
-	mr14
-;
-
-134 
-	mr15
-;
-
-135 
-	mrdi
-;
-
-136 
-	mrsi
-;
-
-137 
-	mrbp
-;
-
-138 
-	mrbx
-;
-
-139 
-	mrdx
-;
-
-140 
-	møx
-;
-
-141 
-	mrcx
-;
-
-142 
-	mr•
-;
-
-143 
-	mrù
-;
-
-144 
-	meÊags
-;
-
-145 
-	mcs
-;
-
-146 
-	mgs
-;
-
-147 
-	mfs
-;
-
-148 
-	m__∑d0
-;
-
-149 
-	mîr
-;
-
-150 
-	må≠no
-;
-
-151 
-	mﬁdmask
-;
-
-152 
-	m¸2
-;
-
-153 
-_Â°©e
- * 
-	mÂ°©e
-;
-
-154 
-	m__ª£rved1
- [8];
-
 	@/usr/include/bits/siginfo.h
 
 20 #i‡!
@@ -35923,298 +30187,6 @@ SIGEV_THREAD_ID
 
 	)
 
-	@/usr/include/bits/signum.h
-
-20 #ifdef 
-_SIGNAL_H
-
-
-23 
-	#SIG_ERR
- ((
-__sigh™dÀr_t
-Ë-1Ë
-
-	)
-
-24 
-	#SIG_DFL
- ((
-__sigh™dÀr_t
-Ë0Ë
-
-	)
-
-25 
-	#SIG_IGN
- ((
-__sigh™dÀr_t
-Ë1Ë
-
-	)
-
-27 #ifde‡
-__USE_UNIX98
-
-
-28 
-	#SIG_HOLD
- ((
-__sigh™dÀr_t
-Ë2Ë
-
-	)
-
-33 
-	#SIGHUP
- 1
-
-	)
-
-34 
-	#SIGINT
- 2
-
-	)
-
-35 
-	#SIGQUIT
- 3
-
-	)
-
-36 
-	#SIGILL
- 4
-
-	)
-
-37 
-	#SIGTRAP
- 5
-
-	)
-
-38 
-	#SIGABRT
- 6
-
-	)
-
-39 
-	#SIGIOT
- 6
-
-	)
-
-40 
-	#SIGBUS
- 7
-
-	)
-
-41 
-	#SIGFPE
- 8
-
-	)
-
-42 
-	#SIGKILL
- 9
-
-	)
-
-43 
-	#SIGUSR1
- 10
-
-	)
-
-44 
-	#SIGSEGV
- 11
-
-	)
-
-45 
-	#SIGUSR2
- 12
-
-	)
-
-46 
-	#SIGPIPE
- 13
-
-	)
-
-47 
-	#SIGALRM
- 14
-
-	)
-
-48 
-	#SIGTERM
- 15
-
-	)
-
-49 
-	#SIGSTKFLT
- 16
-
-	)
-
-50 
-	#SIGCLD
- 
-SIGCHLD
-
-
-	)
-
-51 
-	#SIGCHLD
- 17
-
-	)
-
-52 
-	#SIGCONT
- 18
-
-	)
-
-53 
-	#SIGSTOP
- 19
-
-	)
-
-54 
-	#SIGTSTP
- 20
-
-	)
-
-55 
-	#SIGTTIN
- 21
-
-	)
-
-56 
-	#SIGTTOU
- 22
-
-	)
-
-57 
-	#SIGURG
- 23
-
-	)
-
-58 
-	#SIGXCPU
- 24
-
-	)
-
-59 
-	#SIGXFSZ
- 25
-
-	)
-
-60 
-	#SIGVTALRM
- 26
-
-	)
-
-61 
-	#SIGPROF
- 27
-
-	)
-
-62 
-	#SIGWINCH
- 28
-
-	)
-
-63 
-	#SIGPOLL
- 
-SIGIO
-
-
-	)
-
-64 
-	#SIGIO
- 29
-
-	)
-
-65 
-	#SIGPWR
- 30
-
-	)
-
-66 
-	#SIGSYS
- 31
-
-	)
-
-67 
-	#SIGUNUSED
- 31
-
-	)
-
-69 
-	#_NSIG
- 65
-
-	)
-
-72 
-	#SIGRTMIN
- (
-	`__libc_cuºít_sigπmö
- ())
-
-	)
-
-73 
-	#SIGRTMAX
- (
-	`__libc_cuºít_sigπmax
- ())
-
-	)
-
-77 
-	#__SIGRTMIN
- 32
-
-	)
-
-78 
-	#__SIGRTMAX
- (
-_NSIG
- - 1)
-
-	)
-
 	@/usr/include/bits/sigset.h
 
 21 #i‚def 
@@ -36682,162 +30654,6 @@ __mask
 122 #unde‡
 __SIGSETFN
 
-
-	@/usr/include/bits/sigstack.h
-
-20 #i‚de‡
-_SIGNAL_H
-
-
-26 
-	ssig°ack
-
-
-28 *
-	mss_•
-;
-
-29 
-	mss_⁄°ack
-;
-
-36 
-	mSS_ONSTACK
- = 1,
-
-37 
-	#SS_ONSTACK
- 
-SS_ONSTACK
-
-
-	)
-
-38 
-	mSS_DISABLE
-
-
-39 
-	#SS_DISABLE
- 
-SS_DISABLE
-
-
-	)
-
-43 
-	#MINSIGSTKSZ
- 2048
-
-	)
-
-46 
-	#SIGSTKSZ
- 8192
-
-	)
-
-50 
-	ssigÆt°ack
-
-
-52 *
-	mss_•
-;
-
-53 
-	mss_Êags
-;
-
-54 
-size_t
- 
-	mss_size
-;
-
-55 } 
-	t°ack_t
-;
-
-	@/usr/include/bits/sigthread.h
-
-20 #i‚de‡
-_BITS_SIGTHREAD_H
-
-
-21 
-	#_BITS_SIGTHREAD_H
- 1
-
-	)
-
-23 #i‡!
-deföed
- 
-_SIGNAL_H
- && !deföed 
-_PTHREAD_H
-
-
-31 
-	$±hªad_sigmask
- (
-__how
-,
-
-32 
-__c⁄°
- 
-__sig£t_t
- *
-__ª°ri˘
- 
-__√wmask
-,
-
-33 
-__sig£t_t
- *
-__ª°ri˘
- 
-__ﬁdmask
-)
-__THROW
-;
-
-36 
-	$±hªad_kûl
- (
-±hªad_t
- 
-__thªadid
-, 
-__signo
-Ë
-__THROW
-;
-
-38 #ifde‡
-__USE_GNU
-
-
-40 
-	$±hªad_sigqueue
- (
-±hªad_t
- 
-__thªadid
-, 
-__signo
-,
-
-41 c⁄° 
-sigvÆ
- 
-__vÆue
-Ë
-__THROW
-;
 
 	@/usr/include/bits/socket.h
 
@@ -58793,876 +52609,6 @@ mö
 
 	)
 
-	@/usr/include/sys/ucontext.h
-
-19 #i‚de‡
-_SYS_UCONTEXT_H
-
-
-20 
-	#_SYS_UCONTEXT_H
- 1
-
-	)
-
-22 
-	~<„©uªs.h
->
-
-23 
-	~<sig«l.h
->
-
-24 
-	~<bôs/w‹dsize.h
->
-
-28 
-	~<bôs/sigc⁄ãxt.h
->
-
-30 #i‡
-__WORDSIZE
- == 64
-
-33 
-	tgªg_t
-;
-
-36 
-	#NGREG
- 23
-
-	)
-
-39 
-gªg_t
- 
-	tgªg£t_t
-[
-NGREG
-];
-
-41 #ifde‡
-__USE_GNU
-
-
-45 
-	mREG_R8
- = 0,
-
-46 
-	#REG_R8
- 
-REG_R8
-
-
-	)
-
-47 
-	mREG_R9
-,
-
-48 
-	#REG_R9
- 
-REG_R9
-
-
-	)
-
-49 
-	mREG_R10
-,
-
-50 
-	#REG_R10
- 
-REG_R10
-
-
-	)
-
-51 
-	mREG_R11
-,
-
-52 
-	#REG_R11
- 
-REG_R11
-
-
-	)
-
-53 
-	mREG_R12
-,
-
-54 
-	#REG_R12
- 
-REG_R12
-
-
-	)
-
-55 
-	mREG_R13
-,
-
-56 
-	#REG_R13
- 
-REG_R13
-
-
-	)
-
-57 
-	mREG_R14
-,
-
-58 
-	#REG_R14
- 
-REG_R14
-
-
-	)
-
-59 
-	mREG_R15
-,
-
-60 
-	#REG_R15
- 
-REG_R15
-
-
-	)
-
-61 
-	mREG_RDI
-,
-
-62 
-	#REG_RDI
- 
-REG_RDI
-
-
-	)
-
-63 
-	mREG_RSI
-,
-
-64 
-	#REG_RSI
- 
-REG_RSI
-
-
-	)
-
-65 
-	mREG_RBP
-,
-
-66 
-	#REG_RBP
- 
-REG_RBP
-
-
-	)
-
-67 
-	mREG_RBX
-,
-
-68 
-	#REG_RBX
- 
-REG_RBX
-
-
-	)
-
-69 
-	mREG_RDX
-,
-
-70 
-	#REG_RDX
- 
-REG_RDX
-
-
-	)
-
-71 
-	mREG_RAX
-,
-
-72 
-	#REG_RAX
- 
-REG_RAX
-
-
-	)
-
-73 
-	mREG_RCX
-,
-
-74 
-	#REG_RCX
- 
-REG_RCX
-
-
-	)
-
-75 
-	mREG_RSP
-,
-
-76 
-	#REG_RSP
- 
-REG_RSP
-
-
-	)
-
-77 
-	mREG_RIP
-,
-
-78 
-	#REG_RIP
- 
-REG_RIP
-
-
-	)
-
-79 
-	mREG_EFL
-,
-
-80 
-	#REG_EFL
- 
-REG_EFL
-
-
-	)
-
-81 
-	mREG_CSGSFS
-,
-
-82 
-	#REG_CSGSFS
- 
-REG_CSGSFS
-
-
-	)
-
-83 
-	mREG_ERR
-,
-
-84 
-	#REG_ERR
- 
-REG_ERR
-
-
-	)
-
-85 
-	mREG_TRAPNO
-,
-
-86 
-	#REG_TRAPNO
- 
-REG_TRAPNO
-
-
-	)
-
-87 
-	mREG_OLDMASK
-,
-
-88 
-	#REG_OLDMASK
- 
-REG_OLDMASK
-
-
-	)
-
-89 
-	mREG_CR2
-
-
-90 
-	#REG_CR2
- 
-REG_CR2
-
-
-	)
-
-94 
-	s_libc_Âxªg
-
-
-96 
-	msignifiˇnd
-[4];
-
-97 
-	mexp⁄ít
-;
-
-98 
-	m∑ddög
-[3];
-
-101 
-	s_libc_xmmªg
-
-
-103 
-__uöt32_t
- 
-	mñemít
-[4];
-
-106 
-	s_libc_Â°©e
-
-
-109 
-__uöt16_t
- 
-	mcwd
-;
-
-110 
-__uöt16_t
- 
-	mswd
-;
-
-111 
-__uöt16_t
- 
-	m·w
-;
-
-112 
-__uöt16_t
- 
-	mf›
-;
-
-113 
-__uöt64_t
- 
-	mrù
-;
-
-114 
-__uöt64_t
- 
-	mrdp
-;
-
-115 
-__uöt32_t
- 
-	mmxc§
-;
-
-116 
-__uöt32_t
- 
-	mmx¸_mask
-;
-
-117 
-_libc_Âxªg
- 
-	m_°
-[8];
-
-118 
-_libc_xmmªg
- 
-	m_xmm
-[16];
-
-119 
-__uöt32_t
- 
-	m∑ddög
-[24];
-
-123 
-_libc_Â°©e
- *
-	tÂªg£t_t
-;
-
-128 
-gªg£t_t
- 
-	mgªgs
-;
-
-130 
-Âªg£t_t
- 
-	mÂªgs
-;
-
-131 
-	m__ª£rved1
- [8];
-
-132 } 
-	tmc⁄ãxt_t
-;
-
-135 
-	suc⁄ãxt
-
-
-137 
-	muc_Êags
-;
-
-138 
-uc⁄ãxt
- *
-	muc_lök
-;
-
-139 
-°ack_t
- 
-	muc_°ack
-;
-
-140 
-mc⁄ãxt_t
- 
-	muc_mc⁄ãxt
-;
-
-141 
-__sig£t_t
- 
-	muc_sigmask
-;
-
-142 
-_libc_Â°©e
- 
-	m__Âªgs_mem
-;
-
-143 } 
-	tuc⁄ãxt_t
-;
-
-148 
-	tgªg_t
-;
-
-151 
-	#NGREG
- 19
-
-	)
-
-154 
-gªg_t
- 
-	tgªg£t_t
-[
-NGREG
-];
-
-156 #ifde‡
-__USE_GNU
-
-
-160 
-	mREG_GS
- = 0,
-
-161 
-	#REG_GS
- 
-REG_GS
-
-
-	)
-
-162 
-	mREG_FS
-,
-
-163 
-	#REG_FS
- 
-REG_FS
-
-
-	)
-
-164 
-	mREG_ES
-,
-
-165 
-	#REG_ES
- 
-REG_ES
-
-
-	)
-
-166 
-	mREG_DS
-,
-
-167 
-	#REG_DS
- 
-REG_DS
-
-
-	)
-
-168 
-	mREG_EDI
-,
-
-169 
-	#REG_EDI
- 
-REG_EDI
-
-
-	)
-
-170 
-	mREG_ESI
-,
-
-171 
-	#REG_ESI
- 
-REG_ESI
-
-
-	)
-
-172 
-	mREG_EBP
-,
-
-173 
-	#REG_EBP
- 
-REG_EBP
-
-
-	)
-
-174 
-	mREG_ESP
-,
-
-175 
-	#REG_ESP
- 
-REG_ESP
-
-
-	)
-
-176 
-	mREG_EBX
-,
-
-177 
-	#REG_EBX
- 
-REG_EBX
-
-
-	)
-
-178 
-	mREG_EDX
-,
-
-179 
-	#REG_EDX
- 
-REG_EDX
-
-
-	)
-
-180 
-	mREG_ECX
-,
-
-181 
-	#REG_ECX
- 
-REG_ECX
-
-
-	)
-
-182 
-	mREG_EAX
-,
-
-183 
-	#REG_EAX
- 
-REG_EAX
-
-
-	)
-
-184 
-	mREG_TRAPNO
-,
-
-185 
-	#REG_TRAPNO
- 
-REG_TRAPNO
-
-
-	)
-
-186 
-	mREG_ERR
-,
-
-187 
-	#REG_ERR
- 
-REG_ERR
-
-
-	)
-
-188 
-	mREG_EIP
-,
-
-189 
-	#REG_EIP
- 
-REG_EIP
-
-
-	)
-
-190 
-	mREG_CS
-,
-
-191 
-	#REG_CS
- 
-REG_CS
-
-
-	)
-
-192 
-	mREG_EFL
-,
-
-193 
-	#REG_EFL
- 
-REG_EFL
-
-
-	)
-
-194 
-	mREG_UESP
-,
-
-195 
-	#REG_UESP
- 
-REG_UESP
-
-
-	)
-
-196 
-	mREG_SS
-
-
-197 
-	#REG_SS
- 
-REG_SS
-
-
-	)
-
-202 
-	s_libc_Âªg
-
-
-204 
-	msignifiˇnd
-[4];
-
-205 
-	mexp⁄ít
-;
-
-208 
-	s_libc_Â°©e
-
-
-210 
-	mcw
-;
-
-211 
-	msw
-;
-
-212 
-	mèg
-;
-
-213 
-	mùoff
-;
-
-214 
-	mcs£l
-;
-
-215 
-	md©aoff
-;
-
-216 
-	md©a£l
-;
-
-217 
-_libc_Âªg
- 
-	m_°
-[8];
-
-218 
-	m°©us
-;
-
-222 
-_libc_Â°©e
- *
-	tÂªg£t_t
-;
-
-227 
-gªg£t_t
- 
-	mgªgs
-;
-
-230 
-Âªg£t_t
- 
-	mÂªgs
-;
-
-231 
-	mﬁdmask
-;
-
-232 
-	m¸2
-;
-
-233 } 
-	tmc⁄ãxt_t
-;
-
-236 
-	suc⁄ãxt
-
-
-238 
-	muc_Êags
-;
-
-239 
-uc⁄ãxt
- *
-	muc_lök
-;
-
-240 
-°ack_t
- 
-	muc_°ack
-;
-
-241 
-mc⁄ãxt_t
- 
-	muc_mc⁄ãxt
-;
-
-242 
-__sig£t_t
- 
-	muc_sigmask
-;
-
-243 
-_libc_Â°©e
- 
-	m__Âªgs_mem
-;
-
-244 } 
-	tuc⁄ãxt_t
-;
-
 	@/usr/include/sys/uio.h
 
 19 #i‚de‡
@@ -62849,22 +55795,6 @@ __WORDSIZE
 	~<gnu/°ubs-64.h
 >
 
-	@/usr/include/linux/errno.h
-
-1 #i‚de‡
-_LINUX_ERRNO_H
-
-
-2 
-	#_LINUX_ERRNO_H
-
-
-	)
-
-4 
-	~<asm/î∫o.h
->
-
 	@/usr/include/sys/cdefs.h
 
 20 #i‚def 
@@ -64470,12 +57400,6 @@ SO_TIMESTAMPING
  40
 
 	)
-
-	@/usr/include/asm/errno.h
-
-1 
-	~<asm-gíîic/î∫o.h
->
 
 	@/usr/include/bits/libc-lock.h
 
@@ -71255,614 +64179,6 @@ __√ed_mb°©e_t
 __√ed_wöt_t
 
 
-	@/usr/include/asm-generic/errno.h
-
-1 #i‚de‡
-_ASM_GENERIC_ERRNO_H
-
-
-2 
-	#_ASM_GENERIC_ERRNO_H
-
-
-	)
-
-4 
-	~<asm-gíîic/î∫o-ba£.h
->
-
-6 
-	#EDEADLK
- 35
-
-	)
-
-7 
-	#ENAMETOOLONG
- 36
-
-	)
-
-8 
-	#ENOLCK
- 37
-
-	)
-
-9 
-	#ENOSYS
- 38
-
-	)
-
-10 
-	#ENOTEMPTY
- 39
-
-	)
-
-11 
-	#ELOOP
- 40
-
-	)
-
-12 
-	#EWOULDBLOCK
- 
-EAGAIN
-
-
-	)
-
-13 
-	#ENOMSG
- 42
-
-	)
-
-14 
-	#EIDRM
- 43
-
-	)
-
-15 
-	#ECHRNG
- 44
-
-	)
-
-16 
-	#EL2NSYNC
- 45
-
-	)
-
-17 
-	#EL3HLT
- 46
-
-	)
-
-18 
-	#EL3RST
- 47
-
-	)
-
-19 
-	#ELNRNG
- 48
-
-	)
-
-20 
-	#EUNATCH
- 49
-
-	)
-
-21 
-	#ENOCSI
- 50
-
-	)
-
-22 
-	#EL2HLT
- 51
-
-	)
-
-23 
-	#EBADE
- 52
-
-	)
-
-24 
-	#EBADR
- 53
-
-	)
-
-25 
-	#EXFULL
- 54
-
-	)
-
-26 
-	#ENOANO
- 55
-
-	)
-
-27 
-	#EBADRQC
- 56
-
-	)
-
-28 
-	#EBADSLT
- 57
-
-	)
-
-30 
-	#EDEADLOCK
- 
-EDEADLK
-
-
-	)
-
-32 
-	#EBFONT
- 59
-
-	)
-
-33 
-	#ENOSTR
- 60
-
-	)
-
-34 
-	#ENODATA
- 61
-
-	)
-
-35 
-	#ETIME
- 62
-
-	)
-
-36 
-	#ENOSR
- 63
-
-	)
-
-37 
-	#ENONET
- 64
-
-	)
-
-38 
-	#ENOPKG
- 65
-
-	)
-
-39 
-	#EREMOTE
- 66
-
-	)
-
-40 
-	#ENOLINK
- 67
-
-	)
-
-41 
-	#EADV
- 68
-
-	)
-
-42 
-	#ESRMNT
- 69
-
-	)
-
-43 
-	#ECOMM
- 70
-
-	)
-
-44 
-	#EPROTO
- 71
-
-	)
-
-45 
-	#EMULTIHOP
- 72
-
-	)
-
-46 
-	#EDOTDOT
- 73
-
-	)
-
-47 
-	#EBADMSG
- 74
-
-	)
-
-48 
-	#EOVERFLOW
- 75
-
-	)
-
-49 
-	#ENOTUNIQ
- 76
-
-	)
-
-50 
-	#EBADFD
- 77
-
-	)
-
-51 
-	#EREMCHG
- 78
-
-	)
-
-52 
-	#ELIBACC
- 79
-
-	)
-
-53 
-	#ELIBBAD
- 80
-
-	)
-
-54 
-	#ELIBSCN
- 81
-
-	)
-
-55 
-	#ELIBMAX
- 82
-
-	)
-
-56 
-	#ELIBEXEC
- 83
-
-	)
-
-57 
-	#EILSEQ
- 84
-
-	)
-
-58 
-	#ERESTART
- 85
-
-	)
-
-59 
-	#ESTRPIPE
- 86
-
-	)
-
-60 
-	#EUSERS
- 87
-
-	)
-
-61 
-	#ENOTSOCK
- 88
-
-	)
-
-62 
-	#EDESTADDRREQ
- 89
-
-	)
-
-63 
-	#EMSGSIZE
- 90
-
-	)
-
-64 
-	#EPROTOTYPE
- 91
-
-	)
-
-65 
-	#ENOPROTOOPT
- 92
-
-	)
-
-66 
-	#EPROTONOSUPPORT
- 93
-
-	)
-
-67 
-	#ESOCKTNOSUPPORT
- 94
-
-	)
-
-68 
-	#EOPNOTSUPP
- 95
-
-	)
-
-69 
-	#EPFNOSUPPORT
- 96
-
-	)
-
-70 
-	#EAFNOSUPPORT
- 97
-
-	)
-
-71 
-	#EADDRINUSE
- 98
-
-	)
-
-72 
-	#EADDRNOTAVAIL
- 99
-
-	)
-
-73 
-	#ENETDOWN
- 100
-
-	)
-
-74 
-	#ENETUNREACH
- 101
-
-	)
-
-75 
-	#ENETRESET
- 102
-
-	)
-
-76 
-	#ECONNABORTED
- 103
-
-	)
-
-77 
-	#ECONNRESET
- 104
-
-	)
-
-78 
-	#ENOBUFS
- 105
-
-	)
-
-79 
-	#EISCONN
- 106
-
-	)
-
-80 
-	#ENOTCONN
- 107
-
-	)
-
-81 
-	#ESHUTDOWN
- 108
-
-	)
-
-82 
-	#ETOOMANYREFS
- 109
-
-	)
-
-83 
-	#ETIMEDOUT
- 110
-
-	)
-
-84 
-	#ECONNREFUSED
- 111
-
-	)
-
-85 
-	#EHOSTDOWN
- 112
-
-	)
-
-86 
-	#EHOSTUNREACH
- 113
-
-	)
-
-87 
-	#EALREADY
- 114
-
-	)
-
-88 
-	#EINPROGRESS
- 115
-
-	)
-
-89 
-	#ESTALE
- 116
-
-	)
-
-90 
-	#EUCLEAN
- 117
-
-	)
-
-91 
-	#ENOTNAM
- 118
-
-	)
-
-92 
-	#ENAVAIL
- 119
-
-	)
-
-93 
-	#EISNAM
- 120
-
-	)
-
-94 
-	#EREMOTEIO
- 121
-
-	)
-
-95 
-	#EDQUOT
- 122
-
-	)
-
-97 
-	#ENOMEDIUM
- 123
-
-	)
-
-98 
-	#EMEDIUMTYPE
- 124
-
-	)
-
-99 
-	#ECANCELED
- 125
-
-	)
-
-100 
-	#ENOKEY
- 126
-
-	)
-
-101 
-	#EKEYEXPIRED
- 127
-
-	)
-
-102 
-	#EKEYREVOKED
- 128
-
-	)
-
-103 
-	#EKEYREJECTED
- 129
-
-	)
-
-106 
-	#EOWNERDEAD
- 130
-
-	)
-
-107 
-	#ENOTRECOVERABLE
- 131
-
-	)
-
-109 
-	#ERFKILL
- 132
-
-	)
-
 	@/usr/include/asm/sockios.h
 
 1 
@@ -75942,6 +68258,90 @@ __ps
 589 
 	}
 }
+
+	@/usr/include/errno.h
+
+23 #i‚def 
+_ERRNO_H
+
+
+27 #i‚def 
+__√ed_Em©h
+
+
+28 
+	#_ERRNO_H
+ 1
+
+	)
+
+29 
+	~<„©uªs.h
+>
+
+32 
+	g__BEGIN_DECLS
+
+
+36 
+	~<bôs/î∫o.h
+>
+
+37 #unde‡
+__√ed_Em©h
+
+
+39 #ifdef 
+_ERRNO_H
+
+
+46 #i‚def 
+î∫o
+
+
+47 
+î∫o
+;
+
+50 #ifde‡
+__USE_GNU
+
+
+55 *
+¥ogøm_övoˇti⁄_«me
+, *
+¥ogøm_övoˇti⁄_sh‹t_«me
+;
+
+59 
+	g__END_DECLS
+
+
+67 #i‡
+deföed
+ 
+__USE_GNU
+ || deföed 
+__√ed_îr‹_t
+
+
+68 #i‚de‡
+__îr‹_t_deföed
+
+
+69 
+	tîr‹_t
+;
+
+70 
+	#__îr‹_t_deföed
+ 1
+
+	)
+
+72 #unde‡
+__√ed_îr‹_t
+
 
 	@/usr/include/gnu/option-groups.h
 
@@ -80431,222 +72831,6 @@ __THROW
 __END_DECLS
 
 
-	@/usr/include/asm-generic/errno-base.h
-
-1 #i‚de‡
-_ASM_GENERIC_ERRNO_BASE_H
-
-
-2 
-	#_ASM_GENERIC_ERRNO_BASE_H
-
-
-	)
-
-4 
-	#EPERM
- 1
-
-	)
-
-5 
-	#ENOENT
- 2
-
-	)
-
-6 
-	#ESRCH
- 3
-
-	)
-
-7 
-	#EINTR
- 4
-
-	)
-
-8 
-	#EIO
- 5
-
-	)
-
-9 
-	#ENXIO
- 6
-
-	)
-
-10 
-	#E2BIG
- 7
-
-	)
-
-11 
-	#ENOEXEC
- 8
-
-	)
-
-12 
-	#EBADF
- 9
-
-	)
-
-13 
-	#ECHILD
- 10
-
-	)
-
-14 
-	#EAGAIN
- 11
-
-	)
-
-15 
-	#ENOMEM
- 12
-
-	)
-
-16 
-	#EACCES
- 13
-
-	)
-
-17 
-	#EFAULT
- 14
-
-	)
-
-18 
-	#ENOTBLK
- 15
-
-	)
-
-19 
-	#EBUSY
- 16
-
-	)
-
-20 
-	#EEXIST
- 17
-
-	)
-
-21 
-	#EXDEV
- 18
-
-	)
-
-22 
-	#ENODEV
- 19
-
-	)
-
-23 
-	#ENOTDIR
- 20
-
-	)
-
-24 
-	#EISDIR
- 21
-
-	)
-
-25 
-	#EINVAL
- 22
-
-	)
-
-26 
-	#ENFILE
- 23
-
-	)
-
-27 
-	#EMFILE
- 24
-
-	)
-
-28 
-	#ENOTTY
- 25
-
-	)
-
-29 
-	#ETXTBSY
- 26
-
-	)
-
-30 
-	#EFBIG
- 27
-
-	)
-
-31 
-	#ENOSPC
- 28
-
-	)
-
-32 
-	#ESPIPE
- 29
-
-	)
-
-33 
-	#EROFS
- 30
-
-	)
-
-34 
-	#EMLINK
- 31
-
-	)
-
-35 
-	#EPIPE
- 32
-
-	)
-
-36 
-	#EDOM
- 33
-
-	)
-
-37 
-	#ERANGE
- 34
-
-	)
-
 	@/usr/include/asm-generic/sockios.h
 
 1 #i‚de‡
@@ -80698,6 +72882,128 @@ __ASM_GENERIC_SOCKIOS_H
 11 
 	#SIOCGSTAMPNS
  0x8907
+
+	)
+
+	@/usr/include/bits/errno.h
+
+20 #ifde‡
+_ERRNO_H
+
+
+22 #unde‡
+EDOM
+
+
+23 #unde‡
+EILSEQ
+
+
+24 #unde‡
+ERANGE
+
+
+25 
+	~<löux/î∫o.h
+>
+
+28 
+	#ENOTSUP
+ 
+EOPNOTSUPP
+
+
+	)
+
+31 #i‚de‡
+ECANCELED
+
+
+32 
+	#ECANCELED
+ 125
+
+	)
+
+36 #i‚de‡
+EOWNERDEAD
+
+
+37 
+	#EOWNERDEAD
+ 130
+
+	)
+
+38 
+	#ENOTRECOVERABLE
+ 131
+
+	)
+
+41 #i‚de‡
+ERFKILL
+
+
+42 
+	#ERFKILL
+ 132
+
+	)
+
+45 #i‚de‡
+__ASSEMBLER__
+
+
+47 *
+	$__î∫o_loˇti⁄
+ (Ë
+__THROW
+ 
+	`__©åibuã__
+ ((
+__c⁄°__
+));
+
+49 #i‡!
+deföed
+ 
+_LIBC
+ || deföed 
+_LIBC_REENTRANT
+
+
+51 
+	#î∫o
+ (*
+	`__î∫o_loˇti⁄
+ ())
+
+	)
+
+56 #i‡!
+deföed
+ 
+_ERRNO_H
+ && deföed 
+__√ed_Em©h
+
+
+60 
+	#EDOM
+ 33
+
+	)
+
+61 
+	#EILSEQ
+ 84
+
+	)
+
+62 
+	#ERANGE
+ 34
 
 	)
 
@@ -82201,30 +74507,873 @@ __THROW
 __END_DECLS
 
 
+	@/usr/include/linux/errno.h
+
+1 #i‚de‡
+_LINUX_ERRNO_H
+
+
+2 
+	#_LINUX_ERRNO_H
+
+
+	)
+
+4 
+	~<asm/î∫o.h
+>
+
+	@/usr/include/asm/errno.h
+
+1 
+	~<asm-gíîic/î∫o.h
+>
+
+	@/usr/include/asm-generic/errno.h
+
+1 #i‚de‡
+_ASM_GENERIC_ERRNO_H
+
+
+2 
+	#_ASM_GENERIC_ERRNO_H
+
+
+	)
+
+4 
+	~<asm-gíîic/î∫o-ba£.h
+>
+
+6 
+	#EDEADLK
+ 35
+
+	)
+
+7 
+	#ENAMETOOLONG
+ 36
+
+	)
+
+8 
+	#ENOLCK
+ 37
+
+	)
+
+9 
+	#ENOSYS
+ 38
+
+	)
+
+10 
+	#ENOTEMPTY
+ 39
+
+	)
+
+11 
+	#ELOOP
+ 40
+
+	)
+
+12 
+	#EWOULDBLOCK
+ 
+EAGAIN
+
+
+	)
+
+13 
+	#ENOMSG
+ 42
+
+	)
+
+14 
+	#EIDRM
+ 43
+
+	)
+
+15 
+	#ECHRNG
+ 44
+
+	)
+
+16 
+	#EL2NSYNC
+ 45
+
+	)
+
+17 
+	#EL3HLT
+ 46
+
+	)
+
+18 
+	#EL3RST
+ 47
+
+	)
+
+19 
+	#ELNRNG
+ 48
+
+	)
+
+20 
+	#EUNATCH
+ 49
+
+	)
+
+21 
+	#ENOCSI
+ 50
+
+	)
+
+22 
+	#EL2HLT
+ 51
+
+	)
+
+23 
+	#EBADE
+ 52
+
+	)
+
+24 
+	#EBADR
+ 53
+
+	)
+
+25 
+	#EXFULL
+ 54
+
+	)
+
+26 
+	#ENOANO
+ 55
+
+	)
+
+27 
+	#EBADRQC
+ 56
+
+	)
+
+28 
+	#EBADSLT
+ 57
+
+	)
+
+30 
+	#EDEADLOCK
+ 
+EDEADLK
+
+
+	)
+
+32 
+	#EBFONT
+ 59
+
+	)
+
+33 
+	#ENOSTR
+ 60
+
+	)
+
+34 
+	#ENODATA
+ 61
+
+	)
+
+35 
+	#ETIME
+ 62
+
+	)
+
+36 
+	#ENOSR
+ 63
+
+	)
+
+37 
+	#ENONET
+ 64
+
+	)
+
+38 
+	#ENOPKG
+ 65
+
+	)
+
+39 
+	#EREMOTE
+ 66
+
+	)
+
+40 
+	#ENOLINK
+ 67
+
+	)
+
+41 
+	#EADV
+ 68
+
+	)
+
+42 
+	#ESRMNT
+ 69
+
+	)
+
+43 
+	#ECOMM
+ 70
+
+	)
+
+44 
+	#EPROTO
+ 71
+
+	)
+
+45 
+	#EMULTIHOP
+ 72
+
+	)
+
+46 
+	#EDOTDOT
+ 73
+
+	)
+
+47 
+	#EBADMSG
+ 74
+
+	)
+
+48 
+	#EOVERFLOW
+ 75
+
+	)
+
+49 
+	#ENOTUNIQ
+ 76
+
+	)
+
+50 
+	#EBADFD
+ 77
+
+	)
+
+51 
+	#EREMCHG
+ 78
+
+	)
+
+52 
+	#ELIBACC
+ 79
+
+	)
+
+53 
+	#ELIBBAD
+ 80
+
+	)
+
+54 
+	#ELIBSCN
+ 81
+
+	)
+
+55 
+	#ELIBMAX
+ 82
+
+	)
+
+56 
+	#ELIBEXEC
+ 83
+
+	)
+
+57 
+	#EILSEQ
+ 84
+
+	)
+
+58 
+	#ERESTART
+ 85
+
+	)
+
+59 
+	#ESTRPIPE
+ 86
+
+	)
+
+60 
+	#EUSERS
+ 87
+
+	)
+
+61 
+	#ENOTSOCK
+ 88
+
+	)
+
+62 
+	#EDESTADDRREQ
+ 89
+
+	)
+
+63 
+	#EMSGSIZE
+ 90
+
+	)
+
+64 
+	#EPROTOTYPE
+ 91
+
+	)
+
+65 
+	#ENOPROTOOPT
+ 92
+
+	)
+
+66 
+	#EPROTONOSUPPORT
+ 93
+
+	)
+
+67 
+	#ESOCKTNOSUPPORT
+ 94
+
+	)
+
+68 
+	#EOPNOTSUPP
+ 95
+
+	)
+
+69 
+	#EPFNOSUPPORT
+ 96
+
+	)
+
+70 
+	#EAFNOSUPPORT
+ 97
+
+	)
+
+71 
+	#EADDRINUSE
+ 98
+
+	)
+
+72 
+	#EADDRNOTAVAIL
+ 99
+
+	)
+
+73 
+	#ENETDOWN
+ 100
+
+	)
+
+74 
+	#ENETUNREACH
+ 101
+
+	)
+
+75 
+	#ENETRESET
+ 102
+
+	)
+
+76 
+	#ECONNABORTED
+ 103
+
+	)
+
+77 
+	#ECONNRESET
+ 104
+
+	)
+
+78 
+	#ENOBUFS
+ 105
+
+	)
+
+79 
+	#EISCONN
+ 106
+
+	)
+
+80 
+	#ENOTCONN
+ 107
+
+	)
+
+81 
+	#ESHUTDOWN
+ 108
+
+	)
+
+82 
+	#ETOOMANYREFS
+ 109
+
+	)
+
+83 
+	#ETIMEDOUT
+ 110
+
+	)
+
+84 
+	#ECONNREFUSED
+ 111
+
+	)
+
+85 
+	#EHOSTDOWN
+ 112
+
+	)
+
+86 
+	#EHOSTUNREACH
+ 113
+
+	)
+
+87 
+	#EALREADY
+ 114
+
+	)
+
+88 
+	#EINPROGRESS
+ 115
+
+	)
+
+89 
+	#ESTALE
+ 116
+
+	)
+
+90 
+	#EUCLEAN
+ 117
+
+	)
+
+91 
+	#ENOTNAM
+ 118
+
+	)
+
+92 
+	#ENAVAIL
+ 119
+
+	)
+
+93 
+	#EISNAM
+ 120
+
+	)
+
+94 
+	#EREMOTEIO
+ 121
+
+	)
+
+95 
+	#EDQUOT
+ 122
+
+	)
+
+97 
+	#ENOMEDIUM
+ 123
+
+	)
+
+98 
+	#EMEDIUMTYPE
+ 124
+
+	)
+
+99 
+	#ECANCELED
+ 125
+
+	)
+
+100 
+	#ENOKEY
+ 126
+
+	)
+
+101 
+	#EKEYEXPIRED
+ 127
+
+	)
+
+102 
+	#EKEYREVOKED
+ 128
+
+	)
+
+103 
+	#EKEYREJECTED
+ 129
+
+	)
+
+106 
+	#EOWNERDEAD
+ 130
+
+	)
+
+107 
+	#ENOTRECOVERABLE
+ 131
+
+	)
+
+109 
+	#ERFKILL
+ 132
+
+	)
+
+	@/usr/include/asm-generic/errno-base.h
+
+1 #i‚de‡
+_ASM_GENERIC_ERRNO_BASE_H
+
+
+2 
+	#_ASM_GENERIC_ERRNO_BASE_H
+
+
+	)
+
+4 
+	#EPERM
+ 1
+
+	)
+
+5 
+	#ENOENT
+ 2
+
+	)
+
+6 
+	#ESRCH
+ 3
+
+	)
+
+7 
+	#EINTR
+ 4
+
+	)
+
+8 
+	#EIO
+ 5
+
+	)
+
+9 
+	#ENXIO
+ 6
+
+	)
+
+10 
+	#E2BIG
+ 7
+
+	)
+
+11 
+	#ENOEXEC
+ 8
+
+	)
+
+12 
+	#EBADF
+ 9
+
+	)
+
+13 
+	#ECHILD
+ 10
+
+	)
+
+14 
+	#EAGAIN
+ 11
+
+	)
+
+15 
+	#ENOMEM
+ 12
+
+	)
+
+16 
+	#EACCES
+ 13
+
+	)
+
+17 
+	#EFAULT
+ 14
+
+	)
+
+18 
+	#ENOTBLK
+ 15
+
+	)
+
+19 
+	#EBUSY
+ 16
+
+	)
+
+20 
+	#EEXIST
+ 17
+
+	)
+
+21 
+	#EXDEV
+ 18
+
+	)
+
+22 
+	#ENODEV
+ 19
+
+	)
+
+23 
+	#ENOTDIR
+ 20
+
+	)
+
+24 
+	#EISDIR
+ 21
+
+	)
+
+25 
+	#EINVAL
+ 22
+
+	)
+
+26 
+	#ENFILE
+ 23
+
+	)
+
+27 
+	#EMFILE
+ 24
+
+	)
+
+28 
+	#ENOTTY
+ 25
+
+	)
+
+29 
+	#ETXTBSY
+ 26
+
+	)
+
+30 
+	#EFBIG
+ 27
+
+	)
+
+31 
+	#ENOSPC
+ 28
+
+	)
+
+32 
+	#ESPIPE
+ 29
+
+	)
+
+33 
+	#EROFS
+ 30
+
+	)
+
+34 
+	#EMLINK
+ 31
+
+	)
+
+35 
+	#EPIPE
+ 32
+
+	)
+
+36 
+	#EDOM
+ 33
+
+	)
+
+37 
+	#ERANGE
+ 34
+
+	)
+
 	@
 1
 .
 1
 /usr/include
-103
-2533
+95
+2332
 api.c
 api.h
 config-server.c
 config-server.h
 debug.c
+debug.h
 def.h
-md5.c
-md5.h
 redis.c
 redis.h
 router.c
 router.h
 /usr/include/arpa/inet.h
-/usr/include/errno.h
 /usr/include/netdb.h
 /usr/include/netinet/in.h
-/usr/include/signal.h
 /usr/include/stdio.h
 /usr/include/stdlib.h
 /usr/include/string.h
@@ -82237,18 +75386,12 @@ router.h
 /usr/include/bits/byteswap.h
 /usr/include/bits/confname.h
 /usr/include/bits/environments.h
-/usr/include/bits/errno.h
 /usr/include/bits/in.h
 /usr/include/bits/netdb.h
 /usr/include/bits/posix_opt.h
 /usr/include/bits/pthreadtypes.h
-/usr/include/bits/sigaction.h
-/usr/include/bits/sigcontext.h
 /usr/include/bits/siginfo.h
-/usr/include/bits/signum.h
 /usr/include/bits/sigset.h
-/usr/include/bits/sigstack.h
-/usr/include/bits/sigthread.h
 /usr/include/bits/socket.h
 /usr/include/bits/socket2.h
 /usr/include/bits/stdio-ldbl.h
@@ -82274,7 +75417,6 @@ router.h
 /usr/include/stdint.h
 /usr/include/sys/select.h
 /usr/include/sys/sysmacros.h
-/usr/include/sys/ucontext.h
 /usr/include/sys/uio.h
 /usr/include/xlocale.h
 /usr/include/_G_config.h
@@ -82291,23 +75433,25 @@ router.h
 /usr/include/bits/wordsize.h
 /usr/include/ctype.h
 /usr/include/gnu/stubs.h
-/usr/include/linux/errno.h
 /usr/include/sys/cdefs.h
 /usr/include/asm-generic/socket.h
-/usr/include/asm/errno.h
 /usr/include/bits/libc-lock.h
 /usr/include/gconv.h
 /usr/include/gnu/stubs-64.h
 /usr/include/wchar.h
-/usr/include/asm-generic/errno.h
 /usr/include/asm/sockios.h
 /usr/include/bits/wchar-ldbl.h
 /usr/include/bits/wchar2.h
+/usr/include/errno.h
 /usr/include/gnu/option-groups.h
 /usr/include/pthread.h
 /usr/include/wctype.h
-/usr/include/asm-generic/errno-base.h
 /usr/include/asm-generic/sockios.h
+/usr/include/bits/errno.h
 /usr/include/bits/setjmp.h
 /usr/include/sched.h
 /usr/include/bits/sched.h
+/usr/include/linux/errno.h
+/usr/include/asm/errno.h
+/usr/include/asm-generic/errno.h
+/usr/include/asm-generic/errno-base.h
