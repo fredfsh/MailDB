@@ -49,7 +49,6 @@ int _waitChildren(const int total, const int threshold, const pid_t *pids) {
   int retry;
   int status;
   int i;
-  int result;
   pid_t exitPid;
 
   exitNum = 0;
@@ -58,18 +57,14 @@ int _waitChildren(const int total, const int threshold, const pid_t *pids) {
   while (exitNum < total && successNum < threshold && --retry >= 0) {
     usleep(WAIT_RETRY_INTERVAL);
     while ( (exitPid = waitpid(-1, &status, WNOHANG)) ) {
-      if (exitPid < 0) {
-        result = ROUTER_ERR;
-        goto re;
-      }
+      if (exitPid < 0) return ROUTER_ERR;
       //printf("[debug]router.c: exitPid = %d\n", exitPid);  // debug
       for (i = 0; i < total; ++i) {
         if (exitPid == pids[i]) {
           //printf("[debug]router.c: status = %d\n", status);  // debug
           if (status == REDIS_FATAL_ERR) {
             printf("router.c: %s\n", "Fatal error received from child!");
-            result = ROUTER_ERR;
-            goto re;
+            return ROUTER_ERR;
           }
           if (status == REDIS_OK) ++successNum;
           ++exitNum;
@@ -79,17 +74,8 @@ int _waitChildren(const int total, const int threshold, const pid_t *pids) {
       if (i < total) break;
     }
   }
-  if (successNum < threshold) {
-    result = ROUTER_FAILED;
-    //printf("[debug]router.c: successNum = %d\n", successNum);  // debug
-    goto re;
-  }
-  result = ROUTER_OK;
-  goto re;
-
-re:
-  for (i = 0; i < total; ++i) kill(pids[i], SIGTERM);
-  return result;
+  if (successNum < threshold) return ROUTER_FAILED;
+  return ROUTER_OK;
 }
 
 // Creates a bucket at the database considering consistent hashing.
