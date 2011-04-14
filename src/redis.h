@@ -10,6 +10,7 @@
 #define REDIS_OK 0
 #define REDIS_FAILED -1
 #define REDIS_ERR 1
+#define REDIS_FATAL_ERR 2
 #define STATUS_OK "OK"
 
 #define REDIS_PORT 6379
@@ -31,10 +32,9 @@ int hDel(const in_addr *ip, const char *key, const char *field);
 // Determines if a hash field exists.
 int hExists(const in_addr *ip, const char *key, const char *field);
 // Gets the value of a hash field from a single redis server.
-int hGet(const in_addr *ip, const char *key, const char *field,
-    int *blobLength, void *blob);
+int hGet(const in_addr *ip, const char *key, const char *field, void *blob);
 // Sets the string value of a hash field to a single redis server.
 int hSet(const in_addr *ip, const char *key, const char *field,
-    const int blobLength, const void *blob);
+    const void *blob);
 
 #endif

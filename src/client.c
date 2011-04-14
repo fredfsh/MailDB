@@ -60,7 +60,27 @@ int main(int argc, char *argv[]) {
     printf("Blob \"%s-%s\" not existed.\n", targetBucket, targetField);
   }
 
-  rv = saveBlob(targetBucket, targetField, strlen(targetBlob), targetBlob);
+  rv = loadBlob(targetBucket, targetField, blob);
+  if (rv == API_OK) {
+    memcpy(&blobLength, blob, sizeof(int));
+    if (blobLength == sizeof(int)) {
+      printf("Load blob %s-%s-(nil)\n", targetBucket, targetField);
+    } else {
+      blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
+          = '\0';  // for debug
+      printf("Load blob %s-%s-%s\n", targetBucket, targetField,
+          (char *) &((int *) blob)[1]);
+    }
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
+  }
+
+  blobLength = strlen(targetBlob) + sizeof(int);
+  memcpy(blob, &blobLength, sizeof(int));
+  memcpy(&((int *) blob)[1], targetBlob, strlen(targetBlob));
+  rv = saveBlob(targetBucket, targetField, blob);
   if (rv == API_OK) {
     printf("Save blob \"%s-%s-%s\" success.\n", targetBucket, targetField,
         targetBlob);
@@ -72,11 +92,28 @@ int main(int argc, char *argv[]) {
         targetBlob);
   }
 
-  rv = existBucket(targetBucket);
+  rv = existBlob(targetBucket, targetField);
   if (rv == API_OK) {
-    printf("Bucket \"%s\" existed.\n", targetBucket);
+    printf("Blob \"%s-%s\" existed.\n", targetBucket, targetField);
   } else {
-    printf("Bucket \"%s\" not existed.\n", targetBucket);
+    printf("Blob \"%s-%s\" not existed.\n", targetBucket, targetField);
+  }
+
+  rv = loadBlob(targetBucket, targetField, blob);
+  if (rv == API_OK) {
+    memcpy(&blobLength, blob, sizeof(int));
+    if (blobLength == sizeof(int)) {
+      printf("Load blob %s-%s-(nil)\n", targetBucket, targetField);
+    } else {
+      blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
+          = '\0';  // for debug
+      printf("Load blob %s-%s-%s\n", targetBucket, targetField,
+          (char *) &((int *) blob)[1]);
+    }
+  } else if (rv == API_FAILED) {
+    printf("Failed.\n");
+  } else if (rv == API_ERR) {
+    printf("Error.\n");
   }
 
   rv = deleteBlob(targetBucket, targetField);
@@ -95,22 +132,21 @@ int main(int argc, char *argv[]) {
     printf("Blob \"%s-%s\" not existed.\n", targetBucket, targetField);
   }
 
-
-  /*
-  rv = loadBlob("fredfsh", "four", &blobLength, blob);
+  rv = deleteBucket(targetBucket);
   if (rv == API_OK) {
-    if (blobLength == - 1) {
-      printf("(nil)\n");
-    } else {
-      blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
-          = '\0';  // for debug
-      printf("%s\n", blob);
-    }
+    printf("Delete bucket \"%s\" success.\n", targetBucket);
   } else if (rv == API_FAILED) {
-    printf("Failed.\n");
+    printf("Delete bucket \"%s\" failed.\n", targetBucket);
   } else if (rv == API_ERR) {
-    printf("Error.\n");
+    printf("Delete bucket \"%s\" error.\n", targetBucket);
   }
-*/
+
+  rv = existBucket(targetBucket);
+  if (rv == API_OK) {
+    printf("Bucket \"%s\" existed.\n", targetBucket);
+  } else {
+    printf("Bucket \"%s\" not existed.\n", targetBucket);
+  }
+
   return 0;
 }

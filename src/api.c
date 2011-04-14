@@ -85,13 +85,11 @@ int existBucket(const char *bucketId) {
   return API_OK;
 }
 
-/*
 // Loads a blob.
-int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
-    void *blob) {
+int loadBlob(const char *bucketId, const char *blobId, void *blob) {
   int rv;
 
-  rv = routeLoadBlob(bucketId, blobId, blobLength, blob);
+  rv = routeLoadBlob(bucketId, blobId, blob);
   if (rv == ROUTER_ERR) {
     printf("api.c: %s %s\n", "Failed to load blob.",
         "Lower layer replies with error.");
@@ -102,13 +100,11 @@ int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
   }
   return API_OK;
 }
-*/
 // Saves a blob.
-int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
-    const void *blob) {
+int saveBlob(const char *bucketId, const char *blobId, const void *blob) {
   int rv;
 
-  rv = routeSaveBlob(bucketId, blobId, blobLength, blob);
+  rv = routeSaveBlob(bucketId, blobId, blob);
   if (rv == ROUTER_ERR) {
     printf("api.c: %s %s\n", "Failed to save blob.",
         "Lower layer replies with error.");

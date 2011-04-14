@@ -46,10 +46,8 @@ int routeExistBlob(const char *bucketId, const char *blobId);
 // Determines whether a bucket exists considering consistent hashing.
 int routeExistBucket(const char *bucketId);
 // Loads a blob considering consistent hashing.
-//int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
-//    void *blob);
+int routeLoadBlob(const char *bucketId, const char *blobId, void *blob);
 // Saves a blob considering consistent hashing.
-int routeSaveBlob(const char *bucketId, const char *blobId,
-    const int blobLength, const void *blob);
+int routeSaveBlob(const char *bucketId, const char *blobId, const void *blob);
 
 #endif

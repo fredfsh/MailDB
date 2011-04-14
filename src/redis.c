@@ -52,10 +52,8 @@ int _commandStream(char *commandStream, const char *fmt, ...) {
   return REDIS_OK;
 }
 
-// Receives blob content from a Redis server.
-//
-// @blobLength is set to -1 if the field or key does not exist.
-int _recvBulk(const int sockfd, int *blobLength, void *blob) {
+// Receives blob content from a redis server.
+int _recvBulk(const int sockfd, void *blob) {
   int retry;
   int n;
   int rv;
@@ -99,14 +97,16 @@ int _recvBulk(const int sockfd, int *blobLength, void *blob) {
   rv = recv(sockfd, reply, (pos - reply) + 2, MSG_DONTWAIT);
   n = atoi(&reply[1]);
   if (n > MAX_BLOB_LENGTH) {
-      printf("redis.c: %s %s\n", "Warning.",
-          "Blob content exceeding buffer length truncated.");
-      n = MAX_BLOB_LENGTH;
+    printf("redis.c: %s %s\n", "Warning.",
+        "Blob content exceeding buffer length truncated.");
+    n = MAX_BLOB_LENGTH;
+  } else if (n < 0) {
+    n = sizeof(int);
   }
-  *blobLength = n;
-  if (n < 0) return REDIS_OK;
+  memcpy(blob, &n, sizeof(int));
 
   // Reads blob content from Redis reply.
+  if (n == sizeof(int)) return REDIS_OK;
   retry = REDIS_RETRY;
   while (--retry >= 0) {
     rv = recv(sockfd, blob, n, MSG_DONTWAIT);
@@ -125,7 +125,7 @@ int _recvBulk(const int sockfd, int *blobLength, void *blob) {
           "No reply of blob content from server.");
       return REDIS_FAILED;
   }
-  // Cleans trailing "\r\n".
+  // Cleans trailing "\r\n" in the socket buffer.
   rv = recv(sockfd, reply, 2, MSG_DONTWAIT);
   return REDIS_OK;
 }
@@ -360,15 +360,13 @@ int hExists(const in_addr *ip, const char *key, const char *field) {
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
+  //printf("[debug]redis.c: result = %d\n", result);  // debug
   if (rv == REDIS_OK && !result) rv = REDIS_FAILED;
   return rv;
 }
 
 // Executes HGET command to a Redis server.
-//
-// @blobLength is set to -1 if the field or key does not exist.
-int hGet(const in_addr *ip, const char *key, const char *field,
-    int *blobLength, void *blob) {
+int hGet(const in_addr *ip, const char *key, const char *field, void *blob) {
   int sockfd;
   int rv;
   char commandStream[MAX_COMMAND_LENGTH];
@@ -394,17 +392,18 @@ int hGet(const in_addr *ip, const char *key, const char *field,
   }
 
   // Reads Redis reply.
-  rv = _recvBulk(sockfd, blobLength, blob);
+  rv = _recvBulk(sockfd, blob);
   close(sockfd);
   return rv;
 }
 
 // Executes HSET command to a redis server.
 int hSet(const in_addr *ip, const char *key, const char *field,
-    const int blobLength, const void *blob) {
+    const void *blob) {
   int sockfd;
   int rv;
   int result;
+  int blobLength;
   char commandStream[MAX_COMMAND_LENGTH];
 
   // Connects to redis server.
@@ -416,6 +415,7 @@ int hSet(const in_addr *ip, const char *key, const char *field,
   }
 
   // Writes command metadata to Redis server.
+  memcpy(&blobLength, blob, sizeof(int));
   _commandStream(commandStream, "sssb", "HSET", key, field, blobLength);
   //printf("[debug]redis.c: command length: %zu.", strlen(commandStream));
   //printf("[debug]redis.c: %s", commandStream);
