@@ -4,7 +4,6 @@
 */
 #include "config-server.h"
 #include "def.h"
-#include "errno.h"
 #include "redis.h"
 #include "router.h"
 #include <stdio.h>
