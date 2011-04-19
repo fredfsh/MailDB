@@ -17,6 +17,11 @@
 #define API_FAILED -1
 #define API_ERR 1
 
+// Finishing function must be called after any operation.
+void apiDestroy();
+// Initial function must be called before any operation.
+int apiInit();
+
 // Creates a bucket.
 int createBucket(const char *bucketId);
 // Deletes a blob.
@@ -28,8 +33,10 @@ int existBlob(const char *bucketId, const char *blobId);
 // Determines whether a bucket exists.
 int existBucket(const char *bucketId);
 // Loads a blob.
-int loadBlob(const char *bucketId, const char *blobId, void *blob);
+int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
+    void *blob);
 // Saves a blob.
-int saveBlob(const char *bucketId, const char *blobId, const void *blob);
+int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
+    const void *blob);
 
 #endif

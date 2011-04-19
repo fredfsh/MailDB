@@ -7,6 +7,26 @@
 #include "router.h"
 #include <stdio.h>
 
+// Finishing function must be called after any operation.
+void apiDestroy() { routerDestroy(); }
+
+// Initial function must be called before any operation.
+int apiInit() {
+  int rv;
+
+  rv = routerInit();
+  if (rv == ROUTER_ERR) {
+    printf("api.c: %s %s\n", "Failed to initialize api layer.",
+        "Lower layer fails to.");
+    return API_FAILED;
+  } else if (rv == ROUTER_FAILED) {
+    printf("api.c: %s %s\n", "Failed to initialize api layer.",
+        "Lower layer fails to.");
+    return API_FAILED;
+  }
+  return API_OK;
+}
+
 // Creates a bucket.
 int createBucket(const char *bucketId) {
   int rv;
@@ -86,10 +106,11 @@ int existBucket(const char *bucketId) {
 }
 
 // Loads a blob.
-int loadBlob(const char *bucketId, const char *blobId, void *blob) {
+int loadBlob(const char *bucketId, const char *blobId, int *blobLength,
+    void *blob) {
   int rv;
 
-  rv = routeLoadBlob(bucketId, blobId, blob);
+  rv = routeLoadBlob(bucketId, blobId, blobLength, blob);
   if (rv == ROUTER_ERR) {
     printf("api.c: %s %s\n", "Failed to load blob.",
         "Lower layer replies with error.");
@@ -101,10 +122,11 @@ int loadBlob(const char *bucketId, const char *blobId, void *blob) {
   return API_OK;
 }
 // Saves a blob.
-int saveBlob(const char *bucketId, const char *blobId, const void *blob) {
+int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
+    const void *blob) {
   int rv;
 
-  rv = routeSaveBlob(bucketId, blobId, blob);
+  rv = routeSaveBlob(bucketId, blobId, blobLength, blob);
   if (rv == ROUTER_ERR) {
     printf("api.c: %s %s\n", "Failed to save blob.",
         "Lower layer replies with error.");

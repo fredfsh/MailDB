@@ -4,6 +4,7 @@
 */
 #include "def.h"
 #include "redis.h"
+#include "threadpool.h"
 #include <arpa/inet.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -208,7 +209,7 @@ int _recvStatus(const int sockfd, char *status) {
 // Makes a connection to the destination redis server.
 // @returns file descriptor of the socket connection, or -1 when failed to
 // establish the connection.
-int connectByIp(const in_addr *ip) {
+int connectByIp(const struct in_addr *ip) {
   int sockfd;
   int rv;
   struct sockaddr_in serv_addr;
@@ -224,7 +225,7 @@ int connectByIp(const in_addr *ip) {
   // Connects to the Redis server.
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(REDIS_PORT);
-  memcpy(&serv_addr.sin_addr, ip, sizeof(in_addr));
+  memcpy(&serv_addr.sin_addr, ip, sizeof(struct in_addr));
   rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
   if (rv < 0) {
     printf("router.c: %s %s\n", "Error connecting to Redis server.",
@@ -235,14 +236,18 @@ int connectByIp(const in_addr *ip) {
 }
 
 //Executes DEL command to a Redis server.
-int del(const in_addr *ip, const char *key) {
+int del(void *arg) {
   int sockfd;
   int rv;
   int result;
   char commandStream[MAX_COMMAND_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute DEL.",
         "Failed to connect to redis server.");
@@ -250,31 +255,53 @@ int del(const in_addr *ip, const char *key) {
   }
 
   // Writes command metadata to Redis server.
-  _commandStream(commandStream, "ss", "DEL", key);
+  _commandStream(commandStream, "ss", "DEL", threadTask->redisCommand->key);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing DEL.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute DEL.", "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
+  if (rv != REDIS_OK) {
+    close(sockfd);
+    return rv;
+  }
+  
+  // Writes back result.
+  rv = writeResult(EXIST_UNDEFINED, NULL, threadTask);
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
+  close(sockfd);
   return rv;
 }
 
 //Executes EXISTS command to a Redis server.
 //@returns REDIS_OK when existed.
-int exists(const in_addr *ip, const char *key) {
+int exists(void *arg) {
   int sockfd;
   int rv;
   int result;
+  int exist;
   char commandStream[MAX_COMMAND_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute EXISTS.",
         "Failed to connect to redis server.");
@@ -282,32 +309,59 @@ int exists(const in_addr *ip, const char *key) {
   }
 
   // Writes command metadata to Redis server.
-  _commandStream(commandStream, "ss", "EXISTS", key);
+  _commandStream(commandStream, "ss", "EXISTS", threadTask->redisCommand->key);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing EXISTS.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute EXISTS.",
         "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
-  if (rv == REDIS_OK && !result) rv = REDIS_FAILED;
+  //printf("[debug]redis.c: rv = %d, result = %d.\n", rv, result);  // debug
+  if (rv != REDIS_OK) {
+    //printf("[debug]redis.c: exist bucket failed.\n");  // debug
+    close(sockfd);
+    return rv;
+  }
+  if (result) {
+    exist = EXIST_YES;
+  } else {
+    exist = EXIST_NO;
+  }
+  
+  // Writes back result.
+  rv = writeResult(exist, NULL, threadTask);
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
+  close(sockfd);
   return rv;
 }
 
 //Executes HDEL command to a Redis server.
-int hDel(const in_addr *ip, const char *key, const char *field) {
+int hDel(void *arg) {
   int sockfd;
   int rv;
   int result;
   char commandStream[MAX_COMMAND_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute HDEL.",
         "Failed to connect to redis server.");
@@ -315,31 +369,54 @@ int hDel(const in_addr *ip, const char *key, const char *field) {
   }
 
   // Writes command metadata to Redis server.
-  _commandStream(commandStream, "sss", "HDEL", key, field);
+  _commandStream(commandStream, "sss", "HDEL", threadTask->redisCommand->key,
+      threadTask->redisCommand->field);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing HDEL.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute HDEL.", "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
+  if (rv != REDIS_OK) {
+    close(sockfd);
+    return rv;
+  }
+  
+  // Writes back result.
+  rv = writeResult(EXIST_UNDEFINED, NULL, threadTask);
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
+  close(sockfd);
   return rv;
 }
 
 //Executes HEXISTS command to a Redis server.
 //@returns REDIS_OK when existed.
-int hExists(const in_addr *ip, const char *key, const char *field) {
+int hExists(void *arg) {
   int sockfd;
   int rv;
   int result;
+  int exist;
   char commandStream[MAX_COMMAND_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute HEXIST.",
         "Failed to connect to redis server.");
@@ -347,32 +424,58 @@ int hExists(const in_addr *ip, const char *key, const char *field) {
   }
 
   // Writes command metadata to Redis server.
-  _commandStream(commandStream, "sss", "HEXISTS", key, field);
+  _commandStream(commandStream, "sss", "HEXISTS",
+      threadTask->redisCommand->key, threadTask->redisCommand->field);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing HEXISTS.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute HEXISTS.",
         "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
-  //printf("[debug]redis.c: result = %d\n", result);  // debug
-  if (rv == REDIS_OK && !result) rv = REDIS_FAILED;
+  if (rv != REDIS_OK) {
+    close(sockfd);
+    return rv;
+  }
+  if (result) {
+    exist = EXIST_YES;
+  } else {
+    exist = EXIST_NO;
+  }
+  
+  // Writes back result.
+  rv = writeResult(exist, NULL, threadTask);
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
+  close(sockfd);
   return rv;
 }
 
 // Executes HGET command to a Redis server.
-int hGet(const in_addr *ip, const char *key, const char *field, void *blob) {
+int hGet(void *arg) {
   int sockfd;
   int rv;
   char commandStream[MAX_COMMAND_LENGTH];
+  unsigned char blob[MAX_BLOB_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute HGET.",
         "Failed to connect to redis server.");
@@ -380,34 +483,56 @@ int hGet(const in_addr *ip, const char *key, const char *field, void *blob) {
   }
 
   // Writes command metadata to Redis server.
-  _commandStream(commandStream, "sss", "HGET", key, field);
+  _commandStream(commandStream, "sss", "HGET", threadTask->redisCommand->key,
+      threadTask->redisCommand->field);
   //printf("[debug]redis.c: commandStream: %s\n", commandStream);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing HGET.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute HGET.", "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Reads Redis reply.
   rv = _recvBulk(sockfd, blob);
+  if (rv != REDIS_OK) {
+    //printf("[debug]redis.c: rv = %d\n", rv);  // debug
+    close(sockfd);
+    return rv;
+  }
+  
+  // Writes back result.
+  rv = writeResult(EXIST_UNDEFINED, blob, threadTask);
+  //printf("[debug]redis.c: rv = %d\n", rv);  // debug
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
   close(sockfd);
   return rv;
 }
 
 // Executes HSET command to a redis server.
-int hSet(const in_addr *ip, const char *key, const char *field,
-    const void *blob) {
+int hSet(void *arg) {
   int sockfd;
   int rv;
   int result;
-  int blobLength;
+  int valueLength;
   char commandStream[MAX_COMMAND_LENGTH];
+  ThreadTask *threadTask;
+
+  // Casts arguments.
+  threadTask = (ThreadTask *) arg;
 
   // Connects to redis server.
-  sockfd = connectByIp(ip);
+  sockfd = connectByIp(threadTask->ip);
   if (sockfd == -1) {
     printf("redis.c: %s %s\n", "Failed to execute HSET.",
         "Failed to connect to redis server.");
@@ -415,32 +540,59 @@ int hSet(const in_addr *ip, const char *key, const char *field,
   }
 
   // Writes command metadata to Redis server.
-  memcpy(&blobLength, blob, sizeof(int));
-  _commandStream(commandStream, "sssb", "HSET", key, field, blobLength);
-  //printf("[debug]redis.c: command length: %zu.", strlen(commandStream));
-  //printf("[debug]redis.c: %s", commandStream);
+  memcpy(&valueLength, threadTask->redisCommand->value, sizeof(int));
+  _commandStream(commandStream, "sssb", "HSET", threadTask->redisCommand->key,
+      threadTask->redisCommand->field, valueLength);
   rv = write(sockfd, commandStream, strlen(commandStream));
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing HSET.", "Command not sent.");
+    close(sockfd);
     return REDIS_ERR;
   } else if (rv != (int) strlen(commandStream)) {
     printf("redis.c: %s %s\n", "Failed to execute HSET.", "Command not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
 
   // Writes blob content to Redis server.
-  rv = write(sockfd, blob, blobLength);
+  rv = write(sockfd, threadTask->redisCommand->value, valueLength);
+  //printf("[debug]redis.c: blobLength = %d\n", blobLength);  // debug
   if (rv == -1) {
     printf("redis.c: %s %s\n", "Error executing HSET.", "Blob not sent.");
+    close(sockfd);
     return REDIS_ERR;
-  } else if (rv != blobLength) {
+  } else if (rv != valueLength) {
     printf("redis.c: %s %s\n", "Failed to execute HSET.", "Blob not sent.");
+    close(sockfd);
     return REDIS_FAILED;
   }
   rv = write(sockfd, "\r\n", 2);
+  if (rv == -1) {
+    printf("redis.c: %s %s\n", "Error executing HSET.", "Blob not sent.");
+    close(sockfd);
+    return REDIS_ERR;
+  } else if (rv != 2) {
+    printf("redis.c: %s %s\n", "Failed to execute HSET.", "Blob not sent.");
+    close(sockfd);
+    return REDIS_FAILED;
+  }
 
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
+  if (rv != REDIS_OK) {
+    close(sockfd);
+    return rv;
+  }
+  
+  // Writes back result.
+  rv = writeResult(EXIST_UNDEFINED, NULL, threadTask);
+  if (rv == THREADPOOL_FATAL_ERR) {
+    rv = REDIS_FATAL_ERR;
+  } else if (rv != THREADPOOL_OK) {
+    rv = REDIS_FAILED;
+  } else {
+    rv = REDIS_OK;
+  }
   close(sockfd);
   return rv;
 }
