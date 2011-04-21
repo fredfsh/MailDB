@@ -10,6 +10,6 @@
 #include <netinet/in.h>
 
 // @returns host ips for @key.
-void getHostsByKey(const char *key, int *num, in_addr *ips);
+void getHostsByKey(const char *key, int *num, struct in_addr *ips);
 
 #endif

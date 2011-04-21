@@ -1,0 +1,19 @@
+==================
+Configuration
+==================
+0. Run an instance of Redis on each of your data server. Redis is an open
+  source project available at http://redis.io/download
+1. Put hostnames or ips of your Redis servers in config file RedisServers.cfg,
+  one per line. With no help of consistent hashing, the virtual config server
+  just replicates all the data on every Redis server.
+2. Available apis are defined in api.h, you can invoke them in the source
+  code file of your own client client.c.
+3. Some configurable parameters are placed in def.h, as well as other header
+  files.
+
+==================
+Installation
+==================
+$ cd src
+src$ make
+src$ ./client

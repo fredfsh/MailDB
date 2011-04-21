@@ -35,6 +35,11 @@
 #define WAIT_RETRY 100
 #define WAIT_RETRY_INTERVAL 10 * 1000  // in microseconds
 
+// Finishing function must be called after any operation.
+void routerDestroy();
+// Initial function must be called before any operation.
+int routerInit();
+
 // Creates a bucket considering consistent hashing.
 int routeCreateBucket(const char *bucketId);
 // Deletes a blob considering consistent hashing.
@@ -46,8 +51,10 @@ int routeExistBlob(const char *bucketId, const char *blobId);
 // Determines whether a bucket exists considering consistent hashing.
 int routeExistBucket(const char *bucketId);
 // Loads a blob considering consistent hashing.
-int routeLoadBlob(const char *bucketId, const char *blobId, void *blob);
+int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
+    void *blob);
 // Saves a blob considering consistent hashing.
-int routeSaveBlob(const char *bucketId, const char *blobId, const void *blob);
+int routeSaveBlob(const char *bucketId, const char *blobId,
+    const int blobLength, const void *blob);
 
 #endif

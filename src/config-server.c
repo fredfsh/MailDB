@@ -13,7 +13,7 @@
 #define CONFIG_FILE "RedisServers.cfg"
 #define MAX_LINE_LENGTH 0xFF
 
-void getHostsByKey(const char *key, int *num, in_addr *ips) {
+void getHostsByKey(const char *key, int *num, struct in_addr *ips) {
   FILE *fin;
   int n;
   int rv;
@@ -36,8 +36,8 @@ void getHostsByKey(const char *key, int *num, in_addr *ips) {
   while (!feof(fin)) {
     rv = getaddrinfo(line, NULL, &hints, &result);
     if (!rv && result) {
-      memcpy(&ips[n++], &((sockaddr_in *) result->ai_addr)->sin_addr,
-          sizeof(in_addr));
+      memcpy(&ips[n++], &((struct sockaddr_in *) result->ai_addr)->sin_addr,
+          sizeof(struct in_addr));
     }
     freeaddrinfo(result);
     rv = fscanf(fin, "%s", line);

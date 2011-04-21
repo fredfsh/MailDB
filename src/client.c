@@ -1,6 +1,5 @@
 #include "api.h"
 #include "def.h"
-#include "redis.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -11,6 +10,15 @@ int main(int argc, char *argv[]) {
   char targetBucket[] = "amy";
   char targetField[] = "Russia";
   char targetBlob[] = "Moscow";
+
+  rv = apiInit();
+  if (rv == API_OK) {
+    printf("API init success.\n");
+  } else if (rv == API_FAILED) {
+    printf("API init failed.\n");
+  } else if (rv == API_ERR) {
+    printf("API init error.\n");
+  }
 
   rv = deleteBucket(targetBucket);
   if (rv == API_OK) {
@@ -60,27 +68,22 @@ int main(int argc, char *argv[]) {
     printf("Blob \"%s-%s\" not existed.\n", targetBucket, targetField);
   }
 
-  rv = loadBlob(targetBucket, targetField, blob);
+  rv = loadBlob(targetBucket, targetField, &blobLength, blob);
   if (rv == API_OK) {
-    memcpy(&blobLength, blob, sizeof(int));
-    if (blobLength == sizeof(int)) {
-      printf("Load blob %s-%s-(nil)\n", targetBucket, targetField);
+    if (blobLength == 0) {
+      printf("Load blob \"%s-%s-(nil)\"\n", targetBucket, targetField);
     } else {
       blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
           = '\0';  // for debug
-      printf("Load blob %s-%s-%s\n", targetBucket, targetField,
-          (char *) &((int *) blob)[1]);
+      printf("Load blob \"%s-%s-%s\"\n", targetBucket, targetField, blob);
     }
   } else if (rv == API_FAILED) {
-    printf("Failed.\n");
+    printf("Load blob \"%s-%s\" failed.\n", targetBucket, targetField);
   } else if (rv == API_ERR) {
-    printf("Error.\n");
+    printf("Load blob \"%s-%s\" error.\n", targetBucket, targetField);
   }
 
-  blobLength = strlen(targetBlob) + sizeof(int);
-  memcpy(blob, &blobLength, sizeof(int));
-  memcpy(&((int *) blob)[1], targetBlob, strlen(targetBlob));
-  rv = saveBlob(targetBucket, targetField, blob);
+  rv = saveBlob(targetBucket, targetField, strlen(targetBlob), targetBlob);
   if (rv == API_OK) {
     printf("Save blob \"%s-%s-%s\" success.\n", targetBucket, targetField,
         targetBlob);
@@ -99,21 +102,19 @@ int main(int argc, char *argv[]) {
     printf("Blob \"%s-%s\" not existed.\n", targetBucket, targetField);
   }
 
-  rv = loadBlob(targetBucket, targetField, blob);
+  rv = loadBlob(targetBucket, targetField, &blobLength, blob);
   if (rv == API_OK) {
-    memcpy(&blobLength, blob, sizeof(int));
-    if (blobLength == sizeof(int)) {
-      printf("Load blob %s-%s-(nil)\n", targetBucket, targetField);
+    if (blobLength == 0) {
+      printf("Load blob \"%s-%s-(nil)\"\n", targetBucket, targetField);
     } else {
       blob[blobLength == MAX_BLOB_LENGTH ? MAX_BLOB_LENGTH - 1 : blobLength]
           = '\0';  // for debug
-      printf("Load blob %s-%s-%s\n", targetBucket, targetField,
-          (char *) &((int *) blob)[1]);
+      printf("Load blob \"%s-%s-%s\"\n", targetBucket, targetField, blob);
     }
   } else if (rv == API_FAILED) {
-    printf("Failed.\n");
+    printf("Load blob \"%s-%s\" failed.\n", targetBucket, targetField);
   } else if (rv == API_ERR) {
-    printf("Error.\n");
+    printf("Load blob \"%s-%s\" error.\n", targetBucket, targetField);
   }
 
   rv = deleteBlob(targetBucket, targetField);
@@ -147,6 +148,9 @@ int main(int argc, char *argv[]) {
   } else {
     printf("Bucket \"%s\" not existed.\n", targetBucket);
   }
+
+  apiDestroy();
+  printf("API destroy.\n");
 
   return 0;
 }

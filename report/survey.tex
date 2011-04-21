@@ -1,0 +1,100 @@
+\documentclass{article}
+\title{A Brief Summary of Distributed Key-value Stores}
+\author{Shi FENG 2007013247}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Background}
+Distributed system is a major topic of currrent computer science. Among it,
+a distributed storage system usually takes advantage of multiple machines to
+gain capacity, reliability, availability, while for people who ask for data,
+it seems that he is facing with a single machine and needn't care about the
+whole background framework.\\
+There are a lot of typical distributed storage systems. Google File System,
+Moose File System and many others are classified as \emph{distributed file
+system}.  A client can communicate with the cluster to store and retrieve data
+much like operating files in a local file system. Usually, they support full
+namespace hierarchy and the data is accessed with a path. Another category is
+classified as \emph{distributed database}. The significant feature of the data
+stored in a distributed database is that the data is stored and accessed
+aligned by \emph{columns} and \emph{rows}. Sometimes, more strengthful
+databases also record relationship between data and support complicated query
+semantics.\\
+Apart from the two categories mentioned above, a new kind of distributed
+storage system is getting more and more popular. It is not only light-weighted,
+as it doesn't support relationship between data or just supports weak
+relationship, but also flat, usually because it doesn't support complicated
+namespace hierarchy but just a map of key-value pairs. On the opposite, the
+system which belongs to this category is usually of high performance, to be
+measured by throughput, latency, availability, reliability and other criteria.
+Such systems are called \emph{distributed key-value stores}.\\
+
+\section{Related Works}
+Before I summarize existing distributed key-value stores, I would like to
+explain some fundamental concepts related to distributed system. Without a
+clear introduction on these conceptions, it would be impossible to show you
+the beauty and elegance of architecture designs on famous distributed storage
+system.
+
+\subsection{Replication}
+Replication is copies of same data. In distributed system, data is distributed
+to many computing and storage machines. Under most cases, data is evenly
+stored on different machines. The world will be easy but fragile if we don't
+make copy of data. Let's take a closer look at why data backup is necessary
+with some simple calculation. If the possibility of failture for a single
+machine is $p$, and for simplicity, we assume all the machines are
+independently identical, i.e., the possibility of failure for each machine
+equals $p$ and a machine never notices whether his buddy is alive or dead.
+What is the possibility that a system containing $n$ identical machines goes
+down with one or more machine fail to work at some time? Yes, you are right!
+It is $1 - (1 - p)^n$. So what does this mean? Although $p$ may be small, when
+$n$ gets larger and larger, the result tends to reach 1! Commonly, a
+datacenter of companies like Google contains from thousands of to millions of
+machines with moderate disks. Disk failures are not rare but a common case. If
+the data is not replicated, it would be impossible to ensure the integrity of
+data, as recovery of data from a failed disk costs time, computation resource
+and network bandwith, while this is not always possible. Hence making copies
+of data is critical in large systems like distributed key-value store.\\
+
+\subsection{Consistent Hashing}
+Replication of data may not be as simple as it seems at first glance. There
+are many tricky technologies behind to provide the correctness of the
+replication mechanism, and further the improvement of the performance.
+Situation becomes even worse when the system is distributed as we have to make
+decision on the choice of machine for different block of data.\\
+Usually, the data is distributed by its key. First, a hash function is needed
+to calculate a hash value for the key. The key may be a string or even any
+binary stream, while the result of the hash function always falls into a
+finite range. The range is divided into several segments, each representing a
+machine. That machine takes responsibility of all the data with keys whose
+hash value is within that range.\\
+Different distributed algorithms vary in their hash functions. A simple
+instance could be a distributed system which adopts \emph{Cyclic Redundancy
+Check} as its hash function. As we mentioned above, each machine is associated
+with a segment in the range of hash value. However, in most cases, this range
+is further made up of several sub-segments, called hash slots. Ofen, hash
+slots within a segment are not located adjacently to each other in the hash
+range. Note that this is why the algorithm distributed data evenly in
+different machine, while the impact of a single machine failure is minimized.
+I'll explain it later.\\
+
+\section{Instances of Distributed Key-value Stores}
+In this short article, I'll make a brief summary of several famous distributed
+key-value stores and an introduction on their significant features.
+
+\subsection{Dynamo: Amazon's Highly Available Key-value Store}
+I believe the most famous distributed key-value store is Amazon's Dynamo.
+Although it is not open source and available for organizations outside Amazon
+to use, it is highly recognized by scientists and engineers in the area of
+distributed computing.\\
+Perhaps Dynamo gains popularity mainly because of its elegant design. It is a
+perfect example of minimize system functionality to satisify basic
+requirements of people who use it. Dynamo acts as an internal infrastructure
+for Amazaon's many services, such as the on-line book stores. In most of the
+senarios, the service beyond Dyanmo has such a requirement that data is highly
+writable. This is because a write blocked. 
+
+\end{document}
+
