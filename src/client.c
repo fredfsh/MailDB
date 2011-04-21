@@ -1,6 +1,5 @@
 #include "api.h"
 #include "def.h"
-#include "redis.h"
 #include <stdio.h>
 #include <string.h>
 
