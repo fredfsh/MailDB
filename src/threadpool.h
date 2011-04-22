@@ -16,10 +16,10 @@
 #define THREADPOOL_ERR 1
 #define THREADPOOL_FATAL_ERR 2
 
-#define THREAD_NUM 0xF
+#define THREAD_NUM 0xFF
 
-#define LOCK_RETRY 10
-#define LOCK_RETRY_INTERVAL 10 * 1000 // in microseconds
+#define LOCK_RETRY 100
+#define LOCK_RETRY_INTERVAL 1 * 1000 // in microseconds
 
 // A redis command closure.
 typedef struct RedisCommand {

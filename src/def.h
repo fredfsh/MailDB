@@ -9,6 +9,7 @@
 #define EXIST_BLOB "#ExistBlob#"
 
 #define MAX_COMMAND_LENGTH 0xFF
+#define MAX_KEY_LENGTH 0x3F
 #define MAX_BLOB_LENGTH 0xFFFF
 
 #define C 0xF  // max hosts per key
