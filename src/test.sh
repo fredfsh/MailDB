@@ -1,5 +1,9 @@
-for i in {0..6}
+n=8
+for (( i=0; i<$n; i++ ))
 do
   echo "Test process #$i starts."
-  ./client &
+  min=$(( $n - $i ))
+  echo "Running for $min min."
+  ./client $min &
+  sleep 1m
 done

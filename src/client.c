@@ -1,16 +1,13 @@
 #include "api.h"
 #include "client.h"
 #include "def.h"
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <wait.h>
 
 void makeBlob(char *key, char *field, int *valueLength, void *value) {
   int i;
@@ -32,8 +29,7 @@ void makeBlob(char *key, char *field, int *valueLength, void *value) {
   *valueLength = length;
 }
 
-void testWrite() {
-  int i;
+void testWrite(int minute) {
   int rv;
   int totalNum, successNum, failedNum, errorNum;
   int TPS;
@@ -42,7 +38,6 @@ void testWrite() {
   int valueLength;
   time_t start, end;
   struct timeval last, current, genLast, genCurrent;
-  pid_t pid;
   char key[MAX_KEY_LENGTH];
   char field[MAX_KEY_LENGTH];
   unsigned char value[MAX_BLOB_LENGTH];
@@ -53,59 +48,42 @@ void testWrite() {
   errorNum = 0;
   successTime = 0.0;
   genTime = 0.0;
-  for (i = 0; i < PROCESS_NUM; ++i) {
-    /*
-    pid = fork();
-    if (pid < 0) {
-      perror("Error testing write. Unable to fork.");
-      return;
-    } else if (pid == 0) {  // child process
-    */
-      start = time(NULL);
-      end = time(NULL);
-      while (end - start < LAST_INTERVAL) {
-        gettimeofday(&genLast, NULL);
-        makeBlob(key, field, &valueLength, value);
-        gettimeofday(&genCurrent, NULL);
-        genTime +=
-            (double) ((genCurrent.tv_sec - genLast.tv_sec) * 1000000 +
-            genCurrent.tv_usec - genLast.tv_usec) / 1000.0;
-        ++totalNum;
-        gettimeofday(&last, NULL);
-        rv = saveBlob(key, field, valueLength, value);
-        gettimeofday(&current, NULL);
-        if (rv == API_OK) {
-          ++successNum;
-          successTime +=
-            (double) ((current.tv_sec - last.tv_sec) * 1000000 +
-            current.tv_usec - last.tv_usec) / 1000.0;
-        } else if (rv == API_FAILED) {
-          ++failedNum;
-        } else if (rv == API_ERR) {
-          ++errorNum;
-        }
-        end = time(NULL);
-      }
-      printf("totalNum = %d, successNum = %d, failedNum = %d, errorNum = %d\n",
-          totalNum, successNum, failedNum, errorNum);
-      percentage = 100.0 * (double) successNum / (double) totalNum;
-      printf("successNum / totalNum = %.2f%%\n", percentage);
-      averageTime = successTime / (double) successNum;
-      printf("average write time = %.2fms\n", averageTime);
-      TPS = totalNum / (end - start);
-      printf("transactions per seconds = %d\n", TPS);
-      printf("time used to generate test data = %.2fms\n", genTime);
-      _exit(0);
-    //}
-  }
 
-  for (i = 0; i < PROCESS_NUM; ++i) {
-    pid = wait(NULL);
-    if (pid == -1) {
-      perror("Error testing write. Unable to wait for children processes.");
-      return;
+  start = time(NULL);
+  end = time(NULL);
+  while (end - start < 60 * minute) {
+    gettimeofday(&genLast, NULL);
+    makeBlob(key, field, &valueLength, value);
+    gettimeofday(&genCurrent, NULL);
+    genTime +=
+        (double) ((genCurrent.tv_sec - genLast.tv_sec) * 1000000 +
+        genCurrent.tv_usec - genLast.tv_usec) / 1000.0;
+    ++totalNum;
+    gettimeofday(&last, NULL);
+    rv = saveBlob(key, field, valueLength, value);
+    gettimeofday(&current, NULL);
+    if (rv == API_OK) {
+      ++successNum;
+      successTime +=
+        (double) ((current.tv_sec - last.tv_sec) * 1000000 +
+        current.tv_usec - last.tv_usec) / 1000.0;
+    } else if (rv == API_FAILED) {
+      ++failedNum;
+    } else if (rv == API_ERR) {
+      ++errorNum;
     }
+    end = time(NULL);
   }
+  printf("testTime = %dmin\n", minute);
+  printf("totalNum = %d, successNum = %d, failedNum = %d, errorNum = %d\n",
+      totalNum, successNum, failedNum, errorNum);
+  percentage = 100.0 * (double) successNum / (double) totalNum;
+  printf("successNum / totalNum = %.2f%%\n", percentage);
+  averageTime = successTime / (double) successNum;
+  printf("average write time = %.2fms\n", averageTime);
+  TPS = totalNum / (end - start);
+  printf("transactions per seconds = %d\n", TPS);
+  printf("time used to generate test data = %.2fms\n", genTime);
 }
 
 int main(int argc, char *argv[]) {
@@ -127,7 +105,7 @@ int main(int argc, char *argv[]) {
     printf("API init error.\n");
   }
 
-  testWrite();
+  testWrite(atoi(argv[1]));
 
   /*
   rv = deleteBucket(targetBucket);
