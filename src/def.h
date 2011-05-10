@@ -5,6 +5,10 @@
 #ifndef DEF_H_
 #define DEF_H_
 
+typedef unsigned int u_int;
+typedef unsigned char u_char;
+typedef long util_long;
+
 #define EXIST_BLOB_ID "#ExistBlobId#"
 #define EXIST_BLOB "#ExistBlob#"
 

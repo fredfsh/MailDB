@@ -1,3 +1,4 @@
+.PHONY: survey
 survey:
 	pdflatex survey
 	bibtex survey

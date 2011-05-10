@@ -1,6 +1,10 @@
 /* Config server.
-   Interface file between client and config server. Client ask config server
-   for hosts, which are owners of a key.
+   Eploys *libconhash* to implement consistent hashing with a red-black tree.
+   The consistent hashing is instance independent. libconhash returns C ips
+   for a specific key, each represents a distinct server. We sends back these
+   ips to the client.
+   TODO We don't support dynamically machine join and leaving, because data
+   migration must be solved first.
 
    By fredfsh (fredfsh@gmail.com)
 */
