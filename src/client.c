@@ -9,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 
+/*
 void makeBlob(char *key, char *field, int *valueLength, void *value) {
   int i;
   int length;
@@ -85,16 +86,15 @@ void testWrite(int minute) {
   printf("transactions per seconds = %d\n", TPS);
   printf("time used to generate test data = %.2fms\n", genTime);
 }
+*/
 
 int main(int argc, char *argv[]) {
   int rv;
-  /*
   int blobLength;
   char blob[MAX_BLOB_LENGTH];
   char targetBucket[] = "amy";
   char targetField[] = "Russia";
   char targetBlob[] = "Moscow";
-  */
 
   rv = apiInit();
   if (rv == API_OK) {
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     printf("API init error.\n");
   }
 
-  testWrite(atoi(argv[1]));
+  //testWrite(atoi(argv[1]));
 
   /*
   rv = deleteBucket(targetBucket);
@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
   } else {
     printf("Bucket \"%s\" not existed.\n", targetBucket);
   }
+  */
 
   rv = createBucket(targetBucket);
   if (rv == API_OK) {
@@ -133,6 +134,7 @@ int main(int argc, char *argv[]) {
     printf("Create bucket \"%s\" error.\n", targetBucket);
   }
 
+  /*
   rv = existBucket(targetBucket);
   if (rv == API_OK) {
     printf("Bucket \"%s\" existed.\n", targetBucket);

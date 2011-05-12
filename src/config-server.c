@@ -12,6 +12,7 @@
 
 struct conhash_s *conhash_g;  // global consistent hashing instance
 
+//static ips result;
 static ips result;
 
 ips * get_hosts_by_key_1(char **key, CLIENT *client)
@@ -20,6 +21,7 @@ ips * get_hosts_by_key_1(char **key, CLIENT *client)
   result.ips_len = 0;
   result.ips_val = (u_int *) calloc(C, sizeof(u_int));
 
+  //printf("[debug]config-server.c: key = %s\n", *key);  // debug
   conhash_lookup(conhash_g, *key, (int *) &result.ips_len,
       (struct in_addr *) &result.ips_val);
 

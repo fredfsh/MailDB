@@ -2,7 +2,7 @@
 
    By fredfsh (fredfsh@gmail.com)
 */
-#include "config-server.h"
+#include "cfgsrv.h"
 #include "def.h"
 #include "redis.h"
 #include "router.h"
@@ -14,6 +14,8 @@
 #include <time.h>
 #include <unistd.h>
 
+CLIENT *client = NULL;
+
 // Creates a bucket at the database considering consistent hashing.
 // @returns ROUTER_OK when at least W machines succeed.
 //
@@ -22,25 +24,36 @@
 // @bucketId already exists, no bad effect would take place.
 int routeCreateBucket(const char *bucketId) {
   int rv;
-  int ipNum;
-  struct in_addr ips[C];
+  char *key;
+  ips *rpc_result;
   RedisCommand *redisCommand;
 
+  key = (char *) malloc(MAX_COMMAND_LENGTH * sizeof(char));
+  strcpy(key, bucketId);
+  printf("[debug]router.c: client starts rpc request\n");
   // Finds N redis servers for bucket creation.
-  getHostsByKey(bucketId, &ipNum, ips);
-  if (ipNum < N) {
+  rpc_result = get_hosts_by_key_1(&key, client);
+  printf("[debug]router.c: client receives rpc response\n");
+  if (!rpc_result) {
+    printf("router.c: %s %s\n", "Error creating bucket.",
+        "Failed to get redis server info from config server through rpc.");
+    return ROUTER_ERR;
+  }
+  /*
+  if (rpc_result->ips_len < N) {
     printf("router.c: %s %s\n", "Failed to create bucket.",
         "Not enough redis server available.");
     return ROUTER_FAILED;
   }
-  ipNum = N;
+  rpc_result->ips_len = N;
 
   // Constructs redis command structure.
   redisCommand = newRedisCommand(hSet, bucketId, EXIST_BLOB_ID,
       strlen(EXIST_BLOB), EXIST_BLOB);
 
   // Executes redis command.
-  execute(ipNum, ips, redisCommand);
+  execute(rpc_result->ips_len, (const struct in_addr *) rpc_result->ips_val,
+      redisCommand);
 
   // Reads result.
   rv = readResult(W, redisCommand, NULL, NULL);
@@ -49,9 +62,11 @@ int routeCreateBucket(const char *bucketId) {
   } else {
     rv = ROUTER_OK;
   }
+  */
   return rv;
 }
 
+/*
 // Deletes a blob from the database considering consistent hashing.
 //
 // I choose N machines according to consistent hashing, and deletes the blob
@@ -279,6 +294,7 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
   }
   return rv;
 }
+*/
 
 // Finishing function must be called after any operation.
 void routerDestroy() {
@@ -288,6 +304,9 @@ void routerDestroy() {
 // Initial function must be called before any operation.
 int routerInit() {
   int rv;
+
+  client = clnt_create(CFGSRV_HOST, CFGSRVPROG, CFGSRVVERS, "tcp");
+  printf("[debug]router.c: RPC client init success.\n");
 
   rv = threadPoolInit();
   if (rv == THREADPOOL_ERR) {
@@ -300,5 +319,6 @@ int routerInit() {
     return ROUTER_FAILED;
   }
 
+  printf("[debug]router.c: Client threadpool init success.\n");
   return ROUTER_OK;
 }

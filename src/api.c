@@ -44,6 +44,7 @@ int createBucket(const char *bucketId) {
   return API_OK;
 }
 
+/*
 // Deletes a blob.
 int deleteBlob(const char *bucketId, const char *blobId) {
   int rv;
@@ -137,3 +138,4 @@ int saveBlob(const char *bucketId, const char *blobId, const int blobLength,
   }
   return API_OK;
 }
+*/

@@ -156,11 +156,13 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
         if((conhash==NULL) || (conhash->ivnodes==0) || (object==NULL)) break;
         /* calc hash value */
         hash = conhash->cb_hashfunc(object);
+        //printf("[debug]conhash.c: hash = %lx\n", hash);  // debug
         
         rbnode = util_rbtree_geq_key(&conhash->vnode_tree, hash);
         if(rbnode == NULL) break;
 
         num = 1;
+        printf("[debug]conhash.c: num = %d\n", num);  // debug
         __ip_cpy(&ips[0], &((struct virtual_node_s *) rbnode->data)->node->ip);
         startNode = rbnode;
         while (num < C)
@@ -172,6 +174,8 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
               if (__ip_equals(&ips[i], &ip)) break;
             }
             if (i == num) __ip_cpy(&ips[num++], &ip);
+            printf("[debug]conhash.c: num = %d\n", num);  // debug
+            printf("[debug]conhash.c: key = %ld\n", rbnode->key);  // debug
         }
         *ipNum = num;
         return;
