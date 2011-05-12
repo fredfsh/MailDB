@@ -1,4 +1,4 @@
-/* Refer to the comments at the begining of "redis.h".
+/* Refer to the comments at the begining of "api.h".
 
    By fredfsh (fredfsh@gmail.com)
 */

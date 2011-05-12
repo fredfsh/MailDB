@@ -16,7 +16,7 @@ typedef long util_long;
 #define MAX_KEY_LENGTH 0x3F
 #define MAX_BLOB_LENGTH 0xFFFF
 
-#define C 0xF  // max hosts per key
+#define C 0x5  // max hosts per key
 #define N 0x3
 #define R 0x2
 #define W 0x2

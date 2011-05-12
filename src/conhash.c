@@ -6,92 +6,142 @@
 
 struct conhash_s* conhash_init(conhash_cb_hashfunc pfhash)
 {
-    /* alloc memory and set to zero */
-    struct conhash_s *conhash =
-        (struct conhash_s*) calloc(1, sizeof(struct conhash_s));
-    if(conhash == NULL)
+  /* alloc memory and set to zero */
+  struct conhash_s *conhash =
+      (struct conhash_s*) calloc(1, sizeof(struct conhash_s));
+
+  do
+  {
+    if (!conhash) break;
+
+    /* alloc memory for node list */
+    conhash->nodes = (struct node_s *) calloc(1, sizeof(struct node_s));
+    if (!conhash->nodes) break;
+
+    /* setup callback functions */
+    if(pfhash != NULL)
     {
-        return NULL;
+        conhash->cb_hashfunc = pfhash;
     }
-    do
+    else
     {
-        /* setup callback functions */
-        if(pfhash != NULL)
-        {
-            conhash->cb_hashfunc = pfhash;
-        }
-        else
-        {
-            conhash->cb_hashfunc = __conhash_hash_def;
-        }
-        util_rbtree_init(&conhash->vnode_tree);
-        return conhash;
+        conhash->cb_hashfunc = __conhash_hash_def;
+    }
+    util_rbtree_init(&conhash->vnode_tree);
+    return conhash;
 
-    }while(0);
+  }while(0);
 
-    free(conhash);
-    return NULL;
+  conhash_fini(conhash);
+  return NULL;
 }
 
 void conhash_fini(struct conhash_s *conhash)
 {
-    if(conhash != NULL)
+  if (conhash)
+  {
+    // Frees rb tree.
+    while(!util_rbtree_isempty(&(conhash->vnode_tree)))
     {
-        /* free rb tree */
-        while(!util_rbtree_isempty(&(conhash->vnode_tree)))
+        util_rbtree_node_t *rbnode = conhash->vnode_tree.root;
+        util_rbtree_delete(&(conhash->vnode_tree), rbnode);
+        __conhash_del_rbnode(rbnode);
+    }
+    // Frees node list.
+    if (conhash->nodes)
+    {
+      struct node_s *p, *q;
+      q = conhash->nodes;
+      if (q)
+      {
+        p = q->next;
+        while (p)
         {
-            util_rbtree_node_t *rbnode = conhash->vnode_tree.root;
-            util_rbtree_delete(&(conhash->vnode_tree), rbnode);
-            __conhash_del_rbnode(rbnode);
+          q->next = p->next;
+          free(p);
+          p = q->next;
         }
-        free(conhash);
+        free(q);
+      }
     }
+    free(conhash);
+  }
 }
 
-void conhash_set_node(struct node_s *node, const struct in_addr ip,
-    u_int replica)
+// @returns node whose ip = @ip, or NULL when not found.
+struct node_s * conhash_get_node(const struct conhash_s *conhash,
+    const struct in_addr ip)
 {
-    __ip_cpy(&node->ip, &ip);
-    node->replicas = replica;
-    node->flag = NODE_FLAG_INIT;
+  struct node_s *p;
+
+  p = conhash->nodes->next;
+  while (p)
+  {
+    if (__ip_equals(&ip, &p->ip)) return p;
+    p = p->next;
+  }
+  return NULL;
 }
 
-int conhash_add_node(struct conhash_s *conhash, struct node_s *node)
+// Adds a node.
+// When a node with same @ip already exists in the ring, @returns 0
+// immediately and @replica is ignored.
+int conhash_add_node(struct conhash_s *conhash, const struct in_addr ip,
+    const u_int replica)
 {
-    if((conhash==NULL) || (node==NULL)) 
-    {
-        return -1;
-    }
-    /* check node fisrt */
-    if(!(node->flag&NODE_FLAG_INIT) || (node->flag & NODE_FLAG_IN))
-    {
-        return -1;
-    }
-    node->flag |= NODE_FLAG_IN;
-    /* add replicas of server */
-    __conhash_add_replicas(conhash, node);
- 
-    return 0;
+  struct node_s *p;
+
+  if (!conhash) return -1;
+
+  // Checks node with same ip.
+  p = conhash_get_node(conhash, ip);
+  if (p) return 0;
+
+  // Allocates memory for the added node.
+  p = conhash->nodes;
+  while (p->next) p = p->next;
+  p->next = (struct node_s *) calloc(1, sizeof(struct node_s));
+  if (!p->next) return -1;
+
+  p = p->next;
+  __ip_cpy(&p->ip, &ip);
+  p->replicas = replica;
+  p->state = NODE_STATE_IDLE;
+
+  /* add replicas of server */
+  __conhash_add_replicas(conhash, p);
+
+  return 0;
 }
 
-int conhash_del_node(struct conhash_s *conhash, struct node_s *node)
+// Removes a node whose ip = @ip.
+int conhash_del_node(struct conhash_s *conhash, const struct in_addr ip)
 {
-   if((conhash==NULL) || (node==NULL)) 
-    {
-        return -1;
-    }
-    /* check node first */
-    if(!(node->flag&NODE_FLAG_INIT) || !(node->flag&NODE_FLAG_IN))
-    {
-        return -1;
-    }
-    node->flag &= (~NODE_FLAG_IN);
-    /* add replicas of server */
-    __conhash_del_replicas(conhash, node);
+  struct node_s *p, *q;
 
-    return 0;
+  if (!conhash) return -1;
+
+  // Checks if the node is in the ring.
+  p = conhash->nodes;
+  q = p->next;
+  while (q)
+  {
+    if (__ip_equals(&ip, &q->ip))
+    {
+      p->next = q->next;
+      /* del replicas of server */
+      __conhash_del_replicas(conhash, q);
+      free(q);
+      return 0;
+    }
+    p = q;
+    q = p->next;
+  }
+
+  return 0;
 }
 
+// Retrieves at most C servers responsible for the key and @returns their ips.
 void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
     struct in_addr *ips)
 {

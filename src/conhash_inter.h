@@ -26,6 +26,7 @@ struct conhash_s
 {
     util_rbtree_t vnode_tree; /* rbtree of virtual nodes */
     u_int ivnodes; /* virtual node number */
+    struct node_s *nodes; /* node list */
     long (*cb_hashfunc)(const char *);
 };
 

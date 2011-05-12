@@ -21,16 +21,17 @@
 #define CONHASH_API  
 #endif
 
-#define NODE_FLAG_INIT  0x01 /* node is initialized */
-#define NODE_FLAG_IN    0x02 /* node is added to the ring */
-#define NODE_FLAG_RUN   0x04 /* node is at work */
+#define NODE_STATE_INIT  0x00 /* node not added to ring */
+#define NODE_STATE_IDLE  0x01 /* node added to ring but not at work */
+#define NODE_STATE_RUN   0x02 /* node at work */
 
 /* nodes structure */
 struct node_s
 {
     struct in_addr ip; /* node name or some thing identifies the node */
     u_int replicas; /* number of replica virtual nodes */
-    u_int flag;
+    u_int state;
+    struct node_s *next;
 };
 
 /* 
@@ -54,25 +55,26 @@ extern "C" {
     /* finalize lib */
     CONHASH_API void conhash_fini(struct conhash_s *conhash);
 
-    /* set node */
-    CONHASH_API void conhash_set_node(struct node_s *node,
-        const struct in_addr ip, u_int replica);
+    /* get node */
+    CONHASH_API struct node_s * conhash_get_node(
+        const struct conhash_s *conhash, const struct in_addr ip);
 
     /* 
      * add a new node 
      * @node: the node to add
      */
     CONHASH_API int conhash_add_node(struct conhash_s *conhash,
-        struct node_s *node);
+        const struct in_addr ip, const u_int replica);
 
     /* remove a node */
     CONHASH_API int conhash_del_node(struct conhash_s *conhash,
-        struct node_s *node);
+        const struct in_addr ip);
 
     /* 
      * update a node's virtual nodes 
      * @replica: new replica of server
      * return 0 success, -1 failed
+     * TODO not implemented
      */
     CONHASH_API int conhash_update_node(struct conhash_s *conhash,
         struct node_s *node, u_int replica);
