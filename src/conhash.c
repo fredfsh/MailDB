@@ -68,19 +68,20 @@ void conhash_fini(struct conhash_s *conhash)
   }
 }
 
-// @returns node whose ip = @ip, or NULL when not found.
-struct node_s * conhash_get_node(const struct conhash_s *conhash,
-    const struct in_addr ip)
+// Transfers states of every idle node to "run".
+// TODO: Recovery work such as loading dump file into memory.
+void conhash_reset(struct conhash_s *conhash)
 {
   struct node_s *p;
+
+  if (!conhash) return;
 
   p = conhash->nodes->next;
   while (p)
   {
-    if (__ip_equals(&ip, &p->ip)) return p;
+    p->state = NODE_STATE_RUN;
     p = p->next;
   }
-  return NULL;
 }
 
 // Adds a node.
@@ -141,6 +142,21 @@ int conhash_del_node(struct conhash_s *conhash, const struct in_addr ip)
   return 0;
 }
 
+// @returns node whose ip = @ip, or NULL when not found.
+struct node_s * conhash_get_node(const struct conhash_s *conhash,
+    const struct in_addr ip)
+{
+  struct node_s *p;
+
+  p = conhash->nodes->next;
+  while (p)
+  {
+    if (__ip_equals(&ip, &p->ip)) return p;
+    p = p->next;
+  }
+  return NULL;
+}
+
 // Retrieves at most C servers responsible for the key and @returns their ips.
 void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
     struct in_addr *ips)
@@ -149,6 +165,7 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
     int num;
     long hash;
     const util_rbtree_node_t *rbnode, *startNode;
+    struct node_s *node;
     struct in_addr ip;
 
     do
@@ -160,22 +177,29 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
         
         rbnode = util_rbtree_geq_key(&conhash->vnode_tree, hash);
         if(rbnode == NULL) break;
-
-        num = 1;
-        printf("[debug]conhash.c: num = %d\n", num);  // debug
-        __ip_cpy(&ips[0], &((struct virtual_node_s *) rbnode->data)->node->ip);
         startNode = rbnode;
+        if (((struct virtual_node_s *) rbnode->data)->node->state ==
+            NODE_STATE_RUN) {
+          num = 1;
+          //printf("[debug]conhash.c: num = %d\n", num);  // debug
+          __ip_cpy(&ips[0],
+              &((struct virtual_node_s *) rbnode->data)->node->ip);
+        } else {
+          num = 0;
+        }
+
         while (num < C)
         {
             rbnode = util_rbtree_gt_key(&conhash->vnode_tree, rbnode->key);
             if (rbnode == startNode) break;
-            __ip_cpy(&ip, &((struct virtual_node_s *) rbnode->data)->node->ip);
+            node = ((struct virtual_node_s *) rbnode->data)->node;
+            if (node->state != NODE_STATE_RUN) continue;
+            __ip_cpy(&ip, &node->ip);
             for (i = 0; i < num; ++i) {
               if (__ip_equals(&ips[i], &ip)) break;
             }
-            if (i == num) __ip_cpy(&ips[num++], &ip);
-            printf("[debug]conhash.c: num = %d\n", num);  // debug
-            printf("[debug]conhash.c: key = %ld\n", rbnode->key);  // debug
+            if (i != num) continue;
+            __ip_cpy(&ips[num++], &ip);
         }
         *ipNum = num;
         return;

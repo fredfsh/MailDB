@@ -55,9 +55,8 @@ extern "C" {
     /* finalize lib */
     CONHASH_API void conhash_fini(struct conhash_s *conhash);
 
-    /* get node */
-    CONHASH_API struct node_s * conhash_get_node(
-        const struct conhash_s *conhash, const struct in_addr ip);
+    /* Transfers states of every idle node to "run". */
+    CONHASH_API void conhash_reset(struct conhash_s *conhash);
 
     /* 
      * add a new node 
@@ -69,6 +68,10 @@ extern "C" {
     /* remove a node */
     CONHASH_API int conhash_del_node(struct conhash_s *conhash,
         const struct in_addr ip);
+
+    /* get node */
+    CONHASH_API struct node_s * conhash_get_node(
+        const struct conhash_s *conhash, const struct in_addr ip);
 
     /* 
      * update a node's virtual nodes 

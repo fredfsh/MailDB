@@ -17,13 +17,13 @@ static ips result;
 
 ips * get_hosts_by_key_1(char **key, CLIENT *client)
 {
+  int ipNum;
+  struct in_addr ips[C];
   
-  result.ips_len = 0;
   result.ips_val = (u_int *) calloc(C, sizeof(u_int));
 
-  //printf("[debug]config-server.c: key = %s\n", *key);  // debug
-  conhash_lookup(conhash_g, *key, (int *) &result.ips_len,
-      (struct in_addr *) &result.ips_val);
+  conhash_lookup(conhash_g, *key, &ipNum, (struct in_addr *) result.ips_val);
+  result.ips_len = ipNum;
 
   return &result;
 }
@@ -68,6 +68,8 @@ void __conhash_init()
     rv = fscanf(fin, "%s", line);
   }
   fclose(fin);
+
+  conhash_reset(conhash_g);
 }
 
 // Initializes rpc server-side stub and listens for incoming call.
@@ -100,7 +102,7 @@ void __rpc_init()
     exit(1);
   }
 
-  printf("config-server.c: RPC routine registered. Start listening for "
+  printf("[config-server]: RPC routine registered. Start listening for "
       "incoming calls...\n");
 
   svc_run ();
