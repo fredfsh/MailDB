@@ -1,0 +1,31 @@
+This is makeindex, version 2.15 [TeX Live 2010] (kpathsea + Thai support).
+Scanning style file /usr/local/texlive/2010/texmf-dist/makeindex/latex/gglo.ist........
+** Input style error (file = /usr/local/texlive/2010/texmf-dist/makeindex/latex/gglo.ist, line = 76):
+   -- Unknown specifier lethead_prefix.
+** Input style error (file = /usr/local/texlive/2010/texmf-dist/makeindex/latex/gglo.ist, line = 77):
+   -- Unknown specifier lethead_suffix.
+** Input style error (file = /usr/local/texlive/2010/texmf-dist/makeindex/latex/gglo.ist, line = 78):
+   -- Unknown specifier lethead_flag.
+......done (14 attributes redefined, 3 ignored).
+Scanning input file thuthesis.glo....
+!! Input index error (file = thuthesis.glo, line = 14):
+   -- Extra `|' at position 30 of first argument.
+
+!! Input index error (file = thuthesis.glo, line = 38):
+   -- Extra `=' at position 64 of first argument.
+
+!! Input index error (file = thuthesis.glo, line = 110):
+   -- Incomplete first argument (premature LFD).
+
+!! Input index error (file = thuthesis.glo, line = 131):
+   -- Incomplete first argument (premature LFD).
+
+!! Input index error (file = thuthesis.glo, line = 207):
+   -- First argument too long (max 1024).
+!! Input index error (file = thuthesis.glo, line = 208):
+   -- First argument too long (max 1024).
+done (202 entries accepted, 6 rejected).
+Sorting entries.....done (1868 comparisons).
+Generating output file thuthesis.gls....done (337 lines written, 0 warnings).
+Output written in thuthesis.gls.
+Transcript written in thuthesis.ilg.

@@ -1,0 +1,337 @@
+
+ \begin{theglossary} 
+
+    \makeatletter\scan@allowedfalse
+
+  \item 4.0\efill 
+ \subitem General:\ 研究生的授权部分调整了一下，不知道老师为什么总爱修改 那些无关紧要的格式，郁闷。感谢 PMHT@newsmth 的认真比对。\pfill 
+		43
+  \item 4.3\efill 
+ \subitem \verb*+\thu@fixselectfont+:\ \texttt  {caption} 调整了对 \texttt  {ragged2e} 包的调用，所以 我们这里要判断 \texttt  {everysel} 是不是装载了。\pfill 
+		51
+  \item 4.4.2\efill 
+ \subitem General:\ 修改本科生的授权部分，按照 2008 年的新样例。\pfill 
+		43
+
+  \indexspace
+
+  \item v.2.5.1\efill 
+ \subitem \verb*+\thu@makeabstract+:\ 研究生封面英文摘要连续。\pfill 45
+  \item v1.0-\efill 
+ \subitem General:\ Please refer to ``Bao--Pan'' version.\pfill 1
+  \item v1.1\efill 
+ \subitem General:\ Initial version, migrate from the old ``Bao--Pan'' version. Make the template a class instead of package.\pfill 
+		1
+  \item v1.2\efill 
+ \subitem General:\ Remove \textbf  {fancyref}; Remove \textbf  {ucite} and implemente \textbf  {onlinecite}; use package arial or helvet selectively.\pfill 
+		1
+  \item v1.3\efill 
+ \subitem General:\ replace subfigure with subfig, replace caption2 with caption, add details about using figure in the example.\pfill 
+		1
+  \item v1.4\efill 
+ \subitem General:\ Fix the problem of \textbf  {chinese}, that is because both CJK and everysel redefined the \textbf  {selectfont}. So, a not so good workaround is merge them up. Add \textbf  {shuji} example. Add \textbf  {pozhehao} command.\pfill 
+		1
+  \item v1.4rc1\efill 
+ \subitem General:\ I do not why \textbf  {thu@authorizationaddon} does not work now for v1.3, while it's fine in v1.2. Temporarily, I remove the directive :(. There might be nicer solution. Other changes: add \textsf  {config} option to subfig to be compatible with subfigure. add \textbf  {courier} package for tt font.\pfill 
+		1
+      \subsubitem I have to put all chinese chars into cfg, otherwise they would not appear.\pfill 
+		38
+  \item v1.5\efill 
+ \subitem General:\ 增加个人简历章节的命令，去掉主文件中需要重新 定义 \cs  {cleardoublepage} 和自己写 \cs  {markboth}，\cs  {addcontentsline} 的部分。\pfill 
+		49
+    \subitem \verb*+ack+:\ 在那些不显示编号的章节前面先执行一次 \cs  {cleardoublepage}，使新开章节的页码到达正确的状态。否则会因为 \cs  {addcontentsline} 在 chapter 之前而导致目录页码错误。\pfill 
+		46
+  \item v2.0\efill 
+ \subitem General:\ 以前的太乱了，重新整理过清晰多了。\pfill 25
+      \subsubitem 增加了封面密级，增加博士封面支持\pfill 
+		37
+      \subsubitem 附录的目录项需要调整一下。以及公式编号方式等等。\pfill 
+		35
+    \subitem \verb*+ack+:\ 将致谢定义为一个环境更合适，里面也不用像以前段首需 要自己缩进。\pfill 
+		46
+    \subitem \verb*+resume+:\ 最后决定将 resume 定义为环境。这样与前面的主要符号 表、致谢等对应。\pfill 
+		49
+    \subitem \verb*+\thu@first@titlepage+:\ 封面的培养单位，学科等内容字距自动调整。\pfill 41
+    \subitem \verb*+\ziju+:\ 字距改变，重定义 \cs  {CJKglue} 即可。\pfill 50
+  \item v2.0e\efill 
+ \subitem \verb*+denotation+:\ 主要符号表定义为一个 list，用起来方便。\pfill 45
+  \item v2.1\efill 
+ \subitem General:\ Add support to bachelor thesis.\pfill 1
+      \subsubitem Merge the modification of \texttt  {ntheorem}.\pfill 
+		1
+      \subsubitem Redefine footnote marks.\pfill 1
+      \subsubitem Remove \texttt  {fancyhdr} and \texttt  {geometry}.\pfill 
+		1
+      \subsubitem Remove \texttt  {footmisc} and refine the document.\pfill 
+		1
+      \subsubitem Replace thubib.bst with chinesebst.bst.\pfill 1
+      \subsubitem Work very hard on the document.\pfill 1
+      \subsubitem 彻底放弃 fancyhdr，定义自己的样式。\pfill 
+		25
+      \subsubitem 让脚注它悬挂起来，而且中文中用上标，脚注中用正体。\pfill 
+		27
+    \subitem \verb*+\makecover+:\ 分成几个小模块来搞，不然这个 macro 太大了，看不过来。\pfill 
+		43
+    \subitem \verb*+\pozhehao+:\ 稍微加宽一点。同时把名字改为\textbf  {破折号}：\cs  {pozhehao}\pfill 
+		51
+    \subitem \verb*+\thu@first@titlepage+:\ 增加本科部分。\pfill 41
+  \item v2.2\efill 
+ \subitem General:\ Add bachelor training overview details supporting.\pfill 1
+      \subsubitem Adjust hyperref to avoid boxes around links.\pfill 1
+      \subsubitem Adjust margins. How bad it is to simulate MS WORD.\pfill 
+		1
+      \subsubitem CJK support in preamble.\pfill 1
+  \item v2.3\efill 
+ \subitem General:\ Add assumption environment.\pfill 1
+      \subsubitem Add gbk2uni into the document.\pfill 1
+      \subsubitem Adjust hypersetup to remove color and box.\pfill 1
+      \subsubitem Adjust margins again.\pfill 1
+      \subsubitem Adjust references formats.\pfill 1
+      \subsubitem Change the brace in the cover.\pfill 1
+      \subsubitem Fix a great bug: \cs  {\char 97\relax ssOptionsToClass} and \cs  {LoadClass} rather than \cs  {PassOptionToPackage} and \cs  {LoadPackage}.\pfill 
+		1
+      \subsubitem Redefine frontmatter and mainmatter to fit our case.\pfill 
+		1
+      \subsubitem Reorganize the codes in cover, make the pagestyle more readable.\pfill 
+		1
+      \subsubitem Support openright and openany.\pfill 1
+  \item v2.4\efill 
+ \subitem General:\ Fill more pdf info. with hypersetup.\pfill 1
+      \subsubitem thubib.bst 文献标题取消自动小写。\pfill 1
+      \subsubitem 中文参考文献作者超过三个加等。\pfill 1
+      \subsubitem 中文参考文献取消 In: Proceedings。\pfill 1
+      \subsubitem 为摘要等条目增加书签。\pfill 1
+      \subsubitem 压缩 item 之间的距离。\pfill 1
+      \subsubitem 参考文献为学位论文时，加方括号，作者后面为实心点。\pfill 
+		1
+      \subsubitem 图表标题左对齐，取消原先漂亮的 hang 模式。\pfill 
+		31
+      \subsubitem 增加``注释(Remark)''环境。\pfill 1
+      \subsubitem 学位论文不在需要 type 字段。\pfill 1
+      \subsubitem 把页面尺寸写入 dvi，避免有的用户通 过 dvips 不指定页面类型而得到古怪的结果。\pfill 
+		24
+      \subsubitem 添加模板名称命令。\pfill 17
+      \subsubitem 章节的编号用黑体，也就是自动打开 arialtitle 选项。\pfill 
+		1
+      \subsubitem 自动隐藏密级为内部时后面的五角星。\pfill 
+		1
+      \subsubitem 英文文参考文献调整 In: editor, Proceedings。\pfill 
+		1
+      \subsubitem 表格内容为 11 磅。\pfill 31
+    \subitem \verb*+ack+:\ 调整\textbf  {致谢}等中间的距离。\pfill 46
+    \subitem \verb*+denotation+:\ 为主要符号表环境增加一个可选参数，调节符号列的宽度。\pfill 
+		45
+    \subitem \verb*+thebibliography+:\ 参考文献间距调小一点，label 长度增加一点，以便让超过 100 的参考文献更好地对齐。\pfill 
+		48
+    \subitem \verb*+\thu@makeabstract+:\ It is \textbf  {Key words}, but not \textbf  {Key Words}.\pfill 45
+  \item v2.4.1\efill 
+ \subitem General:\ 2.4 忘了把关键词的 tabular 改成 thu@tabular。\pfill 1
+      \subsubitem 参考文献最后一个作者前是逗号而不是 and。\pfill 
+		1
+  \item v2.4.2\efill 
+ \subitem General:\ 去掉参考文献第二个作者后面烦人的逗号。\pfill 1
+  \item v2.5\efill 
+ \subitem General:\ 不用 \cs  {CJKcaption}，在导言区直接引入配置文件。\pfill 
+		51
+      \subsubitem 为了让索引中能出现\textbf  {图 xxx}，不得不修改 \LaTeX  内部命令 \cs  {@caption}。\pfill 
+		47
+      \subsubitem 修正 minipage 中的脚注。\pfill 27
+      \subsubitem 取消 \texttt  {titletoc} 宏包，用 \cs  {dottedtocline} 调整 目录。\pfill 
+		35
+      \subsubitem 增加 empty 页面样式。\pfill 25
+      \subsubitem 增加插图、表格和公式索引。\pfill 47
+      \subsubitem 增加本科论文的提交选项 submit。\pfill 17
+      \subsubitem 增加索引名称定义。\pfill 31
+      \subsubitem 对本科论文进行大幅度的重写，因为教务处修改了格式要求。\pfill 
+		1
+      \subsubitem 本科的奇偶页眉不同。\pfill 25
+      \subsubitem 标题上下间距重调，以前没有考虑 \cs  {intextsep} 的影响。\pfill 
+		31
+      \subsubitem 重新整理代码，使其布局更易读。\pfill 1
+    \subitem \verb*+\chapter+:\ 取消 \texttt  {titlesec} 宏包，用基本 \LaTeX  {} 命令格式化标题。\pfill 
+		32
+    \subitem \verb*+ack+:\ ft，本科论文要求致谢声明分页，但是研究生的不分！\pfill 
+		46
+    \subitem \verb*+\edate+:\ 院系和专业分别改名用 department 和 major，代替原来 的 affil 和 subject。\pfill 
+		37
+    \subitem \verb*+\equcaption+:\ 将公式编号写入临时文件以便生成公式列表。\pfill 47
+    \subitem \verb*+thebibliography+:\ 参考文献序号靠左，而不是靠右。\pfill 48
+    \subitem \verb*+\listofequations*+:\ 增加公式索引命令。\pfill 47
+    \subitem \verb*+\makecover+:\ 本科论文评语位置调整。\pfill 44
+      \subsubitem 综合论文训练在授权说明之后。\pfill 44
+  \item v2.5.1\efill 
+ \subitem General:\ ft，研究生院目录要 times，而教务处要 arial。\pfill 18
+      \subsubitem submit 只能由本科用。\pfill 17
+      \subsubitem 减小目录项中的导引小点跟页码之间的留白。\pfill 
+		35
+      \subsubitem 参考文献中杂志文章如果没有卷号，那么页码直接跟在 年份后面，并用句点分割。在 thubib.bst 中增加 output.year 函数。\pfill 
+		1
+      \subsubitem 增加 \texttt  {subfigure} 和 \texttt  {subtable} 的 caption 配置。\pfill 
+		31
+      \subsubitem 如果没有设置格式选项，报错。\pfill 17
+      \subsubitem 如果选项设置了 dvips，但是用 pdflatex 编译，报错。\pfill 
+		17
+      \subsubitem 教务处居然要本科论文公式全文编号！\pfill 
+		28
+      \subsubitem 本科 openright，研究生 openany。\pfill 18
+      \subsubitem 本科公式编号前添加\textbf  {公式}二字。ft，这个需要修 \texttt  {amsmath} 极其深入的一个命令。\pfill 
+		28
+      \subsubitem 本科正文之后页码即用罗马数字，研究生不变。\pfill 
+		22
+      \subsubitem 根据教务处的新要求调整附录部分。\pfill 
+		1
+      \subsubitem 硕士封面的冒号前居然有点小距离！\pfill 
+		38
+      \subsubitem 脚注编号使用 \cs  {textcircled} 命令，每页允许至多 99 个 脚注条目。\pfill 
+		27
+      \subsubitem 重新定义表格默认字体。\pfill 31
+    \subitem \verb*+\chapter+:\ 让 \cs  {chapter*} 自动 \cs  {markboth}。\pfill 32
+    \subitem \verb*+\listofequations*+:\ 公式索引项 numwidth 增加。\pfill 47
+    \subitem \verb*+\resumeitem+:\ ft，教务处和研究生院非要搞的不一样！\pfill 49
+    \subitem \verb*+\thu@first@titlepage+:\ 本科封面标题第二行的横线上移一点。\pfill 40
+      \subsubitem 本科封面标题调整微小的空隙。\pfill 40
+    \subitem \verb*+\thu@makeabstract+:\ 不管是哪种论文格式，摘要都要右开。\pfill 44
+      \subsubitem 我靠，教务处又不要正文前的页眉了，ft！\pfill 
+		44
+  \item v2.5.2\efill 
+ \subitem General:\ 上一个版本忘了把研究生的公式编号排除。\pfill 28
+      \subsubitem 更改默认列表距离。\pfill 27
+      \subsubitem 用 \cs  {thu@chapter*} 改写目录命令。\pfill 
+		35
+    \subitem \verb*+ack+:\ 研究生致谢右开。\pfill 46
+      \subsubitem 研究生致谢题目是致谢，目录是致谢与声明。\pfill 
+		46
+    \subitem \verb*+resume+:\ 研究生的个人介绍要右开。\pfill 49
+    \subitem \verb*+\thu@chapter*+:\ 定义自己的 \cs  {thu@chapter*}。\pfill 33
+    \subitem \verb*+\thu@first@titlepage+:\ 研究生论文标题中英文用 arial 字体。\pfill 40
+    \subitem \verb*+\thu@makeabstract+:\ 在研究生论文中，摘要不出现在目录中，但是要在书签中出现。\pfill 
+		44
+  \item v2.5.3\efill 
+ \subitem General:\ submit 选项的一个笔误。\pfill 17
+      \subsubitem 不管 caption 出现在什么位置，\cs  {aboveskip} 总是出现在标题和浮动体之间的距离。\pfill 
+		31
+      \subsubitem 增加对 \texttt  {longtable} 的处理。\pfill 31
+      \subsubitem 第一章永远右开。\pfill 22
+    \subitem \verb*+\equcaption+:\ 取消 \cs  {equcaption} 的参数\pfill 47
+    \subitem \verb*+\thu@makeabstract+:\ \cs  {pagenumber} 会自动设置页码为 1。\pfill 44
+  \item v2.6\efill 
+ \subitem General:\ 去除 hyperref 选项，等待全局传递。\pfill 21
+      \subsubitem 增加 \cs  {floatsep}，\cs  {@fptop}，\cs  {@fpsep} 和 \cs  {@fpbot}。\pfill 
+		30
+      \subsubitem 增加 \texttt  {longtable}。\pfill 21
+      \subsubitem 增加 dvipdfm 选项。\pfill 17
+      \subsubitem 脚注改成 1.5 倍行距，漂亮。\pfill 28
+    \subitem \verb*+\thu@first@titlepage+:\ 本科生题目加长，最多 24 个字。\pfill 40
+  \item v2.6.1\efill 
+ \subitem General:\ 取消 thubib.bst 中 inbook 类 volume 后的页码。\pfill 1
+  \item v2.6.2\efill 
+ \subitem General:\ 去掉 \texttt  {paralist} 的 newitem 和 newenum 选项，因为默 认是打开的。\pfill 
+		19
+      \subsubitem 增加问题和猜想两个数学环境。\pfill 29
+      \subsubitem 根据不同论文格式显示不同公式编号，并自动加入索引。\pfill 
+		28
+    \subitem \verb*+\edate+:\ 改正 groupmembers 的拼 写错误。\pfill 37
+    \subitem \verb*+\equcaption+:\ 此命令配合 \texttt  {amsmath} 命令基本可以满足所有 公式需要。\pfill 
+		47
+    \subitem \verb*+\thu@define@fontsize+:\ 引入此命令重新定义字号。\pfill 23
+    \subitem \verb*+\thu@define@term+:\ 引入 \cs  {thu@define@term} 定义封面命令。\pfill 36
+    \subitem \verb*+\thu@first@titlepage+:\ 如果本科生没有辅导教师则不显示。\pfill 41
+    \subitem \verb*+\thu@makeabstract+:\ 取消 tabular 环境，用 \cs  {hangindent} 实现关键词 悬挂缩进，英文摘要同。\pfill 
+		44
+      \subsubitem 取消最后一列的空白。\pfill 44, 45
+  \item v2.6.3\efill 
+ \subitem \verb*+ack+:\ 重画双虚线，自适应页面宽度。\pfill 46
+    \subitem \verb*+\thu@makeabstract+:\ 为本科正确设置目录及以后的页码。\pfill 44
+  \item v2.6.4\efill 
+ \subitem General:\ 增加 \cs  {listoffigures*}，\cs  {listoftables*}。\pfill 47
+      \subsubitem 增加 \texttt  {neverdecrease} 选项。\pfill 19
+    \subitem \verb*+thebibliography+:\ 调整参考文献标签宽度，使得条目增多时仍能对齐。\pfill 
+		48
+    \subitem \verb*+\listofequations*+:\ 增加 \cs  {listofequations*}。\pfill 47
+    \subitem \verb*+\thu@makeabstract+:\ \textbf  {Keywords} but not \textbf  {Key words}.\pfill 45
+  \item v3.0\efill 
+ \subitem General:\ 不用专门为本科论文生成\textbf  {提交}版本了。\pfill 8
+      \subsubitem 删除 submit 选项。\pfill 17
+      \subsubitem 本科公式又要取消全文统一编号了，这帮家伙，早就告诉 过他们，就是不听。\pfill 
+		28
+      \subsubitem 没有了综合论文训练页面，很多本科论文专用命令就消失了。\pfill 
+		14
+      \subsubitem 缩小目录中标题与页码之间\textbf  {点}之间的距离。\pfill 
+		35
+    \subitem \verb*+ack+:\ 本科论文声明部分图片扫描取消。\pfill 46
+    \subitem \verb*+\makecover+:\ 本科综合论文训练在电子版中取消。\pfill 44
+      \subsubitem 本科论文授权图片扫描取消。\pfill 44
+      \subsubitem 本科论文评语取消。\pfill 44
+    \subitem \verb*+\thu@makeabstract+:\ \textbf  {Key words} but not \textbf  {Keywords}. What are you doing?\pfill 
+		45
+  \item v3.1\efill 
+ \subitem General:\ \textbf  {内部}密级前面要五角星了。\pfill 38
+      \subsubitem replace mathptmx with txfonts.\pfill 19
+      \subsubitem 博士论文目录只出现到第 3 级标题即可。\pfill 
+		35
+      \subsubitem 去掉配置文件中的 \cs  {hfill}。\pfill 38
+      \subsubitem 本科的目录又不要 arial 字体了。\pfill 18
+    \subitem \verb*+\ekeywords+:\ 增强的关键词命令。\pfill 38
+    \subitem \verb*+\thu@define@term+:\ 重新定义摘要为环境，long 选项不需要了。\pfill 36
+    \subitem \verb*+\thu@first@titlepage+:\ 重新放置封面表格的提示元素。\pfill 41
+    \subitem \verb*+\thu@makeabstract+:\ 研究生关键词不再沉底。\pfill 44
+    \subitem \verb*+\thudot+:\ 引入 cs{thudot} 来自动完成参考文献最后的点。\pfill 48
+  \item v4.0\efill 
+ \subitem General:\ \textbf  {内部}密级前面终究还是不要五角星了。\pfill 
+		38
+      \subsubitem 本科研究生目录字号行距都不同。\pfill 
+		35
+  \item v4.2\efill 
+ \subitem General:\ \cs  {eqref} 加括号。\pfill 28
+      \subsubitem 调整证明环境的编号和结尾的方块。\pfill 
+		29
+    \subitem \verb*+\thu@doctor@engcover+:\ 博士英文封面补充联合导师。\pfill 42
+  \item v4.3\efill 
+ \subitem General:\ 子图引用时加括号。\pfill 31
+  \item v4.4\efill 
+ \subitem General:\ 修复网址断字。\pfill 21
+      \subsubitem 变态的本科论文终于去掉了\textbf  {公式}二字。\pfill 
+		29
+      \subsubitem 本科取消了所有页眉，毫无疑问，在以后的修订中还会加 上的，我们等着看。\pfill 
+		22
+      \subsubitem 本科正文后的页码延续前面的阿拉伯数字，不再用罗马数 字。\pfill 
+		22
+      \subsubitem 本科生目录字号改回\cs  {xiaosi}{\ttfamily  [}\meta  {1.8}{\ttfamily  ]}。\pfill 
+		35
+      \subsubitem 本科生目录缩进要求不同。\pfill 35
+      \subsubitem 本科章目录项一直用黑体 (Arial)。\pfill 35
+    \subitem \verb*+\section+:\ 调整段前距为 -20bp 而不是原来的 -24bp。本科的混帐例 子！\pfill 
+		34
+    \subitem \verb*+\subsection+:\ 修改本科生模板的二级节标题为小四而不是半小四。\pfill 
+		35
+      \subsubitem 调整段前距为 -12bp 而不是原来的 -16bp。\pfill 
+		35
+    \subitem \verb*+\subsubsection+:\ 调整段前距为 -12bp 而不是原来的 -16bp。\pfill 35
+  \item v4.4.2\efill 
+ \subitem General:\ 本科生格式终于也开始用空格作为关键字分隔符了。\pfill 
+		38
+      \subsubitem 本科生签名之间距离改为 \cs  {hskip1em}。\pfill 
+		38
+    \subitem \verb*+\thu@makeabstract+:\ Bachelor English abstract format requires indent and no hang-indent.\pfill 
+		45
+      \subsubitem 本科生格式中文关键词采用首行缩进且无悬挂缩进。\pfill 
+		44
+  \item v4.4.3\efill 
+ \subitem \verb*+\thu@first@titlepage+:\ 修改本科生论文封面日期格式以符合新样例。\pfill 42
+      \subsubitem 修改本科生论文封面格式以符合新样例。\pfill 
+		41
+  \item v4.4.4\efill 
+ \subitem General:\ 修复了一个从 v4.3 升级到 v4.4 过程中的丢失公式索引的 bug，原修改代码保留备忘。\pfill 
+		29
+  \item v4.5\efill 
+ \subitem General:\ 加入 XeTeX 支持，需要 \texttt  {xeCJK}。\pfill 19
+      \subsubitem 增加 xetex, pdftex 选项。\pfill 17
+      \subsubitem 彻底转向 UTF-8，并支持 xelatex。\pfill 1
+    \subitem \verb*+\shuji+:\ 简化代码，同时支持 xelatex。\pfill 50
+  \item v4.5.1\efill 
+ \subitem General:\ 太好了，不用处理 \texttt  {longtable} 的 \cs  {caption} 了。\pfill 
+		31
+      \subsubitem 更优雅的插图/表格索引，避免跟 \texttt  {caption} 包冲 突。\cs  {thu@listof} 相应修改。\pfill 
+		47
+
+ \end{theglossary}
