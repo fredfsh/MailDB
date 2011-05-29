@@ -3,11 +3,6 @@
    as the entry point for upper layer who should include this file for
    invocation. This file is an ANSI C version of wrappers.
 
-   First byte of the @blob is an *int* indicates the length of the whole blob.
-   For example, if the real blob content is nothing, or the blob not found,
-   first sizeof(int) bytes pointed by @blob should be an integer value, which
-   equals to sizeof(int).
-
    By fredfsh (fredfsh@gmail.com)
 */
 #ifndef API_H_
