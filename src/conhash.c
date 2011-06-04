@@ -3,6 +3,7 @@
 
 #include "conhash.h"
 #include "conhash_inter.h"
+#include <arpa/inet.h>
 
 struct conhash_s* conhash_init(conhash_cb_hashfunc pfhash)
 {
@@ -188,7 +189,8 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
           num = 0;
         }
 
-        while (num < C)
+        //while (num < C)
+        while (num < N)  // N here to improve performance
         {
             rbnode = util_rbtree_gt_key(&conhash->vnode_tree, rbnode->key);
             if (rbnode == startNode) break;
@@ -201,6 +203,8 @@ void conhash_lookup(struct conhash_s *conhash, const char *object, int *ipNum,
             if (i != num) continue;
             __ip_cpy(&ips[num++], &ip);
         }
+        //printf("[debug]conhash.c: ips = %s, %s, %s", inet_ntoa(ips[0]),
+        //    inet_ntoa(ips[1]), inet_ntoa(ips[2]));
         *ipNum = num;
         return;
 

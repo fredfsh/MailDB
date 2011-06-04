@@ -580,6 +580,7 @@ int hSet(void *arg) {
   // Reads Redis reply.
   rv = _recvInt(sockfd, &result);
   if (rv != REDIS_OK) {
+    printf("[debug]redis.c: %s %s\n", "Caused by", inet_ntoa(*(threadTask->ip)));
     close(sockfd);
     return rv;
   }

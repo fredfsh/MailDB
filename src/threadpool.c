@@ -64,11 +64,17 @@ void * _threadDo(void *nouse) {
   while (1) {
     pthread_cond_wait(g_threadPool->cond, g_threadPool->lock);
     threadTask = g_threadPool->taskQueue;
+    --g_threadPool->waitingTasksNum;
     if ( (g_threadPool->taskQueue = threadTask->next) ) {
       pthread_cond_signal(g_threadPool->cond);
     }
+    --g_threadPool->idleThreadsNum;
     pthread_mutex_unlock(g_threadPool->lock);
+
     if (threadTask) threadTask->redisCommand->command(threadTask);
+    pthread_mutex_lock(g_threadPool->lock);
+    ++g_threadPool->idleThreadsNum;
+    pthread_mutex_unlock(g_threadPool->lock);
   }
 
   return NULL;  // unreachable
@@ -100,6 +106,7 @@ void execute(const int ipNum, const struct in_addr *ip,
   } else {
     g_threadPool->taskQueue = threadTasks[0];
   }
+  g_threadPool->waitingTasksNum += ipNum;
   pthread_mutex_unlock(g_threadPool->lock);
   pthread_cond_signal(g_threadPool->cond);
 }
@@ -157,7 +164,6 @@ int readResult(const int successNum, RedisCommand *redisCommand, int *exist,
     rv = pthread_mutex_trylock(redisCommand->lock);
     if (!rv) {
       if (redisCommand->successNum >= successNum) {
-        --redisCommand->refNum;
         if (exist) *exist = redisCommand->exist;
         if (blob) {
           chosen = rand() % redisCommand->successNum;
@@ -166,14 +172,27 @@ int readResult(const int successNum, RedisCommand *redisCommand, int *exist,
           memcpy(blob, chosenBlob, MAX_BLOB_LENGTH);
         }
         pthread_mutex_unlock(redisCommand->lock);
+        _freeRedisCommand(redisCommand);
         return THREADPOOL_OK;
       }
       pthread_mutex_unlock(redisCommand->lock);
+      if (retry == 1) {
+        printf("threadpool.c: %s %s\n", "Failed to read result.",
+            "Not enough replies gathered from redis.");
+        printf("[debug]threadpool.c: %s %d\n",
+            "Number of tasks waiting in task queue:",
+            g_threadPool->waitingTasksNum);
+        printf("[debug]threadpool.c: %s %d\n", "Number of idle threads:",
+            g_threadPool->idleThreadsNum);
+        return THREADPOOL_FAILED;
+      }
     }
     usleep(LOCK_RETRY_INTERVAL);
   }
   printf("threadpool.c: %s %s\n", "Failed to read result.",
       "Unable to acquire the mutex.");
+  printf("[debug]threadpool.c: successNum = %d, refNum = %d\n",
+      redisCommand->successNum, redisCommand->refNum);
   return THREADPOOL_FAILED;
 }
 // Initial function must be called before usage of the thread pool.
@@ -201,6 +220,7 @@ int threadPoolInit() {
       return THREADPOOL_ERR;
     }
   }
+  g_threadPool->idleThreadsNum = THREAD_NUM;
   return THREADPOOL_OK;
 }
 
@@ -250,6 +270,7 @@ int writeResult(const int exist, const void *blob, ThreadTask *threadTask) {
             "Unable to release the mutex.");
         return THREADPOOL_FATAL_ERR;
       }
+      _freeRedisCommand(redisCommand);
       return THREADPOOL_OK;
     }
     usleep(LOCK_RETRY_INTERVAL);

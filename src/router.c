@@ -289,6 +289,10 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
   // Reads result.
   rv = readResult(W, redisCommand, NULL, NULL);
   if (rv != THREADPOOL_OK) {
+    printf("[debug]router.c: Cause by %x, %x, %x\n",
+        *((unsigned int *) &ips[0]),
+        *((unsigned int *) &ips[1]),
+        *((unsigned int *) &ips[2]));
     rv = ROUTER_FAILED;
   } else {
     rv = ROUTER_OK;

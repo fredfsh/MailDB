@@ -9,7 +9,7 @@ typedef unsigned int u_int;
 typedef unsigned char u_char;
 typedef long util_long;
 
-#define CFGSRV_HOST "alpha"
+#define CFGSRV_HOST "10.0.1.201"
 
 #define EXIST_BLOB_ID "#ExistBlobId#"
 #define EXIST_BLOB "#ExistBlob#"

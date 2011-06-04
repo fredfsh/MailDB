@@ -35,9 +35,12 @@ void testWrite(const char *arg) {
   int averageTime;
   int valueLength;
   int testTimeInSeconds;
+  int opTime;
+  int cnt;
   long successTime;
-  time_t start, end;
-  struct timeval last, current;
+  long genTime;
+  struct timeval start, end, last, current;
+  struct timeval genLast, genCurrent;
   char key[MAX_KEY_LENGTH];
   char field[MAX_KEY_LENGTH];
   unsigned char value[MAX_BLOB_LENGTH];
@@ -48,32 +51,45 @@ void testWrite(const char *arg) {
   failedNum = 0;
   errorNum = 0;
   successTime = 0;
+  genTime = 0;
+  cnt = 0;
 
-  start = time(NULL);
-  end = time(NULL);
+  gettimeofday(&start, NULL);
+  gettimeofday(&end, NULL);
   testTimeInSeconds = atoi(arg);
-  while (end - start < testTimeInSeconds) {
+  while (ms(start, end) < 1000 * testTimeInSeconds) {
+    // make blob
+    gettimeofday(&genLast, NULL);
     makeBlob(key, field, &valueLength, value);
-    ++totalNum;
+    gettimeofday(&genCurrent, NULL);
+    genTime += ms(genLast, genCurrent);
+
+    // save blob
     gettimeofday(&last, NULL);
     rv = saveBlob(key, field, valueLength, value);
     gettimeofday(&current, NULL);
-    if (rv == API_OK) {
-      ++successNum;
-      successTime += ((current.tv_sec - last.tv_sec) * 1000000 +
-        current.tv_usec - last.tv_usec) / 1000;
-    } else if (rv == API_FAILED) {
-      ++failedNum;
-    } else if (rv == API_ERR) {
-      ++errorNum;
+    opTime = ms(last, current);
+    if (++cnt % 100 == 0) printf("opTime = %d\n", opTime);
+
+    if (ms(start, end) > (testTimeInSeconds - 30) * 1000) {
+      ++totalNum;
+      if (rv == API_OK) {
+        ++successNum;
+        successTime += opTime;
+      } else if (rv == API_FAILED) {
+        ++failedNum;
+      } else if (rv == API_ERR) {
+        ++errorNum;
+      }
     }
-    end = time(NULL);
+    gettimeofday(&end, NULL);
   }
   fout = fopen(arg, "w");
   fprintf(fout, "%d %d %d %d\n", totalNum, successNum, failedNum, errorNum);
   averageTime = successTime / successNum;
-  fprintf(fout, "%ld %d\n", successTime, averageTime);
+  fprintf(fout, "%ld %ld %d\n", genTime, successTime, averageTime);
   fclose(fout);
+  printf("Done. Result written to %s.\n", arg);
 }
 
 int main(int argc, char *argv[]) {

@@ -47,9 +47,11 @@ typedef struct ThreadTask {
 // Thread task queue.
 typedef struct ThreadPool {
   struct ThreadTask *taskQueue;
+  int waitingTasksNum;
   pthread_mutex_t *lock;
   pthread_cond_t *cond;
   pthread_t *threads;
+  int idleThreadsNum;
 } ThreadPool;
 
 // Finishing function must be called after usage of the thread pool.
