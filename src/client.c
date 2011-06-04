@@ -29,44 +29,39 @@ void makeBlob(char *key, char *field, int *valueLength, void *value) {
   *valueLength = length;
 }
 
-void testWrite(int minute) {
+void testWrite(const char *arg) {
   int rv;
   int totalNum, successNum, failedNum, errorNum;
-  int TPS;
-  double successTime, genTime, averageTime;
-  double percentage;
+  int averageTime;
   int valueLength;
+  int testTimeInSeconds;
+  long successTime;
   time_t start, end;
-  struct timeval last, current, genLast, genCurrent;
+  struct timeval last, current;
   char key[MAX_KEY_LENGTH];
   char field[MAX_KEY_LENGTH];
   unsigned char value[MAX_BLOB_LENGTH];
+  FILE *fout;
 
   totalNum = 0;
   successNum = 0;
   failedNum = 0;
   errorNum = 0;
-  successTime = 0.0;
-  genTime = 0.0;
+  successTime = 0;
 
   start = time(NULL);
   end = time(NULL);
-  while (end - start < 60 * minute) {
-    gettimeofday(&genLast, NULL);
+  testTimeInSeconds = atoi(arg);
+  while (end - start < testTimeInSeconds) {
     makeBlob(key, field, &valueLength, value);
-    gettimeofday(&genCurrent, NULL);
-    genTime +=
-        (double) ((genCurrent.tv_sec - genLast.tv_sec) * 1000000 +
-        genCurrent.tv_usec - genLast.tv_usec) / 1000.0;
     ++totalNum;
     gettimeofday(&last, NULL);
     rv = saveBlob(key, field, valueLength, value);
     gettimeofday(&current, NULL);
     if (rv == API_OK) {
       ++successNum;
-      successTime +=
-        (double) ((current.tv_sec - last.tv_sec) * 1000000 +
-        current.tv_usec - last.tv_usec) / 1000.0;
+      successTime += ((current.tv_sec - last.tv_sec) * 1000000 +
+        current.tv_usec - last.tv_usec) / 1000;
     } else if (rv == API_FAILED) {
       ++failedNum;
     } else if (rv == API_ERR) {
@@ -74,16 +69,11 @@ void testWrite(int minute) {
     }
     end = time(NULL);
   }
-  printf("testTime = %dmin\n", minute);
-  printf("totalNum = %d, successNum = %d, failedNum = %d, errorNum = %d\n",
-      totalNum, successNum, failedNum, errorNum);
-  percentage = 100.0 * (double) successNum / (double) totalNum;
-  printf("successNum / totalNum = %.2f%%\n", percentage);
-  averageTime = successTime / (double) successNum;
-  printf("average write time = %.2fms\n", averageTime);
-  TPS = totalNum / (end - start);
-  printf("transactions per seconds = %d\n", TPS);
-  printf("time used to generate test data = %.2fms\n", genTime);
+  fout = fopen(arg, "w");
+  fprintf(fout, "%d %d %d %d\n", totalNum, successNum, failedNum, errorNum);
+  averageTime = successTime / successNum;
+  fprintf(fout, "%ld %d\n", successTime, averageTime);
+  fclose(fout);
 }
 
 int main(int argc, char *argv[]) {
@@ -108,7 +98,7 @@ int main(int argc, char *argv[]) {
   if (argc != 2) {
     printf("Usage: ./client process_num\n");
   } else {
-    testWrite(atoi(argv[1]));
+    testWrite(argv[1]);
   }
 
   /*

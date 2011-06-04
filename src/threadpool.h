@@ -18,7 +18,7 @@
 
 #define THREAD_NUM 0xFF
 
-#define LOCK_RETRY 100
+#define LOCK_RETRY 1000
 #define LOCK_RETRY_INTERVAL 1 * 1000 // in microseconds
 
 // A redis command closure.

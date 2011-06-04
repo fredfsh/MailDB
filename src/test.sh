@@ -1,9 +1,9 @@
-n=4
-for (( i=0; i<$n; i++ ))
+n=$@
+for (( i=1; i<=$n; i++ ))
 do
   echo "Test process #$i starts."
-  min=$(( $n - $i ))
-  echo "Running for $min min."
-  ./client $min &
-  sleep 1m
+  sec=$(( ($n - $i) * 30 + 60 ))
+  echo "Running for $sec seconds."
+  ./client $sec &
+  sleep 30s
 done
