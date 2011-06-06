@@ -18,6 +18,10 @@
 
 #define THREAD_NUM 0xFF
 
+#define MAX_WAITING_TASKS_NUM 0xFF
+
+#define ADD_RETRY 1000
+#define ADD_RETRY_INTERVAL 1 * 1000 // in microseconds
 #define LOCK_RETRY 1000
 #define LOCK_RETRY_INTERVAL 1 * 1000 // in microseconds
 

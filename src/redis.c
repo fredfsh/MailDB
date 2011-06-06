@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 // Assembles a binary safe command stream according to Redis protocol, not
@@ -212,6 +213,7 @@ int _recvStatus(const int sockfd, char *status) {
 int connectByIp(const struct in_addr *ip) {
   int sockfd;
   int rv;
+  int retry;
   struct sockaddr_in serv_addr;
 
   // Creates a socket.
@@ -226,13 +228,16 @@ int connectByIp(const struct in_addr *ip) {
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(REDIS_PORT);
   memcpy(&serv_addr.sin_addr, ip, sizeof(struct in_addr));
-  rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-  if (rv < 0) {
-    printf("router.c: %s %s\n", "Error connecting to Redis server.",
-        inet_ntoa(*ip));
-    return -1;
+  retry = CONNECT_RETRY;
+  while (--retry >= 0) {
+    rv = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+    if (rv >= 0) return sockfd;
+    usleep(CONNECT_RETRY_INTERVAL);
   }
-  return sockfd;
+
+  printf("router.c: %s %s\n", "Error connecting to Redis server.",
+      inet_ntoa(*ip));
+  return -1;
 }
 
 //Executes DEL command to a Redis server.
@@ -527,6 +532,9 @@ int hSet(void *arg) {
   int valueLength;
   char commandStream[MAX_COMMAND_LENGTH];
   ThreadTask *threadTask;
+
+  FILE *fout;
+  struct timeval start, end;
 
   // Casts arguments.
   threadTask = (ThreadTask *) arg;

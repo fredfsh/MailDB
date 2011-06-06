@@ -9,14 +9,14 @@ typedef unsigned int u_int;
 typedef unsigned char u_char;
 typedef long util_long;
 
-#define CFGSRV_HOST "10.0.1.201"
+#define CFGSRV_HOST "172.16.4.0"
 
 #define EXIST_BLOB_ID "#ExistBlobId#"
 #define EXIST_BLOB "#ExistBlob#"
 
 #define MAX_COMMAND_LENGTH 0xFF
 #define MAX_KEY_LENGTH 0x3F
-#define MAX_BLOB_LENGTH 0xFFFF
+#define MAX_BLOB_LENGTH (0xFFFF + 5)
 
 #define C 0x5  // max hosts per key
 #define N 0x3

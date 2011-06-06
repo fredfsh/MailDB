@@ -15,13 +15,12 @@ void makeBlob(char *key, char *field, int *valueLength, void *value) {
   unsigned char *p;
 
   length = rand() % (MAX_KEY_LENGTH - 1) + 1;
-  //length = rand() % (10 - 1) + 1;
-  for (i = 0; i < length; ++i) {
-    key[i] = (char) (rand() % 26 + 'A');
-    field[i] = (char) (rand() % 26 + 'a');
-  }
+  for (i = 0; i < length; ++i) key[i] = (char) (rand() % 26 + 'A');
   key[length] = '\0';
-  field[length] = '\0';
+  if (field) {
+    for (i = 0; i < length; ++i) field[i] = (char) (rand() % 26 + 'a');
+    field[length] = '\0';
+  }
   length = rand() % (MAX_BLOB_LENGTH - 1) + 1;
   //length = rand() % (10 - 1) + 1;
   p = (unsigned char *) value;
@@ -71,7 +70,7 @@ void testWrite(const char *arg) {
     opTime = ms(last, current);
     if (++cnt % 100 == 0) printf("opTime = %d\n", opTime);
 
-    if (ms(start, end) > (testTimeInSeconds - 30) * 1000) {
+    if (ms(start, end) >= (testTimeInSeconds - 30) * 1000) {
       ++totalNum;
       if (rv == API_OK) {
         ++successNum;
@@ -88,6 +87,59 @@ void testWrite(const char *arg) {
   fprintf(fout, "%d %d %d %d\n", totalNum, successNum, failedNum, errorNum);
   averageTime = successTime / successNum;
   fprintf(fout, "%ld %ld %d\n", genTime, successTime, averageTime);
+  fclose(fout);
+  printf("Done. Result written to %s.\n", arg);
+}
+
+void testWriteThroughput(const char *arg) {
+  int i;
+  int rv;
+  int totalNum, successNum, failedNum, errorNum;
+  int testTimeInSeconds;
+  int cnt;
+  int valueLengths[TEST_SUITE_NUM];
+  char *keys[TEST_SUITE_NUM];
+  unsigned char *values[TEST_SUITE_NUM];
+  struct timeval start, end;
+  FILE *fout;
+
+  totalNum = 0;
+  successNum = 0;
+  failedNum = 0;
+  errorNum = 0;
+  cnt = 0;
+
+  printf("Preparing for data...\n");
+  for (i = 0; i < TEST_SUITE_NUM; ++i) {
+    keys[i] = (char *) malloc(MAX_KEY_LENGTH * sizeof(char));
+    values[i] =
+        (unsigned char *) malloc(MAX_BLOB_LENGTH * sizeof(unsigned char));
+    makeBlob(keys[i], NULL, &valueLengths[i], values[i]);
+  }
+
+  printf("Starting to write...\n");
+  gettimeofday(&start, NULL);
+  gettimeofday(&end, NULL);
+  testTimeInSeconds = atoi(arg);
+  while (ms(start, end) <= 1000 * testTimeInSeconds) {
+    // save blob
+    rv = saveBlob(keys[cnt], keys[cnt], valueLengths[cnt], values[cnt]);
+    if (++cnt % 100 == 0) printf("totalNum = %d\n", totalNum);
+
+    gettimeofday(&end, NULL);
+    if (ms(start, end) >= (testTimeInSeconds - 30) * 1000) {
+      ++totalNum;
+      if (rv == API_OK) {
+        ++successNum;
+      } else if (rv == API_FAILED) {
+        ++failedNum;
+      } else if (rv == API_ERR) {
+        ++errorNum;
+      }
+    }
+  }
+  fout = fopen(arg, "w");
+  fprintf(fout, "%d %d %d %d\n", totalNum, successNum, failedNum, errorNum);
   fclose(fout);
   printf("Done. Result written to %s.\n", arg);
 }

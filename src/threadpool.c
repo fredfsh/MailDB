@@ -87,6 +87,7 @@ void * _threadDo(void *nouse) {
 void execute(const int ipNum, const struct in_addr *ip,
     RedisCommand *redisCommand) {
   int i;
+  int retry;
   ThreadTask *threadTasks[N], *p;
 
   // We do as much as we can before operate the task queue, to reduce the
@@ -98,17 +99,29 @@ void execute(const int ipNum, const struct in_addr *ip,
   }
 
   // Adds tasks to the task queue.
-  pthread_mutex_lock(g_threadPool->lock);
-  p = g_threadPool->taskQueue;
-  if (p) {
-    while (p->next) p = p->next;
-    p->next = threadTasks[0];
-  } else {
-    g_threadPool->taskQueue = threadTasks[0];
+  retry = ADD_RETRY;
+  while (--retry >= 0) {
+    pthread_mutex_lock(g_threadPool->lock);
+    if (g_threadPool->waitingTasksNum >= MAX_WAITING_TASKS_NUM) {
+      pthread_mutex_unlock(g_threadPool->lock);
+      usleep(ADD_RETRY_INTERVAL);
+      continue;
+    }
+    p = g_threadPool->taskQueue;
+    if (p) {
+      while (p->next) p = p->next;
+      p->next = threadTasks[0];
+    } else {
+      g_threadPool->taskQueue = threadTasks[0];
+    }
+    g_threadPool->waitingTasksNum += ipNum;
+    pthread_mutex_unlock(g_threadPool->lock);
+    pthread_cond_signal(g_threadPool->cond);
+    return;
   }
-  g_threadPool->waitingTasksNum += ipNum;
-  pthread_mutex_unlock(g_threadPool->lock);
-  pthread_cond_signal(g_threadPool->cond);
+
+  printf("threadpool.c: %s %s\n", "Failed to add tasks to thread pool.",
+      "Too many waiting tasks.");
 }
 
 // Constructs redis command structure.

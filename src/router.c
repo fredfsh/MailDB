@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -248,7 +249,8 @@ int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
   execute(N, ips, redisCommand);
 
   // Reads result.
-  rv = readResult(R, redisCommand, NULL, rblob);
+  rv = readResult(N, redisCommand, NULL, rblob);
+  //rv = readResult(R, redisCommand, NULL, rblob);
   if (rv != THREADPOOL_OK) {
     rv = ROUTER_FAILED;
   } else {
@@ -271,6 +273,9 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
   int rv;
   struct in_addr ips[N];
   RedisCommand *redisCommand;
+
+  FILE *fout;
+  struct timeval start, end;
 
   // Finds N redis servers for blob saving.
   rv = __getHostsByKey(bucketId, ips);

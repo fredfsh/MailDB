@@ -20,8 +20,14 @@
 
 #define REDIS_PORT 6379
 
+#define CONNECT_RETRY 1000
+#define CONNECT_RETRY_INTERVAL 1 * 1000 // in microseconds
 #define REDIS_RETRY 1000
 #define REDIS_RETRY_INTERVAL 1 * 1000 // in microseconds
+
+#define ms(begin, end) \
+    (  ((end.tv_sec - begin.tv_sec) * 1000000 + \
+        (end.tv_usec - begin.tv_usec)            ) / 1000  )
 
 // Makes a connection to the destination redis server.
 int connectByIp(const struct in_addr *ip);
