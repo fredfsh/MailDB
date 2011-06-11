@@ -62,6 +62,19 @@ void * _threadDo(void *nouse) {
   ThreadTask *threadTask;
 
   while (1) {
+    /*(
+
+      lock mutex
+      while (!condition) wait cond
+      condition = 0
+      unlock mutex
+
+      lock mutex
+      condtion = 1
+      unlock mutex
+      signal
+
+      */
     pthread_cond_wait(g_threadPool->cond, g_threadPool->lock);
     threadTask = g_threadPool->taskQueue;
     --g_threadPool->waitingTasksNum;

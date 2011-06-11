@@ -274,9 +274,6 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
   struct in_addr ips[N];
   RedisCommand *redisCommand;
 
-  FILE *fout;
-  struct timeval start, end;
-
   // Finds N redis servers for blob saving.
   rv = __getHostsByKey(bucketId, ips);
   if (rv != ROUTER_OK) {

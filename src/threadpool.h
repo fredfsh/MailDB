@@ -16,9 +16,9 @@
 #define THREADPOOL_ERR 1
 #define THREADPOOL_FATAL_ERR 2
 
-#define THREAD_NUM 0xFF
+#define THREAD_NUM 0x3F
 
-#define MAX_WAITING_TASKS_NUM 0xFF
+#define MAX_WAITING_TASKS_NUM 0x3F
 
 #define ADD_RETRY 1000
 #define ADD_RETRY_INTERVAL 1 * 1000 // in microseconds

@@ -9,10 +9,9 @@
 #include <time.h>
 #include <unistd.h>
 
-void makeBlob(char *key, char *field, int *valueLength, void *value) {
+void makeKeys(char *key, char *field) {
   int i;
   int length;
-  unsigned char *p;
 
   length = rand() % (MAX_KEY_LENGTH - 1) + 1;
   for (i = 0; i < length; ++i) key[i] = (char) (rand() % 26 + 'A');
@@ -21,11 +20,83 @@ void makeBlob(char *key, char *field, int *valueLength, void *value) {
     for (i = 0; i < length; ++i) field[i] = (char) (rand() % 26 + 'a');
     field[length] = '\0';
   }
+}
+
+void makeBlob(char *key, char *field, int *valueLength, void *value) {
+  int i;
+  int length;
+  unsigned char *p;
+
+  makeKeys(key, field);
+
   length = rand() % (MAX_BLOB_LENGTH - 1) + 1;
   //length = rand() % (10 - 1) + 1;
   p = (unsigned char *) value;
   for (i = 0; i < length; ++i) *(p++) = rand();
   *valueLength = length;
+}
+
+void testRead(const char *arg) {
+  int rv;
+  int totalNum, successNum, failedNum, errorNum;
+  int averageTime;
+  int valueLength;
+  int testTimeInSeconds;
+  int opTime;
+  int cnt;
+  long successTime;
+  long genTime;
+  struct timeval start, end, last, current;
+  struct timeval genLast, genCurrent;
+  char key[MAX_KEY_LENGTH];
+  char field[MAX_KEY_LENGTH];
+  unsigned char value[MAX_BLOB_LENGTH];
+  FILE *fout;
+
+  totalNum = 0;
+  successNum = 0;
+  failedNum = 0;
+  errorNum = 0;
+  successTime = 0;
+  genTime = 0;
+  cnt = 0;
+
+  gettimeofday(&start, NULL);
+  gettimeofday(&end, NULL);
+  testTimeInSeconds = atoi(arg);
+  while (ms(start, end) < 1000 * testTimeInSeconds) {
+    // make keys
+    gettimeofday(&genLast, NULL);
+    makeKeys(key, field);
+    gettimeofday(&genCurrent, NULL);
+    genTime += ms(genLast, genCurrent);
+
+    // load blob
+    gettimeofday(&last, NULL);
+    rv = loadBlob(key, field, &valueLength, value);
+    gettimeofday(&current, NULL);
+    opTime = ms(last, current);
+    if (++cnt % 1000 == 0) printf("opTime = %d\n", opTime);
+
+    if (ms(start, end) >= (testTimeInSeconds - 30) * 1000) {
+      ++totalNum;
+      if (rv == API_OK) {
+        ++successNum;
+        successTime += opTime;
+      } else if (rv == API_FAILED) {
+        ++failedNum;
+      } else if (rv == API_ERR) {
+        ++errorNum;
+      }
+    }
+    gettimeofday(&end, NULL);
+  }
+  fout = fopen(arg, "w");
+  fprintf(fout, "%d %d %d %d\n", totalNum, successNum, failedNum, errorNum);
+  averageTime = successTime / successNum;
+  fprintf(fout, "%ld %ld %d\n", genTime, successTime, averageTime);
+  fclose(fout);
+  printf("Done. Result written to %s.\n", arg);
 }
 
 void testWrite(const char *arg) {

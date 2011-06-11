@@ -118,6 +118,7 @@ int _recvBulk(const int sockfd, void *blob) {
     } else if (rv != n) {
       printf("redis.c: %s %s\n", "Failed to receive blob from Redis.",
           "Length of blob content not equals as indicated.");
+      printf("[debug]redis.c: rv = %d, n = %d\n", rv, n);
       return REDIS_FAILED;
     }
     break;
@@ -532,9 +533,6 @@ int hSet(void *arg) {
   int valueLength;
   char commandStream[MAX_COMMAND_LENGTH];
   ThreadTask *threadTask;
-
-  FILE *fout;
-  struct timeval start, end;
 
   // Casts arguments.
   threadTask = (ThreadTask *) arg;
