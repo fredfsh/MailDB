@@ -18,6 +18,33 @@
 #include <unistd.h>
 
 CLIENT *client = NULL;
+extern ThreadPool *g_threadPool;
+
+// Dynamically determines whether R+W>N should be activated.
+// @returns number of replications to perform the operation on.
+//
+// @returns N with the possiblility:
+//   p(x) = x / X,
+// where x is the number of idle worker threads and X is the total number of
+// threads in the threadpool. Otherwise, @returns @refNum.
+// TODO: We want to speed up hence reading without lock.
+int __getExpectedAnswersNum(const int refNum) {
+  return rand() % THREAD_NUM < g_threadPool->idleThreadsNum ? N : refNum;
+
+  /*
+  retry = LOCK_RETRY / 5;
+  while (--retry >= 0) {
+    rv = pthread_mutex_trylock(g_threadPool->lock);
+    if (!rv) {
+      x = g_threadPool->idleThreadsNum;
+      pthread_mutex_unlock(g_threadPool->lock);
+      return rand() % THREAD_NUM < x ? N : refNum;
+    }
+    usleep(LOCK_RETRY_INTERVAL);
+  }
+  return refNum;
+  */
+}
 
 // Gets N hosts for the specific @key.
 // @returns false when not enough servers available.
@@ -246,12 +273,17 @@ int routeLoadBlob(const char *bucketId, const char *blobId, int *blobLength,
   redisCommand = newRedisCommand(hGet, bucketId, blobId, 0, NULL);
 
   // Executes redis command.
-  execute(N, ips, redisCommand);
+  execute(__getExpectedAnswersNum(R), ips, redisCommand);
 
   // Reads result.
-  rv = readResult(N, redisCommand, NULL, rblob);
+  rv = readResult(R, redisCommand, NULL, rblob);
+  //rv = readResult(N, redisCommand, NULL, rblob);
   //rv = readResult(R, redisCommand, NULL, rblob);
   if (rv != THREADPOOL_OK) {
+    printf("[debug]router.c: Caused by %x, %x, %x\n",
+        *((unsigned int *) &ips[0]),
+        *((unsigned int *) &ips[1]),
+        *((unsigned int *) &ips[2]));
     rv = ROUTER_FAILED;
   } else {
     memcpy(&rblobLength, rblob, sizeof(int));
@@ -286,12 +318,12 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
   redisCommand = newRedisCommand(hSet, bucketId, blobId, blobLength, blob);
 
   // Executes redis command.
-  execute(N, ips, redisCommand);
+  execute(__getExpectedAnswersNum(W), ips, redisCommand);
 
   // Reads result.
   rv = readResult(W, redisCommand, NULL, NULL);
   if (rv != THREADPOOL_OK) {
-    printf("[debug]router.c: Cause by %x, %x, %x\n",
+    printf("[debug]router.c: Caused by %x, %x, %x\n",
         *((unsigned int *) &ips[0]),
         *((unsigned int *) &ips[1]),
         *((unsigned int *) &ips[2]));
@@ -305,15 +337,26 @@ int routeSaveBlob(const char *bucketId, const char *blobId,
 // Finishing function must be called after any operation.
 void routerDestroy() {
   threadPoolDestroy();
+  redisDestroy();
 }
 
 // Initial function must be called before any operation.
 int routerInit() {
   int rv;
 
+  // redis layer init
+  redisInit();
+
+  // rpc init
   client = clnt_create(CFGSRV_HOST, CFGSRVPROG, CFGSRVVERS, "tcp");
+  if (!client) {
+    printf("router.c: %s %s\n", "Failed to initialize router layer.",
+        "Error initializing RPC client.");
+    return ROUTER_FAILED;
+  }
   printf("[debug]router.c: RPC client init success.\n");
 
+  // threadpool init
   rv = threadPoolInit();
   if (rv == THREADPOOL_ERR) {
     printf("router.c: %s %s\n", "Failed to initialize router layer.",

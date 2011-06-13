@@ -32,9 +32,6 @@
 #define MAX_PORT_LENGTH 0xFF
 #define MAX_SNAPSHOT_LENGTH 0xFFFF
 
-#define WAIT_RETRY 100
-#define WAIT_RETRY_INTERVAL 10 * 1000  // in microseconds
-
 // Finishing function must be called after any operation.
 void routerDestroy();
 // Initial function must be called before any operation.

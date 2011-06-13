@@ -16,14 +16,14 @@
 #define THREADPOOL_ERR 1
 #define THREADPOOL_FATAL_ERR 2
 
-#define THREAD_NUM 0x3F
+#define THREAD_NUM 0x0F
+#define MAX_WAITING_TASKS_NUM 0x0F
 
-#define MAX_WAITING_TASKS_NUM 0x3F
-
-#define ADD_RETRY 1000
-#define ADD_RETRY_INTERVAL 1 * 1000 // in microseconds
-#define LOCK_RETRY 1000
-#define LOCK_RETRY_INTERVAL 1 * 1000 // in microseconds
+#define ADD_RETRY 200
+#define ADD_RETRY_INTERVAL 5 * 1000 // in microseconds
+#define LOCK_RETRY 200
+#define LOCK_RETRY_INTERVAL 5 * 1000 // in microseconds
+#define SIGNAL_INTERVAL 1 * 1000 // in microseconds
 
 // A redis command closure.
 typedef struct RedisCommand {
@@ -39,6 +39,7 @@ typedef struct RedisCommand {
   /* miscellaneous */
   pthread_mutex_t *lock;  // write back lock
   int refNum;  // Increased by 1 when attached to a threadpool task structure.
+  int doingNum;  // debug
 } RedisCommand;
 
 // Thread task.
@@ -57,6 +58,10 @@ typedef struct ThreadPool {
   pthread_t *threads;
   int idleThreadsNum;
 } ThreadPool;
+
+#define ms(begin, end) \
+    (  ((end.tv_sec - begin.tv_sec) * 1000000 + \
+        (end.tv_usec - begin.tv_usec)            ) / 1000  )
 
 // Finishing function must be called after usage of the thread pool.
 void threadPoolDestroy();

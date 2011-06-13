@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -44,8 +45,7 @@ ThreadTask * _newThreadTask(const struct in_addr *ip,
     RedisCommand *redisCommand) {
   ThreadTask *result;
 
-  result = (ThreadTask *) malloc(sizeof(ThreadTask));
-  memset(result, 0, sizeof(ThreadTask));
+  result = (ThreadTask *) calloc(1, sizeof(ThreadTask));
   ++redisCommand->refNum;
   result->redisCommand = redisCommand;
   result->ip = (struct in_addr *) malloc(sizeof(struct in_addr));
@@ -60,34 +60,33 @@ ThreadTask * _newThreadTask(const struct in_addr *ip,
 // blocks at pthread_cond_wait.
 void * _threadDo(void *nouse) {
   ThreadTask *threadTask;
+  int runonce;
+  int shouldSignal;
 
   while (1) {
-    /*(
-
-      lock mutex
-      while (!condition) wait cond
-      condition = 0
-      unlock mutex
-
-      lock mutex
-      condtion = 1
-      unlock mutex
-      signal
-
-      */
-    pthread_cond_wait(g_threadPool->cond, g_threadPool->lock);
+    // wait for task
+    pthread_mutex_lock(g_threadPool->lock);
+    runonce = 1;
+    while (!g_threadPool->taskQueue) {
+      if (runonce) {
+        ++g_threadPool->idleThreadsNum;
+        runonce = 0;
+      }
+      pthread_cond_wait(g_threadPool->cond, g_threadPool->lock);
+    }
     threadTask = g_threadPool->taskQueue;
     --g_threadPool->waitingTasksNum;
-    if ( (g_threadPool->taskQueue = threadTask->next) ) {
-      pthread_cond_signal(g_threadPool->cond);
-    }
+    g_threadPool->taskQueue = threadTask->next;
+    shouldSignal = g_threadPool->taskQueue == NULL ? 0 : 1;
     --g_threadPool->idleThreadsNum;
+    pthread_mutex_lock(threadTask->redisCommand->lock);
+    ++threadTask->redisCommand->doingNum;
+    pthread_mutex_unlock(threadTask->redisCommand->lock);
     pthread_mutex_unlock(g_threadPool->lock);
+    if (shouldSignal) pthread_cond_signal(g_threadPool->cond);
 
+    // do task
     if (threadTask) threadTask->redisCommand->command(threadTask);
-    pthread_mutex_lock(g_threadPool->lock);
-    ++g_threadPool->idleThreadsNum;
-    pthread_mutex_unlock(g_threadPool->lock);
   }
 
   return NULL;  // unreachable
@@ -99,6 +98,7 @@ void * _threadDo(void *nouse) {
 // enqueuing these tasks, the function returns immediately.
 void execute(const int ipNum, const struct in_addr *ip,
     RedisCommand *redisCommand) {
+  int rv;
   int i;
   int retry;
   ThreadTask *threadTasks[N], *p;
@@ -114,8 +114,15 @@ void execute(const int ipNum, const struct in_addr *ip,
   // Adds tasks to the task queue.
   retry = ADD_RETRY;
   while (--retry >= 0) {
-    pthread_mutex_lock(g_threadPool->lock);
+    rv = pthread_mutex_trylock(g_threadPool->lock);
+    if (rv) {
+      usleep(ADD_RETRY_INTERVAL);
+      continue;
+    }
     if (g_threadPool->waitingTasksNum >= MAX_WAITING_TASKS_NUM) {
+      printf("[debug]threadpool.c: %s %d\n",
+          "Too many tasks are waiting in the queue:",
+          g_threadPool->waitingTasksNum);
       pthread_mutex_unlock(g_threadPool->lock);
       usleep(ADD_RETRY_INTERVAL);
       continue;
@@ -129,12 +136,15 @@ void execute(const int ipNum, const struct in_addr *ip,
     }
     g_threadPool->waitingTasksNum += ipNum;
     pthread_mutex_unlock(g_threadPool->lock);
-    pthread_cond_signal(g_threadPool->cond);
+    for (i = 0; i < ipNum; ++i) {
+      pthread_cond_signal(g_threadPool->cond);
+      usleep(SIGNAL_INTERVAL);
+    }
     return;
   }
 
   printf("threadpool.c: %s %s\n", "Failed to add tasks to thread pool.",
-      "Too many waiting tasks.");
+      "Too many waiting tasks or unable to acquire the lock.");
 }
 
 // Constructs redis command structure.
@@ -206,8 +216,9 @@ int readResult(const int successNum, RedisCommand *redisCommand, int *exist,
         printf("threadpool.c: %s %s\n", "Failed to read result.",
             "Not enough replies gathered from redis.");
         printf("[debug]threadpool.c: %s %d\n",
-            "Number of tasks waiting in task queue:",
-            g_threadPool->waitingTasksNum);
+            "Number of success responses got:", redisCommand->successNum);
+        printf("[debug]threadpool.c: %s %d\n",
+            "Number of threads working on this cmd :", redisCommand->doingNum);
         printf("[debug]threadpool.c: %s %d\n", "Number of idle threads:",
             g_threadPool->idleThreadsNum);
         return THREADPOOL_FAILED;
@@ -221,6 +232,7 @@ int readResult(const int successNum, RedisCommand *redisCommand, int *exist,
       redisCommand->successNum, redisCommand->refNum);
   return THREADPOOL_FAILED;
 }
+
 // Initial function must be called before usage of the thread pool.
 int threadPoolInit() {
   int i;
@@ -230,8 +242,7 @@ int threadPoolInit() {
   srand((unsigned int) time(NULL));
 
   // Memory allocation.
-  g_threadPool = (ThreadPool *) malloc(sizeof(ThreadPool));
-  memset(g_threadPool, 0, sizeof(ThreadPool));
+  g_threadPool = (ThreadPool *) calloc(1, sizeof(ThreadPool));
   g_threadPool->lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(g_threadPool->lock, NULL);
   g_threadPool->cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
@@ -246,7 +257,6 @@ int threadPoolInit() {
       return THREADPOOL_ERR;
     }
   }
-  g_threadPool->idleThreadsNum = THREAD_NUM;
   return THREADPOOL_OK;
 }
 
@@ -296,7 +306,7 @@ int writeResult(const int exist, const void *blob, ThreadTask *threadTask) {
             "Unable to release the mutex.");
         return THREADPOOL_FATAL_ERR;
       }
-      _freeRedisCommand(redisCommand);
+      _freeThreadTask(threadTask);
       return THREADPOOL_OK;
     }
     usleep(LOCK_RETRY_INTERVAL);

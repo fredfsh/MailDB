@@ -9,6 +9,7 @@ LDFLAGS = -lpthread
 RPCGEN = rpcgen
 
 CLISRC = api.c\
+      connectionpool.c\
       client.c\
       redis.c\
       router.c\
