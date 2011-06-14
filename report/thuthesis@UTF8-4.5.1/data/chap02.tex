@@ -1,4 +1,4 @@
-\chapter{问题定义}\label{chapter:def}
+\chapter{数据结构与调用接口}\label{chapter:def}
 在第\ref{chapter:architecture}章介绍系统架构之前，本章先定义需要解决的问题。
 
 \section{数据结构}
@@ -26,7 +26,7 @@
   \label{figure:datastructure}
 \end{figure}
 
-\section{接口}\label{section:api}
+\section{上层应用调用接口}\label{section:api}
 分布式二级哈希表作为各种云存储应用的底层存储后端，为不同的应用提供了统一的调用
 接口。接口的设计既要保证通用性，考虑系统实现的效率，又不能损失易用性。分布式哈
 希表的调用接口及说明参见表\ref{table:api}。

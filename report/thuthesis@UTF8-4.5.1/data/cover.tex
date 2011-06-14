@@ -6,32 +6,53 @@
 \cauthor{冯时} 
 \csupervisor{陈文光教授}
 % 如果没有副指导老师或者联合指导老师，把下面两行相应的删除即可。
-\cassosupervisor{陈康副教授}
+%\cassosupervisor{陈康副教授}
 % 日期自动生成，如果你要自己写就改这个cdate
 %\cdate{\CJKdigits{\the\year}年\CJKnumber{\the\month}月}
 
 % 定义中英文摘要和关键字
 \begin{cabstract}
-随着互联网的发展和云存储的兴起，传统的分布式哈希表越来越难以满足丰富的个人在线
-存储应用对存储后端的需求。二级哈希表存储的是具有二级索引的数据，因此能够提供更
-丰富的语义。本论文阐述了分布式二级哈希表的架构设计和实现细节，说明了性能对于分
-布式存储系统的重要性。分布式二级哈希表综合了分布式系统领域的一些经典技术，利用
-配置服务器集中管理控制信息，并采用一致性哈希进行数据的分配和备份。
+随着互联网的发展和云计算的兴起，邮件系统、个人在线相册等云存储应用对底层的存储
+后端提出了越来越高的要求。系统一方面能够存储和管理大容量的数据，具备较高的扩展
+性；另一方面又要保证在对海量数据的操作能够迅速得到响应，运行效率较高。传统的分
+布式存储系统由于支持的语义比较简单，或者系统架构复杂，不能很好的适应云存储应用
+的需求。分布式二级哈希表存储具有二级索引的数据，其语义能够满足上层应用的基本需
+求，同时整个系统结构简单，运行高效。本论文的主要贡献如下：
+\begin{enumerate}
+  \item 详细阐述了如何通过综合分布式领域的经典技术，设计并实现了分布式二级哈希
+  表存储系统。其中，数据在集群中的分布和备份采用一致性哈希算法，数据的本地存储
+  依赖开源项目Redis，操作的异步化用到了线程池。
+  \item 说明了运行效率是分布式系统的重要设计原则之一，并展示了在分布式二级哈希
+  表中，如何通过对系统作出一系列优化来提升系统性能。
+\end{enumerate}
 \end{cabstract}
 
 \ckeywords{分布式, 哈希表, 存储, 性能, 一致性哈希}
 
 \begin{eabstract} 
-With the development of Internet and boom of cloud storage, traditional
-distributed hash table is too simple to support the upper layer applications
-which provide personal online storage service. A two-level DHT stores data
-with a major index plus a secondary one, resulting in more complex semantics.
-The present thesis describes both architecture design and implementation
-details of two-level DHTs, and comes to a conclusion that high performance and
-efficiency is fundamental aspect of a distributed system. The two-level DHT is
-a combination of classical technologies in distribute computing, with a config
-server to monitor the cluster. It also employs consistent hashing to solve
-data partition and replication.
+With the development of Internet and boom of cloud computing, cloud storage
+applications, say mail system and personal online photo albums, rely more and
+more heavily on the underlying backend storages. The system should not only
+store and manager huge amount of data, with high scalability, but also limit
+operation time, with high functional efficiency. Traditional distributed
+storage systems either provide too simple semantics, or suffer from high
+overheads of operations with relatively complicated system designs, hence they
+are more and more unsuitable for the cloud storage applications. A two-level
+distributed hash table stores data with a major index plus a secondary one.
+This data structure along with the operations upon them support well enough
+for the upper layer applications. Besides, the system benefits from a simple
+and clear architecture design and functions effectively. The present thesis
+makes the following major contributions:
+\begin{enumerate}
+  \item It describes in details how the two-level DHT is designed and
+  implemented combining classic technologies in the area of distribute system.
+  Data are partitioned and replicated subject to consistent hashing algorithm.
+  Local storage is handled by Redis, an open source project. Operations are
+  executed asynchronously with the help of a thread pool.
+  \item It also shows that efficiency is one of critical principles in system
+  design and a major concern during implementation and optimization of a
+  distributed system.
+\end{enumerate}
 \end{eabstract}
 
 \ekeywords{distributed, hash table, storage, performance, consistent hashing}
